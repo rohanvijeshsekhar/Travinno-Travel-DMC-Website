@@ -42,6 +42,16 @@ jobs:
             git reset --hard origin/main
             git clean -fd --exclude='.env' --exclude='*.db' --exclude='travinno-data.json'
 
+            # Configure Hostinger MySQL environment variables
+            cat << 'EOF' > .env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=u410255584_tvn
+DB_PASSWORD=Travinno2026
+DB_NAME=u410255584_Travinno2
+NODE_ENV=production
+EOF
+
             # Restore live server data file if backup exists
             if [ -f /tmp/travinno-data.json.bak ]; then
               cp /tmp/travinno-data.json.bak travinno-data.json 2>/dev/null || true

@@ -72,13 +72,28 @@ if (database && user) {
     });
     useMySQL = true;
 
-    // Create table asynchronously on module load
+    // Create table asynchronously on module load & auto-migrate JSON data if table is empty
     dbPool.query(
       `CREATE TABLE IF NOT EXISTS travinno_collections (
         col_key VARCHAR(255) PRIMARY KEY,
         col_value LONGTEXT NOT NULL
       )`
-    ).catch((err: any) => {
+    ).then(async () => {
+      if (dbPool) {
+        const [rows]: any = await dbPool.query('SELECT COUNT(*) as count FROM travinno_collections').catch(() => null);
+        if (rows && rows[0] && rows[0].count === 0) {
+          console.log('=== Next.js DB Helper: Auto-seeding empty Hostinger MySQL Database ===');
+          const localData = readJsonData();
+          for (const [k, v] of Object.entries(localData)) {
+            const strVal = typeof v === 'string' ? v : JSON.stringify(v);
+            await dbPool.query(
+              'INSERT INTO travinno_collections (col_key, col_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE col_value = VALUES(col_value)',
+              [k, strVal]
+            ).catch(() => null);
+          }
+        }
+      }
+    }).catch((err: any) => {
       console.log('[db-server] MySQL init unavailable, switching to fast JSON:', err.message);
       useMySQL = false;
     });
