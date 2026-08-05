@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCollections } from '@/lib/db-server';
+import { getCollectionsSSR } from '@/lib/db-server';
 import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import HomeScrollEffects from '@/components/HomeScrollEffects';
@@ -27,7 +27,7 @@ const WhyTravinno = lazyLoad(() => import('@/components/WhyTravinno'), { ssr: tr
 const ContactCTA = lazyLoad(() => import('@/components/ContactCTA'), { ssr: true });
 
 export async function generateMetadata() {
-  const collections = await getCollections();
+  const collections = await getCollectionsSSR();
   const seoList = collections['travinno_seo'] || [];
   const entry = seoList.find((item: any) => item.page === 'home');
   return {
@@ -38,7 +38,7 @@ export async function generateMetadata() {
 
 export default async function HomePage() {
   // 1. Fetch collections from database on the server
-  const collections = await getCollections();
+  const collections = await getCollectionsSSR();
 
   // 2. Load defaults first, then overwrite with server collections
   db._loadDefaults();

@@ -226,3 +226,47 @@ export async function resetCollections(): Promise<void> {
     writeJsonData({});
   }
 }
+
+// -- Image field stripping for SSR ---------------------------------------------
+// Stripping base64 from SSR reduces the HTML response from ~8 MB to ~5 KB.
+// Images are served separately via GET /demo/api/image?c=...&i=...&f=...
+const IMAGE_COLLECTIONS: Record<string, string[]> = {
+  travinno_destinations: ['image'],
+  travinno_hero_slides: ['desktopImage', 'mobileImage'],
+  travinno_team: ['image'],
+  travinno_blogs: ['image'],
+};
+
+function makeImageApiUrl(col: string, id: string | number, field: string, raw: string): string {
+  const b64start = raw.indexOf(',');
+  const ver = b64start >= 0 ? raw.substring(b64start + 1, b64start + 9) : '0';
+  return `api/image?c=${col}&i=${encodeURIComponent(String(id))}&f=${field}&v=${ver}`;
+}
+
+function stripBase64ForSSR(data: Record<string, any>): Record<string, any> {
+  const out: Record<string, any> = {};
+  for (const [colKey, colVal] of Object.entries(data)) {
+    const imageFields = IMAGE_COLLECTIONS[colKey];
+    if (!imageFields || !Array.isArray(colVal)) { out[colKey] = colVal; continue; }
+    out[colKey] = (colVal as any[]).map((item: any) => {
+      if (!item || typeof item !== 'object') return item;
+      const stripped = { ...item };
+      for (const field of imageFields) {
+        const val = item[field];
+        if (typeof val === 'string' && val.startsWith('data:')) {
+          const id = item.id ?? item.name ?? 0;
+          stripped[field] = makeImageApiUrl(colKey, id, field, val);
+        }
+      }
+      return stripped;
+    });
+  }
+  return out;
+}
+
+// Use in public page.tsx files to keep SSR HTML small.
+// Admin page uses getCollections() directly to get full base64 for editing.
+export async function getCollectionsSSR(): Promise<Record<string, any>> {
+  const full = await getCollections();
+  return stripBase64ForSSR(full);
+}

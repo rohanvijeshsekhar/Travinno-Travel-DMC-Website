@@ -2,14 +2,14 @@
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
-import { getCollections } from '@/lib/db-server';
+import { getCollectionsSSR } from '@/lib/db-server';
 import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import { ParallaxComponent } from '@/components/ui/parallax-scrolling';
 import type { Metadata } from 'next';
 
 export async function generateMetadata() {
-  const collections = await getCollections();
+  const collections = await getCollectionsSSR();
   const seoList = collections['travinno_seo'] || [];
   const entry = seoList.find((item: any) => item.page === 'about');
   return {
@@ -19,7 +19,7 @@ export async function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const collections = await getCollections();
+  const collections = await getCollectionsSSR();
 
   // Seed server-side cache
   Object.keys(collections).forEach((key) => {

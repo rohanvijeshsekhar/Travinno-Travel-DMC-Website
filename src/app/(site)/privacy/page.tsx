@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
-import { getCollections } from '@/lib/db-server';
+import { getCollectionsSSR } from '@/lib/db-server';
 import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import PrivacyPage from '@/components/PrivacyPage';
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PrivacyPageRoute() {
-  const collections = await getCollections();
+  const collections = await getCollectionsSSR();
 
   // Seed server-side cache
   Object.keys(collections).forEach((key) => {
