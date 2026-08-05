@@ -31,11 +31,22 @@ jobs:
             pm2 delete travinno 2>/dev/null || true
             pm2 save --force 2>/dev/null || true
 
+            # Backup live server data file so git reset doesn't overwrite admin edits
+            if [ -f travinno-data.json ]; then
+              cp travinno-data.json /tmp/travinno-data.json.bak 2>/dev/null || true
+            fi
+
             # Force-clean any local changes that might block git pull
             # (e.g. from a previous failed rsync deployment)
             git fetch origin main
             git reset --hard origin/main
             git clean -fd --exclude='.env' --exclude='*.db' --exclude='travinno-data.json'
+
+            # Restore live server data file if backup exists
+            if [ -f /tmp/travinno-data.json.bak ]; then
+              cp /tmp/travinno-data.json.bak travinno-data.json 2>/dev/null || true
+              rm -f /tmp/travinno-data.json.bak 2>/dev/null || true
+            fi
 
             # Install ALL dependencies (dev deps needed for Next.js build)
             npm ci

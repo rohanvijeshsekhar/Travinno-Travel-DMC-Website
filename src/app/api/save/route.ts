@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveCollection } from '@/lib/db-server';
+import { revalidatePath } from 'next/cache';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +12,8 @@ export async function POST(req: NextRequest) {
     }
 
     await saveCollection(key, value);
+    revalidatePath('/', 'layout');
+
     return NextResponse.json({ success: true }, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
