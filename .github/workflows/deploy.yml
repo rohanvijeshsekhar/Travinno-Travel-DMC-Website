@@ -24,9 +24,7 @@ jobs:
           script: |
             cd ~/travinno
 
-            # ── ONE-TIME CLEANUP: kill any stale pm2 process from a previous bad deploy ──
-            # pm2 conflicts with Phusion Passenger on Hostinger by binding to port 3000
-            # instead of the LSNODE_SOCKET UNIX socket. This ensures pm2 never runs here.
+            # ── ONE-TIME CLEANUP: kill any stale pm2 process ──────────────────────────
             pm2 stop travinno 2>/dev/null || true
             pm2 delete travinno 2>/dev/null || true
             pm2 save --force 2>/dev/null || true
@@ -37,20 +35,17 @@ jobs:
             fi
 
             # Force-clean any local changes that might block git pull
-            # (e.g. from a previous failed rsync deployment)
             git fetch origin main
             git reset --hard origin/main
             git clean -fd --exclude='.env' --exclude='*.db' --exclude='travinno-data.json'
 
-            # Configure Hostinger MySQL environment variables
-            cat << 'EOF' > .env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=u410255584_tvn
-DB_PASSWORD=Travinno2026
-DB_NAME=u410255584_Travinno2
-NODE_ENV=production
-EOF
+            # ── Write .env with Hostinger MySQL credentials ───────────────────────────
+            # MUST be written before the build (Next.js reads it at build time)
+            # AND must persist after build so server.js loads it at runtime.
+            printf 'DB_HOST=127.0.0.1\nDB_PORT=3306\nDB_USER=u410255584_tvn\nDB_PASSWORD=Travinno2026\nDB_NAME=u410255584_Travinno2\nNODE_ENV=production\n' > .env
+
+            echo "✅ .env written:"
+            cat .env
 
             # Restore live server data file if backup exists
             if [ -f /tmp/travinno-data.json.bak ]; then
@@ -58,20 +53,43 @@ EOF
               rm -f /tmp/travinno-data.json.bak 2>/dev/null || true
             fi
 
-            # Install ALL dependencies (dev deps needed for Next.js build)
+            # ── Write server.js that explicitly loads dotenv before starting Next ─────
+            # Phusion Passenger calls server.js directly. Without dotenv.config(),
+            # process.env does NOT have DB_HOST etc. because Passenger does NOT
+            # source .env automatically. This is why MySQL was showing "not set".
+            printf '%s\n' \
+              "require('dotenv').config({ path: require('path').join(__dirname, '.env') });" \
+              "const { createServer } = require('http');" \
+              "const { parse } = require('url');" \
+              "const next = require('next');" \
+              "const dev = process.env.NODE_ENV !== 'production';" \
+              "const app = next({ dev });" \
+              "const handle = app.getRequestHandler();" \
+              "app.prepare().then(() => {" \
+              "  const socketOrPort = process.env.LSNODE_SOCKET || process.env.PORT || 3000;" \
+              "  const server = createServer((req, res) => {" \
+              "    const parsedUrl = parse(req.url, true);" \
+              "    handle(req, res, parsedUrl);" \
+              "  });" \
+              "  if (typeof socketOrPort === 'string' && socketOrPort.startsWith('/')) {" \
+              "    server.listen(socketOrPort, () => console.log('Ready on UNIX socket:', socketOrPort));" \
+              "  } else {" \
+              "    server.listen(socketOrPort, () => console.log('Ready on port:', socketOrPort));" \
+              "  }" \
+              "});" > server.js
+
+            # Install ALL dependencies (dotenv needed at runtime for server.js)
             npm ci
 
             # Build with increased memory limit to prevent OOM crashes on shared hosting
             export NODE_OPTIONS="--max-old-space-size=1536"
             npm run build
 
-            # ── Restart the Node.js app ─────────────────────────────────────────────
-            # Hostinger runs Node.js via Phusion Passenger / LiteSpeed.
-            # Passenger spawns server.js itself, injecting LSNODE_SOCKET so the app
-            # listens on a UNIX socket (not port 3000).
-            # The ONLY correct restart mechanism on Hostinger is touching tmp/restart.txt.
-            # Do NOT use pm2 here — it conflicts with Passenger by binding to port 3000
-            # while Passenger expects its UNIX socket, breaking all request handling.
+            # Verify .env still exists after build (sanity check)
+            echo "🔍 .env after build:"
+            cat .env
+
+            # ── Restart the Node.js app via Phusion Passenger ─────────────────────────
             mkdir -p tmp
             touch tmp/restart.txt
             echo "🔄 Passenger restart triggered via tmp/restart.txt"
