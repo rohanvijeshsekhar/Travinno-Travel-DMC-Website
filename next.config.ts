@@ -15,21 +15,29 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000,
   },
 
-  // Prevent HTML pages from being cached by the browser.
-  // After every deploy, Next.js generates new chunk filenames (content hashes).
-  // If the browser serves stale cached HTML that references old chunk hashes,
-  // it gets a ChunkLoadError 404 when trying to download those chunks.
-  // Static JS/CSS chunks (/demo/_next/static/**) are still cached immutably
-  // because their filenames contain content hashes and never change for the same content.
   async headers() {
     return [
       {
-        // Apply to all HTML routes (everything except static assets)
-        source: '/((?!_next/static|_next/image|favicon|images|fonts|video|partners).*)',
+        // API routes must never be cached — they serve live DB data
+        source: '/api/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, must-revalidate',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+        ],
+      },
+      {
+        // HTML pages: allow browser Back/Forward cache (bfcache) and intermediate
+        // caches to store responses, but always revalidate before serving.
+        // This prevents ChunkLoadError on redeploy because stale HTML is
+        // revalidated on every navigation, while still allowing instant bfcache
+        // hits and avoiding the full round-trip cost of no-store.
+        source: '/((?!api|_next/static|_next/image|favicon|images|fonts|video|partners).*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       },
@@ -38,3 +46,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

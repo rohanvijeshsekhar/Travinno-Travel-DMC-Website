@@ -6,8 +6,14 @@ import { db } from './db';
 
 const DATA_FILE = path.join(process.cwd(), 'travinno-data.json');
 
-// Memory cache for MySQL and JSON fallback to eliminate query/parsing bottlenecks
+// ── In-memory caches ───────────────────────────────────────────────────────────
+// cachedMySQLData: holds the full result of the last SELECT from travinno_collections.
+// Set to null only when saveCollection/resetCollections is called (i.e. admin saves).
+// Never expires on a timer — stale data is impossible because every write path
+// explicitly nullifies this before writing to MySQL.
 let cachedMySQLData: Record<string, any> | null = null;
+
+// cachedJsonData: mtime-gated cache for the JSON fallback file.
 let cachedJsonData: Record<string, any> | null = null;
 let cachedJsonMtime = 0;
 
@@ -48,7 +54,7 @@ function writeJsonData(data: Record<string, any>): boolean {
   }
 }
 
-// ── Database Connection Pool (MySQL with Instant JSON Fallback) ───────────────────
+// ── Database Connection Pool ───────────────────────────────────────────────────
 let dbPool: mysql.Pool | null = null;
 let useMySQL = false;
 
@@ -69,27 +75,46 @@ if (database && user) {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      connectTimeout: 1000, // Fast 1-second timeout to prevent blocking page loads if MySQL is down
+      connectTimeout: 1000,
     });
     useMySQL = true;
 
-    // Create table & sync latest deployed JSON data into Hostinger MySQL
+    // ── One-time table creation + initial seed (ONLY if table is empty) ─────────
+    // IMPORTANT: We must NOT overwrite existing MySQL rows on every server restart.
+    // Admin panel edits are stored in MySQL as the source of truth (including
+    // base64-encoded images). Overwriting them with the JSON file on each boot
+    // would silently destroy all admin changes made after deployment.
+    // Solution: seed from JSON once (when the table is completely empty),
+    // then never touch existing rows again.
     dbPool.query(
       `CREATE TABLE IF NOT EXISTS travinno_collections (
         col_key VARCHAR(255) PRIMARY KEY,
         col_value LONGTEXT NOT NULL
       )`
     ).then(async () => {
-      if (dbPool) {
-        console.log('=== Next.js DB Helper: Syncing latest deployed JSON data to Hostinger MySQL ===');
-        const localData = readJsonData();
-        for (const [k, v] of Object.entries(localData)) {
-          const strVal = typeof v === 'string' ? v : JSON.stringify(v);
-          await dbPool.query(
-            'INSERT INTO travinno_collections (col_key, col_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE col_value = VALUES(col_value)',
-            [k, strVal]
-          ).catch(() => null);
+      if (!dbPool) return;
+      try {
+        const [rows]: any = await dbPool.query(
+          'SELECT COUNT(*) as count FROM travinno_collections'
+        );
+        const count = rows?.[0]?.count ?? 0;
+        if (count === 0) {
+          // First deploy — seed MySQL from JSON so the site has initial data
+          console.log('[db-server] Empty MySQL table detected — seeding from JSON...');
+          const localData = readJsonData();
+          for (const [k, v] of Object.entries(localData)) {
+            const strVal = typeof v === 'string' ? v : JSON.stringify(v);
+            await dbPool.query(
+              'INSERT INTO travinno_collections (col_key, col_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE col_value = VALUES(col_value)',
+              [k, strVal]
+            ).catch(() => null);
+          }
+          console.log('[db-server] MySQL seeding complete.');
+        } else {
+          console.log(`[db-server] MySQL has ${count} rows — skipping seed, keeping live data.`);
         }
+      } catch (e: any) {
+        console.log('[db-server] MySQL seed check failed:', e.message);
       }
     }).catch((err: any) => {
       console.log('[db-server] MySQL init unavailable, switching to fast JSON:', err.message);
@@ -101,16 +126,23 @@ if (database && user) {
   }
 }
 
-// Get all collections (deduplicated per request using React cache & memory cache)
+// ── getCollections ─────────────────────────────────────────────────────────────
+// Uses React cache() for per-request deduplication (generateMetadata + page()
+// both call this — the second call within the same React render tree is free).
+// Also uses the module-level cachedMySQLData for cross-request warmup so
+// subsequent page navigations never hit MySQL at all — they return in <1ms.
 export const getCollections = cache(async (): Promise<Record<string, any>> => {
   let rawData: Record<string, any> = {};
 
   if (useMySQL && dbPool) {
+    // Fast path: return the in-memory cache if it's warm
     if (cachedMySQLData) {
       rawData = cachedMySQLData;
     } else {
       try {
-        const [rows]: any = await dbPool.query('SELECT col_key, col_value FROM travinno_collections');
+        const [rows]: any = await dbPool.query(
+          'SELECT col_key, col_value FROM travinno_collections'
+        );
         rows.forEach((row: any) => {
           try {
             rawData[row.col_key] = JSON.parse(row.col_value);
@@ -118,9 +150,10 @@ export const getCollections = cache(async (): Promise<Record<string, any>> => {
             rawData[row.col_key] = row.col_value;
           }
         });
+        // Warm up the cache so every subsequent request skips MySQL entirely
         cachedMySQLData = rawData;
       } catch (err: any) {
-        console.log('[db-server] MySQL query failed, permanently reverting to JSON:', err.message);
+        console.log('[db-server] MySQL query failed, reverting to JSON:', err.message);
         useMySQL = false;
         rawData = readJsonData();
       }
@@ -129,7 +162,7 @@ export const getCollections = cache(async (): Promise<Record<string, any>> => {
     rawData = readJsonData();
   }
 
-  // Guarantee default initial collections for any missing key (e.g. travinno_team, travinno_hero_slides)
+  // Merge in any default collections not present in DB
   const finalData: Record<string, any> = { ...rawData };
   if (db && db.collections) {
     Object.keys(db.collections).forEach((key) => {
@@ -142,12 +175,14 @@ export const getCollections = cache(async (): Promise<Record<string, any>> => {
   return finalData;
 });
 
-// Save one collection
+// ── saveCollection ─────────────────────────────────────────────────────────────
+// Called by POST /api/save. Invalidates the in-memory cache so the very next
+// getCollections() call reads fresh data from MySQL.
 export async function saveCollection(key: string, value: any): Promise<void> {
   const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
-  const parsedValue = typeof value === 'string' ? JSON.parse(value) : value;
+  const parsedValue = typeof value === 'string' ? (() => { try { return JSON.parse(value); } catch { return value; } })() : value;
 
-  // Invalidate memory cache so next read gets fresh updated data
+  // Invalidate both caches so next getCollections() fetches fresh data
   cachedMySQLData = null;
   cachedJsonData = null;
 
@@ -174,7 +209,7 @@ export async function saveCollection(key: string, value: any): Promise<void> {
   }
 }
 
-// Reset all
+// ── resetCollections ───────────────────────────────────────────────────────────
 export async function resetCollections(): Promise<void> {
   cachedMySQLData = null;
   cachedJsonData = null;

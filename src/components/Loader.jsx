@@ -18,19 +18,19 @@ export default function Loader({ onComplete }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
 
-    // Fade-out: start CSS transition at 3700ms
+    // Fade-out: start CSS transition at 1800ms (animation is complete by 2.2s)
     const fadeTimer = setTimeout(() => {
       if (loaderRef.current) {
-        loaderRef.current.style.transition = 'opacity 0.8s ease-in-out';
+        loaderRef.current.style.transition = 'opacity 0.7s ease-in-out';
         loaderRef.current.style.opacity = '0';
       }
-    }, 3700);
+    }, 1800);
 
-    // Unmount: call onComplete at 4600ms (after fade finishes)
+    // Unmount: call onComplete at 2500ms (after fade finishes)
     const exitTimer = setTimeout(() => {
       document.body.style.overflow = '';
       if (onComplete) onComplete();
-    }, 4600);
+    }, 2500);
 
     return () => {
       document.body.style.overflow = '';
@@ -216,8 +216,8 @@ export default function Loader({ onComplete }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 2.2,
-            duration: 0.8,
+            delay: 1.0,
+            duration: 0.6,
             ease: "easeOut"
           }}
           src="/demo/images/logo_loading.png"
@@ -238,8 +238,8 @@ export default function Loader({ onComplete }) {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 2.4,
-            duration: 0.8,
+            delay: 1.2,
+            duration: 0.6,
             ease: "easeOut"
           }}
           style={{
@@ -273,7 +273,7 @@ export default function Loader({ onComplete }) {
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
             transition={{
-              duration: 3.7,
+              duration: 1.8,
               ease: [0.22, 1, 0.36, 1]
             }}
             style={{
