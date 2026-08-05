@@ -1,3 +1,6 @@
+// Force SSR on every request - prevents stale build-time data
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import { getCollections } from '@/lib/db-server';
 import { db } from '@/lib/db';

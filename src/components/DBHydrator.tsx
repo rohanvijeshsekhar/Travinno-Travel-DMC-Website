@@ -8,7 +8,10 @@ interface DBHydratorProps {
 }
 
 export default function DBHydrator({ data }: DBHydratorProps) {
-  // Load all SSR collections into the client-side db cache first
+  // ── Synchronous render-phase update ────────────────────────────────────────
+  // This runs BEFORE any child component's render, so page-level components
+  // that read from db.collections in their useState initializers always get
+  // the fresh SSR data from MySQL — not the stale build-time INITIAL_* defaults.
   if (data) {
     Object.keys(data).forEach((key) => {
       if (data[key] !== undefined && data[key] !== null) {
@@ -18,17 +21,31 @@ export default function DBHydrator({ data }: DBHydratorProps) {
   }
 
   // Signal db.init() that SSR already provided the latest server data.
-  // This prevents the redundant client-side /api/ping + /api/collections fetch
-  // that was causing the 8–10 second image load delay after admin updates.
+  // This skips the client-side /api/ping + /api/collections double-fetch
+  // which was causing the 4–10 second delay after admin panel updates.
   db.ssrHydrated = Object.keys(data || {}).length > 0;
 
-  // Initialize the db — will now take the SSR fast path and skip network fetches
+  // Initialize on first load (takes the fast SSR path since ssrHydrated=true)
   db.init();
 
+  // ── Post-mount broadcast ────────────────────────────────────────────────────
+  // db.init() only broadcasts on the very FIRST call (db.initialized guard).
+  // On SPA navigations the new page's DBHydrator has fresh SSR data but
+  // db.initialized is already true, so db.init() is a no-op and the broadcast
+  // never fires. Layout components (Header, Footer) that are already mounted
+  // never learn about the new data and continue showing stale content.
+  //
+  // Fix: always dispatch 'travinno-db-update' from useEffect on every mount.
+  // On SPA navigation, DBHydrator unmounts (it's in the page, not the layout)
+  // and remounts on the new page, so this useEffect fires every time.
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Preserve default index page SEO as initial fallback
+    // Broadcast fresh data to all currently-mounted components including
+    // the persistent layout (Header, Footer) so they re-render immediately.
+    window.dispatchEvent(new CustomEvent('travinno-db-update'));
+
+    // ── SEO title/description update ─────────────────────────────────────────
     const defaultTitle = document.title;
     const defaultDescEl = document.querySelector('meta[name="description"]');
     const defaultDesc = defaultDescEl ? defaultDescEl.getAttribute('content') : '';
@@ -51,7 +68,6 @@ export default function DBHydrator({ data }: DBHydratorProps) {
           }
         }
       } else {
-        // Determine the current route page key to resolve standard page title
         const path = window.location.pathname;
         let routeKey = 'home';
         if (path.includes('/about')) routeKey = 'about';
@@ -79,7 +95,7 @@ export default function DBHydrator({ data }: DBHydratorProps) {
 
     window.addEventListener('hashchange', handleHashTitle);
     window.addEventListener('travinno-db-update', handleHashTitle);
-    
+
     // Run initially on mount
     handleHashTitle();
 
@@ -87,7 +103,7 @@ export default function DBHydrator({ data }: DBHydratorProps) {
       window.removeEventListener('hashchange', handleHashTitle);
       window.removeEventListener('travinno-db-update', handleHashTitle);
     };
-  }, []);
+  }, []); // fires on every mount (each SPA navigation remounts this component)
 
   return null;
 }

@@ -4,21 +4,27 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import HomeScrollEffects from '@/components/HomeScrollEffects';
 import TwinklingStars from '@/components/TwinklingStars';
-import dynamic from 'next/dynamic';
+import lazyLoad from 'next/dynamic';
+
+// Force SSR on every request so pages always reflect live MySQL data.
+// Without this, Next.js pre-renders pages at BUILD TIME when MySQL is
+// unreachable from GitHub Actions, baking stale data into the HTML.
+// The client then falls back to a slow /api/collections fetch (4–10s delay).
+export const dynamic = 'force-dynamic';
 
 // Above the fold - eagerly loaded
 import CinematicHero from '@/components/CinematicHero';
 import ScrollIndicator from '@/components/ScrollIndicator';
 
 // Below the fold - dynamically lazy loaded to improve mobile TTI and Reduce JavaScript execution time
-const EditorialSection = dynamic(() => import('@/components/EditorialSection'), { ssr: true });
-const DestinationStorySection = dynamic(() => import('@/components/ui/destination-story-section'), { ssr: true });
-const ExpertiseSection = dynamic(() => import('@/components/ExpertiseSection'), { ssr: true });
-const TestimonialsSection = dynamic(() => import('@/components/TestimonialsSection'), { ssr: true });
-const OurJourney = dynamic(() => import('@/components/OurJourney'), { ssr: true });
-const LogoCloudSection = dynamic(() => import('@/components/LogoCloudSection'), { ssr: true });
-const WhyTravinno = dynamic(() => import('@/components/WhyTravinno'), { ssr: true });
-const ContactCTA = dynamic(() => import('@/components/ContactCTA'), { ssr: true });
+const EditorialSection = lazyLoad(() => import('@/components/EditorialSection'), { ssr: true });
+const DestinationStorySection = lazyLoad(() => import('@/components/ui/destination-story-section'), { ssr: true });
+const ExpertiseSection = lazyLoad(() => import('@/components/ExpertiseSection'), { ssr: true });
+const TestimonialsSection = lazyLoad(() => import('@/components/TestimonialsSection'), { ssr: true });
+const OurJourney = lazyLoad(() => import('@/components/OurJourney'), { ssr: true });
+const LogoCloudSection = lazyLoad(() => import('@/components/LogoCloudSection'), { ssr: true });
+const WhyTravinno = lazyLoad(() => import('@/components/WhyTravinno'), { ssr: true });
+const ContactCTA = lazyLoad(() => import('@/components/ContactCTA'), { ssr: true });
 
 export async function generateMetadata() {
   const collections = await getCollections();
