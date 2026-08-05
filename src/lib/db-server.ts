@@ -1,8 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import mysql from 'mysql2/promise';
+import { cache } from 'react';
 
 const DATA_FILE = path.join(process.cwd(), 'travinno-data.json');
+
+// Memory cache for JSON fallback to eliminate disk I/O bottlenecks
+let cachedJsonData: Record<string, any> | null = null;
 
 // Initialize JSON fallback file if it doesn't exist
 if (!fs.existsSync(DATA_FILE)) {
@@ -10,9 +14,14 @@ if (!fs.existsSync(DATA_FILE)) {
 }
 
 function readJsonData(): Record<string, any> {
+  if (cachedJsonData) {
+    return cachedJsonData;
+  }
   try {
     if (fs.existsSync(DATA_FILE)) {
-      return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+      const content = fs.readFileSync(DATA_FILE, 'utf8');
+      cachedJsonData = JSON.parse(content);
+      return cachedJsonData || {};
     }
   } catch (e: any) {
     console.error('[db-server] readJsonData error:', e.message);
@@ -23,6 +32,7 @@ function readJsonData(): Record<string, any> {
 function writeJsonData(data: Record<string, any>): boolean {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+    cachedJsonData = data;
     return true;
   } catch (e: any) {
     console.error('[db-server] writeJsonData error:', e.message);
@@ -30,7 +40,7 @@ function writeJsonData(data: Record<string, any>): boolean {
   }
 }
 
-// ── Database Connection Pool (MySQL with JSON Fallback) ───────────────────────────
+// ── Database Connection Pool (MySQL with Instant JSON Fallback) ───────────────────
 let dbPool: mysql.Pool | null = null;
 let useMySQL = false;
 
@@ -51,9 +61,9 @@ if (database && user) {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      connectTimeout: 1000, // Fast 1-second timeout to prevent blocking page loads if MySQL is down
     });
     useMySQL = true;
-    console.log('=== Next.js DB Helper: Active MySQL Connection ===');
 
     // Create table asynchronously on module load
     dbPool.query(
@@ -62,18 +72,17 @@ if (database && user) {
         col_value LONGTEXT NOT NULL
       )`
     ).catch((err: any) => {
-      console.log('[db-server] MySQL Table Init Error:', err.message);
+      console.log('[db-server] MySQL init unavailable, switching to fast JSON:', err.message);
+      useMySQL = false;
     });
   } catch (e: any) {
     console.log('[db-server] MySQL connection failed, falling back to JSON:', e.message);
     useMySQL = false;
   }
-} else {
-  console.log('=== Next.js DB Helper: Local travinno-data.json ===');
 }
 
-// Get all collections
-export async function getCollections(): Promise<Record<string, any>> {
+// Get all collections (deduplicated per request using React cache)
+export const getCollections = cache(async (): Promise<Record<string, any>> => {
   if (useMySQL && dbPool) {
     try {
       const [rows]: any = await dbPool.query('SELECT col_key, col_value FROM travinno_collections');
@@ -87,13 +96,14 @@ export async function getCollections(): Promise<Record<string, any>> {
       });
       return data;
     } catch (err: any) {
-      console.log('[db-server] MySQL Read Error, falling back to JSON:', err.message);
+      console.log('[db-server] MySQL query failed, permanently reverting to JSON:', err.message);
+      useMySQL = false;
       return readJsonData();
     }
   } else {
     return readJsonData();
   }
-}
+});
 
 // Save one collection
 export async function saveCollection(key: string, value: any): Promise<void> {
@@ -106,7 +116,8 @@ export async function saveCollection(key: string, value: any): Promise<void> {
         [key, stringValue]
       );
     } catch (err: any) {
-      console.log('[db-server] MySQL Write Error, falling back to JSON:', err.message);
+      console.log('[db-server] MySQL write failed, falling back to JSON:', err.message);
+      useMySQL = false;
       const data = readJsonData();
       data[key] = typeof value === 'string' ? JSON.parse(value) : value;
       writeJsonData(data);
@@ -128,6 +139,7 @@ export async function resetCollections(): Promise<void> {
       await dbPool.query('TRUNCATE TABLE travinno_collections');
     } catch (err: any) {
       console.log('[db-server] MySQL Truncate Error:', err.message);
+      useMySQL = false;
       writeJsonData({});
     }
   } else {
