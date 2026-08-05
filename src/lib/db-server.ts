@@ -6,7 +6,8 @@ import { db } from './db';
 
 const DATA_FILE = path.join(process.cwd(), 'travinno-data.json');
 
-// Memory cache for JSON fallback with mtime tracking across processes
+// Memory cache for MySQL and JSON fallback to eliminate query/parsing bottlenecks
+let cachedMySQLData: Record<string, any> | null = null;
 let cachedJsonData: Record<string, any> | null = null;
 let cachedJsonMtime = 0;
 
@@ -103,24 +104,29 @@ if (database && user) {
   }
 }
 
-// Get all collections (deduplicated per request using React cache)
+// Get all collections (deduplicated per request using React cache & memory cache)
 export const getCollections = cache(async (): Promise<Record<string, any>> => {
   let rawData: Record<string, any> = {};
 
   if (useMySQL && dbPool) {
-    try {
-      const [rows]: any = await dbPool.query('SELECT col_key, col_value FROM travinno_collections');
-      rows.forEach((row: any) => {
-        try {
-          rawData[row.col_key] = JSON.parse(row.col_value);
-        } catch (e) {
-          rawData[row.col_key] = row.col_value;
-        }
-      });
-    } catch (err: any) {
-      console.log('[db-server] MySQL query failed, permanently reverting to JSON:', err.message);
-      useMySQL = false;
-      rawData = readJsonData();
+    if (cachedMySQLData) {
+      rawData = cachedMySQLData;
+    } else {
+      try {
+        const [rows]: any = await dbPool.query('SELECT col_key, col_value FROM travinno_collections');
+        rows.forEach((row: any) => {
+          try {
+            rawData[row.col_key] = JSON.parse(row.col_value);
+          } catch (e) {
+            rawData[row.col_key] = row.col_value;
+          }
+        });
+        cachedMySQLData = rawData;
+      } catch (err: any) {
+        console.log('[db-server] MySQL query failed, permanently reverting to JSON:', err.message);
+        useMySQL = false;
+        rawData = readJsonData();
+      }
     }
   } else {
     rawData = readJsonData();
@@ -143,6 +149,10 @@ export const getCollections = cache(async (): Promise<Record<string, any>> => {
 export async function saveCollection(key: string, value: any): Promise<void> {
   const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
   const parsedValue = typeof value === 'string' ? JSON.parse(value) : value;
+
+  // Invalidate memory cache so next read gets fresh updated data
+  cachedMySQLData = null;
+  cachedJsonData = null;
 
   if (useMySQL && dbPool) {
     try {
@@ -169,6 +179,9 @@ export async function saveCollection(key: string, value: any): Promise<void> {
 
 // Reset all
 export async function resetCollections(): Promise<void> {
+  cachedMySQLData = null;
+  cachedJsonData = null;
+
   if (useMySQL && dbPool) {
     try {
       await dbPool.query('TRUNCATE TABLE travinno_collections');
