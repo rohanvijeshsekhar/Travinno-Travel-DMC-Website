@@ -27,7 +27,7 @@ export default function CinematicHero() {
         zIndex: 1,
       }}
     >
-      {/* Background Video Layer */}
+      {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
       <video
         ref={videoRef}
         autoPlay
@@ -48,18 +48,6 @@ export default function CinematicHero() {
       >
         <source src="/video/new.MP4" type="video/mp4" />
       </video>
-
-      {/* Cinematic Dark Gradient & Vignette Overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(ellipse at center, rgba(5, 5, 5, 0.35) 0%, rgba(5, 5, 5, 0.65) 100%), linear-gradient(180deg, rgba(5, 5, 5, 0.5) 0%, rgba(5, 5, 5, 0.2) 40%, rgba(5, 5, 5, 0.7) 100%)',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}
-      />
 
       {/* Centered Editorial Overlay Content */}
       <div
@@ -87,7 +75,7 @@ export default function CinematicHero() {
             color: '#F5F2EC',
             margin: '0 0 14px 0',
             lineHeight: 1.15,
-            textShadow: '0 2px 16px rgba(0, 0, 0, 0.65)',
+            textShadow: '0 2px 20px rgba(0, 0, 0, 0.9), 0 4px 30px rgba(0, 0, 0, 0.7)',
             whiteSpace: 'normal',
           }}
         >
@@ -101,9 +89,9 @@ export default function CinematicHero() {
             fontWeight: 500,
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
-            color: 'rgba(245, 242, 236, 0.85)',
+            color: '#F5F2EC',
             margin: '0 0 36px 0',
-            textShadow: '0 2px 10px rgba(0, 0, 0, 0.6)',
+            textShadow: '0 2px 14px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.7)',
           }}
         >
           Bespoke B2B Travel &amp; Destination Management
@@ -120,10 +108,10 @@ export default function CinematicHero() {
               letterSpacing: '2.2px',
               textTransform: 'uppercase',
               color: '#F5F2EC',
-              background: 'rgba(5, 5, 5, 0.25)',
+              background: 'rgba(0, 0, 0, 0.45)',
               border: '1px solid rgba(245, 242, 236, 0.85)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
               padding: '16px 36px',
               borderRadius: '0px',
               textDecoration: 'none',
@@ -132,13 +120,14 @@ export default function CinematicHero() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.45)',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#F5F2EC';
               e.currentTarget.style.color = '#000000';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(5, 5, 5, 0.25)';
+              e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.45)';
               e.currentTarget.style.color = '#F5F2EC';
             }}
           >

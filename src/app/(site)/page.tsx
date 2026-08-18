@@ -70,14 +70,14 @@ export default async function HomePage() {
         {/* Cinematic Living Photograph Experience */}
         <CinematicHero />
 
-        {/* Smooth bottom blend overlay to fade images into the page background */}
+        {/* Subtle bottom edge blend to transition into the page background */}
         <div
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             width: '100%',
-            height: '250px',
+            height: '60px',
             background: 'linear-gradient(to bottom, transparent 0%, #050505 100%)',
             zIndex: 10,
             pointerEvents: 'none',
