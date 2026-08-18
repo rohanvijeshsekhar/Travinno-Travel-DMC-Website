@@ -29,34 +29,18 @@ jobs:
             pm2 delete travinno 2>/dev/null || true
             pm2 save --force 2>/dev/null || true
 
-            # Backup live server data file so git reset doesn't overwrite admin edits
-            if [ -f travinno-data.json ]; then
-              cp travinno-data.json /tmp/travinno-data.json.bak 2>/dev/null || true
-            fi
-
-            # Force-clean any local changes that might block git pull
+            # Force-clean any local untracked files and pull latest git changes (including travinno-data.json)
             git fetch origin main
             git reset --hard origin/main
-            git clean -fd --exclude='.env' --exclude='*.db' --exclude='travinno-data.json'
+            git clean -fd --exclude='.env' --exclude='*.db'
 
             # ── Write .env with Hostinger MySQL credentials ───────────────────────────
-            # MUST be written before the build (Next.js reads it at build time)
-            # AND must persist after build so server.js loads it at runtime.
             printf 'DB_HOST=127.0.0.1\nDB_PORT=3306\nDB_USER=u410255584_tvn\nDB_PASSWORD=Travinno2026\nDB_NAME=u410255584_Travinno2\nNODE_ENV=production\n' > .env
 
             echo "✅ .env written:"
             cat .env
 
-            # Restore live server data file if backup exists
-            if [ -f /tmp/travinno-data.json.bak ]; then
-              cp /tmp/travinno-data.json.bak travinno-data.json 2>/dev/null || true
-              rm -f /tmp/travinno-data.json.bak 2>/dev/null || true
-            fi
-
             # ── Write server.js that explicitly loads dotenv before starting Next ─────
-            # Phusion Passenger calls server.js directly. Without dotenv.config(),
-            # process.env does NOT have DB_HOST etc. because Passenger does NOT
-            # source .env automatically. This is why MySQL was showing "not set".
             printf '%s\n' \
               "require('dotenv').config({ path: require('path').join(__dirname, '.env') });" \
               "const { createServer } = require('http');" \
@@ -78,8 +62,41 @@ jobs:
               "  }" \
               "});" > server.js
 
-            # Install ALL dependencies (dotenv needed at runtime for server.js)
+            # Install ALL dependencies
             npm ci
+
+            # ── Sync pushed travinno-data.json directly into live MySQL ───────────────
+            node -e "
+              require('dotenv').config();
+              const mysql = require('mysql2/promise');
+              const fs = require('fs');
+              async function sync() {
+                try {
+                  if (!fs.existsSync('travinno-data.json')) return;
+                  const data = JSON.parse(fs.readFileSync('travinno-data.json', 'utf8'));
+                  const pool = mysql.createPool({
+                    host: process.env.DB_HOST || '127.0.0.1',
+                    port: parseInt(process.env.DB_PORT || '3306', 10),
+                    user: process.env.DB_USER,
+                    password: process.env.DB_PASSWORD,
+                    database: process.env.DB_NAME
+                  });
+                  await pool.query('CREATE TABLE IF NOT EXISTS travinno_collections (col_key VARCHAR(255) PRIMARY KEY, col_value LONGTEXT NOT NULL)');
+                  for (const [k, v] of Object.entries(data)) {
+                    const strVal = typeof v === 'string' ? v : JSON.stringify(v);
+                    await pool.query(
+                      'INSERT INTO travinno_collections (col_key, col_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE col_value = VALUES(col_value)',
+                      [k, strVal]
+                    );
+                  }
+                  console.log('✅ Synced travinno-data.json to Hostinger MySQL table');
+                  await pool.end();
+                } catch(e) {
+                  console.log('MySQL sync note:', e.message);
+                }
+              }
+              sync();
+            "
 
             # Build with increased memory limit to prevent OOM crashes on shared hosting
             export NODE_OPTIONS="--max-old-space-size=1536"
