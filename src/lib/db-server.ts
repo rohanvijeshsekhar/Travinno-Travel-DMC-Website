@@ -232,7 +232,6 @@ export async function resetCollections(): Promise<void> {
 // Images are served separately via GET /demo/api/image?c=...&i=...&f=...
 const IMAGE_COLLECTIONS: Record<string, string[]> = {
   travinno_destinations: ['image'],
-  travinno_hero_slides: ['desktopImage', 'mobileImage'],
   travinno_team: ['image'],
   travinno_blogs: ['image'],
 };

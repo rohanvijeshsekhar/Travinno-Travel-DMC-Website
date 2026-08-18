@@ -249,64 +249,7 @@ const INITIAL_TESTIMONIALS = [
 
 const INITIAL_LOGOS = Array.from({ length: 52 }, (_, i) => `partners/partner-${i + 1}.webp`);
 
-const INITIAL_HERO_SLIDES = [
-  {
-    id: 'hero_1',
-    name: 'Dubai',
-    duration: 4.0,
-    desktopImage: 'images/hero/uae.webp',
-    mobileImage: 'images/hero/uae.webp',
-    effect: { scaleStart: 1.05, scaleEnd: 1.11, xStart: 0, xEnd: 0, yStart: 0, yEnd: 0 }
-  },
-  {
-    id: 'hero_2',
-    name: 'Kenya',
-    duration: 3.6,
-    desktopImage: 'images/hero/kenya.webp',
-    mobileImage: 'images/hero/kenya.webp',
-    effect: { scaleStart: 1.11, scaleEnd: 1.05, xStart: 0, xEnd: 0, yStart: 0, yEnd: 0 }
-  },
-  {
-    id: 'hero_3',
-    name: 'Thailand',
-    duration: 4.2,
-    desktopImage: 'images/hero/thailand.webp',
-    mobileImage: 'images/hero/thailand.webp',
-    effect: { scaleStart: 1.10, scaleEnd: 1.16, xStart: -3, xEnd: 3, yStart: 0, yEnd: 0 }
-  },
-  {
-    id: 'hero_4',
-    name: 'Malaysia',
-    duration: 3.8,
-    desktopImage: 'images/hero/malaysia.webp',
-    mobileImage: 'images/hero/malaysia.webp',
-    effect: { scaleStart: 1.10, scaleEnd: 1.16, xStart: 0, xEnd: 0, yStart: -3, yEnd: 3 }
-  },
-  {
-    id: 'hero_5',
-    name: 'Singapore',
-    duration: 4.4,
-    desktopImage: 'images/hero/singapore.webp',
-    mobileImage: 'images/hero/singapore.webp',
-    effect: { scaleStart: 1.08, scaleEnd: 1.14, xStart: -2, xEnd: 2, yStart: -2, yEnd: 2 }
-  },
-  {
-    id: 'hero_6',
-    name: 'Vietnam',
-    duration: 3.7,
-    desktopImage: 'images/hero/vietnam.webp',
-    mobileImage: 'images/hero/vietnam.webp',
-    effect: { scaleStart: 1.14, scaleEnd: 1.08, xStart: 2, xEnd: -2, yStart: 0, yEnd: 0 }
-  },
-  {
-    id: 'hero_7',
-    name: 'Bali',
-    duration: 5.0,
-    desktopImage: 'images/hero/bali.webp',
-    mobileImage: 'images/hero/bali.webp',
-    effect: { scaleStart: 1.10, scaleEnd: 1.10, xStart: -2, xEnd: 2, yStart: 2, yEnd: -2 }
-  }
-];
+
 
 const INITIAL_INQUIRIES = [
   {
@@ -381,7 +324,7 @@ export const db = {
     'travinno_team': INITIAL_TEAM,
     'travinno_testimonials': INITIAL_TESTIMONIALS,
     'travinno_logos': INITIAL_LOGOS,
-    'travinno_hero_slides': INITIAL_HERO_SLIDES,
+
     'travinno_inquiries': INITIAL_INQUIRIES,
     'travinno_applications': INITIAL_APPLICATIONS,
     'travinno_activities': INITIAL_ACTIVITIES,
@@ -453,7 +396,7 @@ export const db = {
             { key: 'travinno_team', defaultVal: INITIAL_TEAM },
             { key: 'travinno_testimonials', defaultVal: INITIAL_TESTIMONIALS },
             { key: 'travinno_logos', defaultVal: INITIAL_LOGOS },
-            { key: 'travinno_hero_slides', defaultVal: INITIAL_HERO_SLIDES },
+
             { key: 'travinno_inquiries', defaultVal: INITIAL_INQUIRIES },
             { key: 'travinno_applications', defaultVal: INITIAL_APPLICATIONS },
             { key: 'travinno_activities', defaultVal: INITIAL_ACTIVITIES },
@@ -488,7 +431,7 @@ export const db = {
       { key: 'travinno_team', defaultVal: INITIAL_TEAM },
       { key: 'travinno_testimonials', defaultVal: INITIAL_TESTIMONIALS },
       { key: 'travinno_logos', defaultVal: INITIAL_LOGOS },
-      { key: 'travinno_hero_slides', defaultVal: INITIAL_HERO_SLIDES },
+
       { key: 'travinno_inquiries', defaultVal: INITIAL_INQUIRIES },
       { key: 'travinno_applications', defaultVal: INITIAL_APPLICATIONS },
       { key: 'travinno_activities', defaultVal: INITIAL_ACTIVITIES },
@@ -498,24 +441,7 @@ export const db = {
     broadcastChange();
   },
 
-  // GET ALL
-  getHeroSlides() {
-    this.init();
-    return this.collections['travinno_hero_slides'] || [];
-  },
-  saveHeroSlides(list: any[], activityMessage: string | null = null) {
-    this.collections['travinno_hero_slides'] = list;
-    this._ssSet('travinno_hero_slides', list);
-    if (this.serverActive || process.env.NODE_ENV === 'production') {
-      fetch(`${API_BASE}/api/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'travinno_hero_slides', value: list })
-      }).catch(err => console.error('Error writing hero slides to server:', err));
-    }
-    if (activityMessage) this.logActivity(activityMessage);
-    broadcastChange();
-  },
+
 
   getDestinations() {
     this.init();

@@ -618,7 +618,7 @@ export default function AdminPanel() {
   const [inquiries, setInquiries] = useState([]);
   const [applications, setApplications] = useState([]);
   const [activities, setActivities] = useState([]);
-  const [heroSlides, setHeroSlides] = useState([]);
+
 
   // Modal / Form overlays
   const [editingItem, setEditingItem] = useState(null);
@@ -631,7 +631,7 @@ export default function AdminPanel() {
   const [careerForm, setCareerForm] = useState({ title: '', location: '', type: 'Full-Time', description: '', status: 'Open' });
   const [teamForm, setTeamForm] = useState({ name: '', position: '', bio: '', image: '', isLeader: false, order: 0, signature: '' });
   const [testimonialForm, setTestimonialForm] = useState({ name: '', company: '', location: '', text: '', rating: 5 });
-  const [heroSlideForm, setHeroSlideForm] = useState({ name: '', duration: 4.0, desktopImage: '', mobileImage: '', effect: { scaleStart: 1.05, scaleEnd: 1.11, xStart: 0, xEnd: 0, yStart: 0, yEnd: 0 } });
+
 
   // SEO Management states
   const [seo, setSeo] = useState([]);
@@ -716,7 +716,7 @@ export default function AdminPanel() {
     setInquiries(db.getInquiries());
     setApplications(db.getApplications());
     setActivities(db.getActivities());
-    setHeroSlides(db.getHeroSlides());
+
     setSeo(db.getSeo());
   };
 
@@ -795,32 +795,6 @@ export default function AdminPanel() {
     }
   };
 
-  // HERO SLIDES CRUD
-  const saveHeroSlide = (e) => {
-    e.preventDefault();
-    if (!heroSlideForm.name) {
-      alert("Please fill in the slide name.");
-      return;
-    }
-    let list = [...heroSlides];
-    if (editingItem) {
-      list = list.map(item => item.id === editingItem.id ? { ...item, ...heroSlideForm } : item);
-      db.saveHeroSlides(list, `Edited hero slide: ${heroSlideForm.name}`);
-    } else {
-      const id = 'hero_' + Date.now();
-      const newItem = { ...heroSlideForm, id };
-      list.push(newItem);
-      db.saveHeroSlides(list, `Added new hero slide: ${heroSlideForm.name}`);
-    }
-    closeForm();
-  };
-
-  const deleteHeroSlide = (id, name) => {
-    if (confirm(`Are you sure you want to delete the hero slide "${name}"?`)) {
-      const list = heroSlides.filter(item => item.id !== id);
-      db.saveHeroSlides(list, `Deleted hero slide: ${name}`);
-    }
-  };
 
   // BLOGS CRUD
   const saveBlog = (e) => {
@@ -955,8 +929,7 @@ export default function AdminPanel() {
     setEditingItem(item);
     if (activeTab === 'destinations') {
       setDestForm(item ? { ...item } : { name: '', region: '', tagline: '', image: '', description: '' });
-    } else if (activeTab === 'hero-slides') {
-      setHeroSlideForm(item ? { ...item } : { name: '', duration: 4.0, desktopImage: '', mobileImage: '', effect: { scaleStart: 1.05, scaleEnd: 1.11, xStart: 0, xEnd: 0, yStart: 0, yEnd: 0 } });
+
     } else if (activeTab === 'blogs') {
       setBlogForm(item ? { ...item } : { title: '', category: '', readTime: '', image: '', description: '', content: '' });
     } else if (activeTab === 'careers') {
@@ -1175,7 +1148,7 @@ export default function AdminPanel() {
             {[
               { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
               { id: 'destinations', label: 'Destinations', icon: <Globe size={16} /> },
-              { id: 'hero-slides', label: 'Hero Slides', icon: <Image size={16} /> },
+
               { id: 'blogs', label: 'Blog Posts', icon: <BookOpen size={16} /> },
               { id: 'careers', label: 'Job Openings', icon: <Briefcase size={16} /> },
               { id: 'applications', label: 'Applications', icon: <FileText size={16} /> },
@@ -1394,7 +1367,7 @@ export default function AdminPanel() {
               </a>
             )}
 
-            {['destinations', 'hero-slides', 'blogs', 'careers', 'team', 'testimonials'].includes(activeTab) && (
+            {['destinations', 'blogs', 'careers', 'team', 'testimonials'].includes(activeTab) && (
               <button
                 onClick={() => openForm()}
                 style={{
@@ -1573,96 +1546,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* ==========================================
-            VIEW: HERO SLIDES
-            ========================================== */}
-        {activeTab === 'hero-slides' && !isFormOpen && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
-            {heroSlides.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  backgroundColor: currentTheme.surface,
-                  border: `1px solid ${currentTheme.border}`,
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '350px'
-                }}
-              >
-                {/* Desktop & Mobile Previews Side-by-Side */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', height: '150px', borderBottom: `1px solid ${currentTheme.border}`, overflow: 'hidden' }}>
-                  <div style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
-                    {item.desktopImage ? (
-                      <img src={item.desktopImage.startsWith('data:') || item.desktopImage.startsWith('http') ? item.desktopImage : `/demo/${item.desktopImage.startsWith('/') ? item.desktopImage.slice(1) : item.desktopImage}`} alt="Desktop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.65rem', color: currentTheme.subText }}>No Desktop</div>
-                    )}
-                    <span style={{ position: 'absolute', bottom: '6px', left: '6px', backgroundColor: 'rgba(0,0,0,0.7)', color: '#FFFFFF', padding: '2px 6px', fontSize: '0.55rem', borderRadius: '3px', textTransform: 'uppercase' }}>Desktop</span>
-                  </div>
-                  <div style={{ position: 'relative', overflow: 'hidden', height: '100%', borderLeft: `1px solid ${currentTheme.border}` }}>
-                    {item.mobileImage ? (
-                      <img src={item.mobileImage.startsWith('data:') || item.mobileImage.startsWith('http') ? item.mobileImage : `/demo/${item.mobileImage.startsWith('/') ? item.mobileImage.slice(1) : item.mobileImage}`} alt="Mobile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.65rem', color: currentTheme.subText }}>No Mobile</div>
-                    )}
-                    <span style={{ position: 'absolute', bottom: '6px', left: '6px', backgroundColor: 'rgba(0,0,0,0.7)', color: '#FFFFFF', padding: '2px 6px', fontSize: '0.55rem', borderRadius: '3px', textTransform: 'uppercase' }}>Mobile</span>
-                  </div>
-                </div>
 
-                {/* Details */}
-                <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxSizing: 'border-box' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1.1rem', color: currentTheme.text, margin: '0 0 4px 0' }}>{item.name}</h3>
-                    <div style={{ display: 'flex', gap: '8px', fontSize: '0.72rem', color: currentTheme.subText }}>
-                      <span>Duration: {item.duration}s</span>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div style={{ display: 'flex', gap: '8px', borderTop: `1px solid ${currentTheme.border}`, paddingTop: '12px', marginTop: '12px' }}>
-                    <button
-                      onClick={() => openForm(item)}
-                      style={{
-                        flex: 1,
-                        padding: '8px',
-                        backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                        border: `1px solid ${currentTheme.border}`,
-                        borderRadius: '6px',
-                        color: currentTheme.text,
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px'
-                      }}
-                    >
-                      <Edit2 size={12} /> Edit
-                    </button>
-                    <button
-                      onClick={() => deleteHeroSlide(item.id, item.name)}
-                      style={{
-                        padding: '8px 12px',
-                        backgroundColor: 'rgba(193, 18, 31, 0.1)',
-                        border: '1px solid rgba(193, 18, 31, 0.25)',
-                        borderRadius: '6px',
-                        color: '#FF6B6B',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* ==========================================
             VIEW: DESTINATIONS
@@ -2580,55 +2464,7 @@ export default function AdminPanel() {
 
               {/* DYNAMIC FORM VIEWS */}
 
-              {/* 0. Hero Slides Form */}
-              {activeTab === 'hero-slides' && (
-                <form onSubmit={saveHeroSlide} style={formGroupStyle}>
-                  <div style={fieldStyle}>
-                    <label style={labelStyle}>Slide Name (e.g. Dubai)</label>
-                    <input
-                      type="text"
-                      required
-                      value={heroSlideForm.name}
-                      onChange={(e) => setHeroSlideForm({ ...heroSlideForm, name: e.target.value })}
-                      style={inputStyle}
-                      placeholder="e.g. Dubai"
-                    />
-                  </div>
 
-                  <div style={fieldStyle}>
-                    <label style={labelStyle}>Animation Duration (Seconds)</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      required
-                      value={heroSlideForm.duration}
-                      onChange={(e) => setHeroSlideForm({ ...heroSlideForm, duration: parseFloat(e.target.value) })}
-                      style={inputStyle}
-                      placeholder="e.g. 4.0"
-                    />
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <ImageCropper
-                      title="Desktop Slide Image (16:9 aspect ratio)"
-                      currentImage={heroSlideForm.desktopImage}
-                      onImageCropped={(base64) => setHeroSlideForm({ ...heroSlideForm, desktopImage: base64 })}
-                      aspectRatio="16:9"
-                    />
-                    <ImageCropper
-                      title="Mobile Slide Image (9:16 aspect ratio)"
-                      currentImage={heroSlideForm.mobileImage}
-                      onImageCropped={(base64) => setHeroSlideForm({ ...heroSlideForm, mobileImage: base64 })}
-                      aspectRatio="9:16"
-                    />
-                  </div>
-
-                  <div style={formActionsStyle}>
-                    <button type="button" onClick={closeForm} style={btnCancelStyle}>Cancel</button>
-                    <button type="submit" style={btnSubmitStyle}>Save Slide</button>
-                  </div>
-                </form>
-              )}
 
               {/* 1. Destinations Form */}
               {activeTab === 'destinations' && (
