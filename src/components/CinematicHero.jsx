@@ -27,7 +27,7 @@ export default function CinematicHero() {
         zIndex: 1,
       }}
     >
-      {/* Background Video Layer - ONLY videonew.MP4 */}
+      {/* Background Video Layer */}
       <video
         ref={videoRef}
         autoPlay
@@ -35,7 +35,7 @@ export default function CinematicHero() {
         muted
         playsInline
         preload="auto"
-        src="/video/videonew.MP4"
+        src="/video/new.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -46,7 +46,7 @@ export default function CinematicHero() {
           zIndex: 1,
         }}
       >
-        <source src="/video/videonew.MP4" type="video/mp4" />
+        <source src="/video/new.MP4" type="video/mp4" />
       </video>
 
       {/* Cinematic Dark Gradient & Vignette Overlay */}
