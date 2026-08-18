@@ -9,7 +9,7 @@ export default function CinematicHero() {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch(() => {
-        // Autoplay may be restricted by some mobile browsers until user interaction
+        // Autoplay policy handling
       });
     }
   }, []);
@@ -27,7 +27,7 @@ export default function CinematicHero() {
         zIndex: 1,
       }}
     >
-      {/* Background Video Layer */}
+      {/* Background Video Layer - ONLY videonew.MP4 */}
       <video
         ref={videoRef}
         autoPlay
@@ -35,6 +35,7 @@ export default function CinematicHero() {
         muted
         playsInline
         preload="auto"
+        src="/video/videonew.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -46,7 +47,6 @@ export default function CinematicHero() {
         }}
       >
         <source src="/video/videonew.MP4" type="video/mp4" />
-        <source src="/video/0615.mp4" type="video/mp4" />
       </video>
 
       {/* Cinematic Dark Gradient & Vignette Overlay */}
