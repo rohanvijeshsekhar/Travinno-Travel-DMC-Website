@@ -352,7 +352,7 @@ export function ParallaxComponent() {
           <img
             ref={heroImageRef}
             src="/demo/images/about_hero.png"
-            alt="Cinematic Silhouette on Mountain Ridge B&W"
+            alt="Travinno Team Strategy Session"
             style={{
               width: '100%',
               height: '100%',
