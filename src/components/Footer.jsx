@@ -684,15 +684,17 @@ function Footer() {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.84rem', color: 'rgba(245, 242, 236, 0.65)', lineHeight: 1.5 }}>
-              Dubai ( United Arab Emirates)<span style={{ fontSize: '0.62rem', color: 'rgba(245, 242, 236, 0.4)', marginLeft: '3px', verticalAlign: 'super' }}>AE</span>
+              Dubai <span style={{ fontSize: '0.62rem', color: 'rgba(245, 242, 236, 0.4)', marginLeft: '3px', verticalAlign: 'super' }}>AE</span>
             </div>
             <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.84rem', color: 'rgba(245, 242, 236, 0.65)', lineHeight: 1.5 }}>
               Thailand <span style={{ fontSize: '0.62rem', color: 'rgba(245, 242, 236, 0.4)', marginLeft: '3px', verticalAlign: 'super' }}>TH</span>
             </div>
             <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.84rem', color: 'rgba(245, 242, 236, 0.65)', lineHeight: 1.5 }}>
-              Kerala <span style={{ fontSize: '0.62rem', color: 'rgba(245, 242, 236, 0.4)', marginLeft: '3px', verticalAlign: 'super' }}>IN</span>
+              Kenya <span style={{ fontSize: '0.62rem', color: 'rgba(245, 242, 236, 0.4)', marginLeft: '3px', verticalAlign: 'super' }}>KE</span>
             </div>
-
+            <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.84rem', color: 'rgba(245, 242, 236, 0.65)', lineHeight: 1.5 }}>
+              India <span style={{ fontSize: '0.62rem', color: 'rgba(245, 242, 236, 0.4)', marginLeft: '3px', verticalAlign: 'super' }}>IN</span>
+            </div>
           </div>
         </div>
       </div>
