@@ -215,7 +215,7 @@ export default function Header() {
           <svg
             viewBox="0 0 100 130"
             style={{
-              height: '46px',
+              height: '51px',
               width: 'auto',
               display: 'block'
             }}
@@ -726,7 +726,7 @@ export default function Header() {
                     <svg
                       viewBox="0 0 100 130"
                       style={{
-                        height: '40px',
+                        height: '44px',
                         width: 'auto',
                         display: 'block'
                       }}
