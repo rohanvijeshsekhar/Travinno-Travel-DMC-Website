@@ -171,20 +171,12 @@ const INITIAL_TEAM = [
     order: 3
   },
   {
-    id: 5,
-    name: 'Kavitha Prinu',
-    position: 'Manager Sales (Group)',
-    image: 'images/specialist_4.webp',
-    isLeader: false,
-    order: 4
-  },
-  {
     id: 6,
     name: 'Neethu Dilver',
     position: 'Manager FIT (Indian Operations)',
     image: 'images/specialist_5.webp',
     isLeader: false,
-    order: 5
+    order: 4
   },
   {
     id: 7,
@@ -192,7 +184,7 @@ const INITIAL_TEAM = [
     position: 'Asst. Manager (Product & Contracting)',
     image: 'images/specialist_6.webp',
     isLeader: false,
-    order: 6
+    order: 5
   },
   {
     id: 8,
@@ -200,7 +192,7 @@ const INITIAL_TEAM = [
     position: 'Asst. Manager - Groups',
     image: 'images/specialist_7.webp',
     isLeader: false,
-    order: 7
+    order: 6
   },
   {
     id: 9,
@@ -208,15 +200,7 @@ const INITIAL_TEAM = [
     position: 'Visa Department Head',
     image: 'images/specialist_8.webp',
     isLeader: false,
-    order: 8
-  },
-  {
-    id: 10,
-    name: 'Violah Cherotich',
-    position: 'Business Development Manager (Africa)',
-    image: 'images/specialist_9.webp',
-    isLeader: false,
-    order: 9
+    order: 7
   }
 ];
 

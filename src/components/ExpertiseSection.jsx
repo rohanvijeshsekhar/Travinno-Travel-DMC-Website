@@ -5,32 +5,32 @@ import { motion } from 'framer-motion';
 
 const expertiseData = [
   {
-    waypoint: 'WP-01 // LEISURE',
+    waypoint: 'LEISURE',
     title: 'Leisure Travel',
     description: 'Curated travel experiences designed around comfort, discovery and unforgettable moments.'
   },
   {
-    waypoint: 'WP-02 // GROUPS',
+    waypoint: 'GROUPS',
     title: 'Group Tours',
     description: 'Seamless planning and execution for leisure groups, educational tours and special interest travel.'
   },
   {
-    waypoint: 'WP-03 // EVENTS',
+    waypoint: 'EVENTS',
     title: 'MICE & Events',
     description: 'Professional management of meetings, incentives, conferences and destination events.'
   },
   {
-    waypoint: 'WP-04 // CORP',
+    waypoint: 'CORP',
     title: 'Corporate Travel',
     description: 'Reliable travel solutions tailored for businesses and corporate travellers.'
   },
   {
-    waypoint: 'WP-05 // GROUND',
+    waypoint: 'GROUND',
     title: 'Ground Handling',
     description: 'End-to-end destination support, transfers, logistics and operational coordination.'
   },
   {
-    waypoint: 'WP-06 // LUXURY',
+    waypoint: 'LUXURY',
     title: 'Luxury Experiences',
     description: 'Exclusive experiences crafted for discerning travellers seeking something extraordinary.'
   }
@@ -418,8 +418,8 @@ function ExpertiseSection() {
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
             className="expertise-heading"
           >
-            <span>Travel</span>
-            <span className="expertise-gradient-text expertise-allura-text">Expertise</span>
+            <span>Destination</span>
+            <span className="expertise-gradient-text expertise-allura-text">Management</span>
           </motion.h2>
         </div>
       </div>

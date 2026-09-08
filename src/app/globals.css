@@ -1164,7 +1164,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 80px;
+  height: 92px;
   flex-shrink: 0;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   opacity: 0.75;
@@ -1176,7 +1176,7 @@ a {
 }
 
 .partner-logo-img {
-  height: 74px;
+  height: 85px;
   width: auto;
   display: block;
   object-fit: contain;
@@ -1237,11 +1237,11 @@ a {
   }
 
   .partner-logo-item {
-    height: 68px;
+    height: 78px;
   }
 
   .partner-logo-img {
-    height: 62px;
+    height: 71px;
   }
 
   .partners-bottom-caption {
@@ -1276,11 +1276,11 @@ a {
   }
 
   .partner-logo-item {
-    height: 56px;
+    height: 64px;
   }
 
   .partner-logo-img {
-    height: 50px;
+    height: 58px;
   }
 
   .partners-bottom-caption {
