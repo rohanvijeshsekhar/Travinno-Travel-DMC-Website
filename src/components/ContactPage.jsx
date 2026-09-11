@@ -434,7 +434,7 @@ export default function ContactPage() {
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                   <MapPin size={15} style={{ color: 'rgba(245, 242, 236, 0.4)', marginTop: '3px', flexShrink: 0 }} />
                   <span style={{ fontSize: '0.86rem', lineHeight: 1.5, color: 'rgba(245, 242, 236, 0.75)' }}>
-                    Room no: A1A, Al Rubaya Building, P. O Box: 22595, Damascus Street, Al Qusais, Dubai, UAE
+                    Room No: 213, Abdullah Saeed Belhabb Building, Damascus Street 3, Al Qusais, Dubai, United Arab Emirates
                   </span>
                 </div>
 
