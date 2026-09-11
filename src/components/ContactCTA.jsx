@@ -308,7 +308,7 @@ function ContactCTA() {
             boxSizing: 'border-box'
           }}
         >
-          From bespoke leisure escapes to ultra-luxury destination experiences — we orchestrate travel that inspires, connects, and stays with you forever.
+          To build meaningful relationships and deliver out-of-this-world experiences.
         </motion.p>
 
         {/* Action Buttons */}
