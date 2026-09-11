@@ -267,7 +267,7 @@ function ContactCTA() {
             margin: '0 0 20px 0'
           }}
         >
-          Start your luxury <br />
+          A Partnership That Goes <br />
           <span 
             style={{
               fontFamily: "'Allura', cursive",
@@ -286,7 +286,7 @@ function ContactCTA() {
               marginBottom: '-20px'
             }}
           >
-            Journey Today.
+            Beyond Travel.
           </span>
         </motion.h2>
 
