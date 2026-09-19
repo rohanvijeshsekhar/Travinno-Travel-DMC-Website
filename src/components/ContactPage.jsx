@@ -441,9 +441,7 @@ export default function ContactPage() {
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                   <Phone size={15} style={{ color: 'rgba(245, 242, 236, 0.4)', flexShrink: 0 }} />
                   <div style={{ display: 'flex', gap: '12px', fontSize: '0.86rem' }}>
-                    <a href="tel:+971042955141" className="editorial-contact-link">+971 (04) 2955141</a>
-                    <span style={{ color: 'rgba(245, 242, 236, 0.2)' }}>|</span>
-                    <a href="tel:+971507481902" className="editorial-contact-link">+971 (0) 507481902</a>
+                    <a href="tel:+97145756105" className="editorial-contact-link">+971 4 575 6105</a>
                   </div>
                 </div>
 
@@ -597,7 +595,7 @@ export default function ContactPage() {
                       <input 
                         type="tel" 
                         className="premium-input-field" 
-                        placeholder="+971 50 123 4567"
+                        placeholder="+971 4 575 6105"
                         value={formData.phoneNumber}
                         onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                       />

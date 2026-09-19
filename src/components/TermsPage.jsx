@@ -156,7 +156,7 @@ export default function TermsPage() {
             <strong>Travinno Legal & Compliance Hub</strong><br />
             Level 15, The Gate District, DIFC, UAE<br />
             Email: <a href="mailto:legal@travinno.com" style={{ color: '#C1121F', textDecoration: 'none' }}>legal@travinno.com</a><br />
-            Phone: +971 4 123 4567
+            Phone: +971 4 575 6105
           </div>
         </>
       )

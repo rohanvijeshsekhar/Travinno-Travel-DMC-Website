@@ -670,8 +670,8 @@ a {
 }
 
 .expertise-allura-text {
-  font-family: 'Allura', cursive;
-  font-size: 1.35em;
+  font-family: 'Alex Brush', 'Allura', cursive;
+  font-size: 1.4em;
   font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 1.25;
@@ -683,34 +683,36 @@ a {
 }
 
 .journey-allura-text {
-  font-family: 'Allura', cursive;
+  font-family: 'Alex Brush', 'Allura', cursive;
   background: linear-gradient(to bottom, #F5F2EC 20%, #E8A7A7 60%, #C1121F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: inline-block;
-  font-size: 1.35em;
+  font-size: 1.4em;
   font-weight: 400;
   letter-spacing: 0.02em;
-  line-height: 1;
+  line-height: 1.2;
   text-transform: none;
   vertical-align: middle;
   margin-left: 8px;
+  padding-right: 4px;
 }
 
 .leaders-allura-text {
-  font-family: 'Allura', cursive;
+  font-family: 'Alex Brush', 'Allura', cursive;
   background: linear-gradient(to bottom, #F5F2EC 20%, #E8A7A7 60%, #C1121F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: inline-block;
-  font-size: 1.35em;
+  font-size: 1.4em;
   font-weight: 400;
   letter-spacing: 0.02em;
-  line-height: 1;
+  line-height: 1.2;
   text-transform: none;
   vertical-align: middle;
+  padding-right: 4px;
 }
 
 .expertise-intro {
@@ -3574,13 +3576,14 @@ footer {
 }
 
 .testimonials-allura-text {
-  font-family: 'Allura', cursive;
-  font-size: 1.3em;
+  font-family: 'Alex Brush', 'Allura', cursive;
+  font-size: 1.35em;
   font-weight: 400;
-  line-height: 0.9;
+  line-height: 1.1;
   letter-spacing: normal;
   text-transform: none;
   padding-top: 4px;
+  padding-right: 4px;
 }
 
 .testimonials-sub {

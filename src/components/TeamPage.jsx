@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Users, Gem, ShieldCheck, Compass, Map, Wind, Activity, Anchor } from 'lucide-react';
+import { Globe, Gem, Compass, Map, Wind, Activity, Anchor } from 'lucide-react';
 import { db } from '../lib/db';
 
 const HERO_IMAGE = 'images/team_hero.png';
@@ -250,70 +250,9 @@ export default function TeamPage() {
           transform: scale(1.05);
         }
 
-        /* Glassmorphism Feature Bar */
-        .feature-bar {
-          width: 90%;
-          max-width: 1100px;
-          margin: 0 auto 80px auto;
-          padding: 20px 32px;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 20px rgba(193, 18, 31, 0.15);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          position: relative;
-          z-index: 10;
-          transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-          cursor: pointer;
-        }
 
-        .feature-bar:hover {
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-          border-color: rgba(255, 255, 255, 0.25);
-          transform: translateY(-4px);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(193, 18, 31, 0.25);
-        }
 
-        .feature-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          flex: 1;
-          justify-content: center;
-        }
 
-        .feature-divider {
-          width: 1px;
-          height: 24px;
-          background-color: rgba(255, 255, 255, 0.15);
-        }
-
-        @media (max-width: 768px) {
-          .feature-bar {
-            padding: 16px 20px;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-          }
-          .feature-item {
-            flex: 1 1 45%;
-            justify-content: flex-start;
-            padding: 8px;
-          }
-          .feature-divider {
-            display: none;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .feature-item {
-            flex: 1 1 100%;
-          }
-        }
 
         /* Media Queries for Grid and Split */
         @media (max-width: 991px) {
@@ -522,42 +461,7 @@ export default function TeamPage() {
           </div>
         </section>
 
-        {/* Glassmorphism Feature Bar */}
-        <div className="feature-bar">
-          <div className="feature-item">
-            <Globe size={20} strokeWidth={1.5} color="#C1121F" />
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: 500, color: '#FFFFFF', letterSpacing: '0.5px' }}>
-              Global Reach
-            </span>
-          </div>
 
-          <div className="feature-divider" />
-
-          <div className="feature-item">
-            <Users size={20} strokeWidth={1.5} color="#C1121F" />
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: 500, color: '#FFFFFF', letterSpacing: '0.5px' }}>
-              Expert Team
-            </span>
-          </div>
-
-          <div className="feature-divider" />
-
-          <div className="feature-item">
-            <Gem size={20} strokeWidth={1.5} color="#C1121F" />
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: 500, color: '#FFFFFF', letterSpacing: '0.5px' }}>
-              Premium Service
-            </span>
-          </div>
-
-          <div className="feature-divider" />
-
-          <div className="feature-item">
-            <ShieldCheck size={20} strokeWidth={1.5} color="#C1121F" />
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.9rem', fontWeight: 500, color: '#FFFFFF', letterSpacing: '0.5px' }}>
-              Trusted by Clients
-            </span>
-          </div>
-        </div>
 
         {/* 2. MANAGING DIRECTOR SECTION */}
         {managingDirector && (
@@ -1192,8 +1096,8 @@ export default function TeamPage() {
               alignItems: 'center',
               textAlign: 'center'
             }}>
-              <span>Join Our Global</span>
-              <span className="journey-allura-text" style={{ marginTop: '4px' }}>Team Today</span>
+              <span>Join Our</span>
+              <span className="journey-allura-text" style={{ marginTop: '4px' }}>Team</span>
             </h2>
 
             <p style={{

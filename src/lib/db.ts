@@ -264,7 +264,7 @@ const INITIAL_APPLICATIONS = [
     jobTitle: 'Senior Travel Consultant',
     fullName: 'Jasmine Lee',
     email: 'jasmine.lee@luxuryconsult.com',
-    phone: '+971 50 123 4567',
+    phone: '+971 4 575 6105',
     coverLetter: 'I have 6 years of boutique luxury travel consulting experience in the Middle East. I would love to join the dynamic Travinno team in Dubai!',
     fileName: 'jasmine_resume.pdf',
     date: 'June 30, 2026'

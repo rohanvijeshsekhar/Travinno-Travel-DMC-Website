@@ -842,7 +842,7 @@ export default function AboutJourney() {
       >
       {/* Import vintage and handwriting fonts */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Allura&family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Allura&family=Alex+Brush&family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap');
         
         .journal-experience-container {
           --color-paper: #f5f2ec;
@@ -871,11 +871,11 @@ export default function AboutJourney() {
         }
 
         .about-inspire-cursive {
-          font-family: 'Allura', cursive;
-          font-size: 1.35em;
+          font-family: 'Alex Brush', 'Allura', cursive;
+          font-size: 1.4em;
           font-weight: 400;
           letter-spacing: 0.02em;
-          line-height: 1;
+          line-height: 1.2;
           display: inline-block;
           text-transform: none;
           vertical-align: middle;

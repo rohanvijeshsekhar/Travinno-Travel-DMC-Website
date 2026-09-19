@@ -535,20 +535,23 @@ export default function DestinationStorySection() {
           display: flex;
           align-items: center;
           gap: 10px;
-          line-height: 1;
+          line-height: 1.2;
         }
 
         .dest-country-name-script {
-          font-family: 'Allura', cursive;
+          font-family: 'Alex Brush', 'Allura', cursive;
           background: linear-gradient(to bottom, #F5F2EC 20%, #E8A7A7 60%, #C1121F 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           display: inline-block;
-          font-size: 2.2rem;
+          font-size: 2.6rem;
           font-weight: 400;
-          letter-spacing: 0.02em;
-          line-height: 1;
+          letter-spacing: 0.03em;
+          line-height: 1.2;
+          padding-top: 2px;
+          padding-bottom: 4px;
+          padding-right: 6px;
           text-transform: none;
         }
 
@@ -727,10 +730,15 @@ export default function DestinationStorySection() {
 
           .dest-country-heading {
             font-size: 1.25rem !important;
+            line-height: 1.2 !important;
           }
 
           .dest-country-name-script {
-             font-size: 1.75rem !important;
+             font-size: 2.1rem !important;
+             line-height: 1.2 !important;
+             padding-top: 2px !important;
+             padding-bottom: 4px !important;
+             padding-right: 4px !important;
           }
 
           .dest-editorial-description {

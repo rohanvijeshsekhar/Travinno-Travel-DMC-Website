@@ -1174,7 +1174,7 @@ export default function Header() {
                   letterSpacing: '0.5px'
                 }}>
                   <a
-                    href="tel:+97145260000"
+                    href="tel:+97145756105"
                     style={{
                       color: 'rgba(255, 255, 255, 0.4)',
                       textDecoration: 'none',
@@ -1186,7 +1186,7 @@ export default function Header() {
                     onMouseEnter={(e) => e.currentTarget.style.color = '#800000'}
                     onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'}
                   >
-                    📞 Call Us
+                    📞 +971 4 575 6105
                   </a>
                   <span>•</span>
                   <span

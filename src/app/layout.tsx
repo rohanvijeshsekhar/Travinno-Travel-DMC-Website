@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import './globals.css';
+import ChunkErrorRecovery from '../components/ChunkErrorRecovery';
 
 export const metadata: Metadata = {
   title: 'Travinno - Crafting Journeys, Creating Memories',
@@ -21,28 +21,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Auto-recover from ChunkLoadError after a new deployment.
-            If the browser has cached old HTML with stale chunk hashes,
-            script tags will 404. We detect this and do one hard reload
-            to get fresh HTML + correct chunk references. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                window.addEventListener('error', function(e) {
-                  var msg = (e.message || '') + ' ' + (e.filename || '');
-                  if (msg.indexOf('ChunkLoadError') !== -1 || 
-                      (msg.indexOf('_next/static/chunks') !== -1 && e.target && e.target.tagName === 'SCRIPT')) {
-                    if (!sessionStorage.getItem('chunk_reload_attempted')) {
-                      sessionStorage.setItem('chunk_reload_attempted', '1');
-                      window.location.reload(true);
-                    }
-                  }
-                }, true);
-              })();
-            `,
-          }}
-        />
         {/* Preconnect to font origins for faster DNS+TLS handshake */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -50,7 +28,7 @@ export default function RootLayout({
         {/* Load Google Fonts non-render-blocking via link instead of CSS @import */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Allura&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Allura&family=Alex+Brush&display=swap"
         />
         <link
           rel="stylesheet"
@@ -66,6 +44,7 @@ export default function RootLayout({
           minHeight: '100vh',
         }}
       >
+        <ChunkErrorRecovery />
         {children}
       </body>
     </html>

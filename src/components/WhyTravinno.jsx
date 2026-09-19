@@ -65,7 +65,7 @@ function LocalExpertiseVisual({ isHovered }) {
           <animate attributeName="opacity" values="0.6;0;0.6" dur="2.5s" repeatCount="indefinite" delay="0.5s" />
         </circle>
       </g>
-      
+
       <g transform="translate(260, 100)">
         <circle r="2" fill="rgba(255,255,255,0.7)" />
       </g>
@@ -78,59 +78,111 @@ function LocalExpertiseVisual({ isHovered }) {
 }
 
 function TrustedPartnershipsVisual({ isHovered }) {
-  const lineSpeed = isHovered ? "3.5s" : "4s";
+  const lineSpeed = isHovered ? "2.5s" : "3.5s";
+  const pulseDur = isHovered ? "2s" : "3s";
   
   return (
     <svg className="w-full h-full" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Background network grids */}
-      <path d="M 40 160 L 140 80 L 220 190 L 320 90" stroke="rgba(255,255,255,0.015)" strokeWidth="1" />
+      {/* Background ambient network grid & orbital connection rings */}
+      <circle cx="200" cy="120" r="105" stroke="rgba(255,255,255,0.025)" strokeWidth="1" strokeDasharray="3 4" />
+      <ellipse cx="200" cy="125" rx="140" ry="55" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="2 3" />
+      <ellipse cx="200" cy="125" rx="140" ry="55" stroke="#C1121F" strokeWidth="1.2" strokeDasharray="6 8" opacity="0.35">
+        <animate attributeName="stroke-dashoffset" values="50;0" dur={lineSpeed} repeatCount="indefinite" />
+      </ellipse>
+
+      {/* Network Connection Lines between people nodes */}
+      <line x1="115" y1="125" x2="200" y2="52" stroke="rgba(255,255,255,0.08)" strokeWidth="1.2" strokeDasharray="3 3" />
+      <line x1="285" y1="125" x2="200" y2="52" stroke="rgba(255,255,255,0.08)" strokeWidth="1.2" strokeDasharray="3 3" />
       
-      {/* Hotel Building Silhouette (Left) */}
-      <g transform="translate(90, 60)">
-        <rect x="0" y="20" width="45" height="120" rx="3" stroke="rgba(255,255,255,0.12)" strokeWidth="1.2" fill="rgba(10,10,10,0.4)" />
-        <rect x="12" y="5" width="21" height="15" rx="1" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        
-        {/* Architectural lines / windows */}
-        <line x1="9" y1="30" x2="9" y2="130" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-        <line x1="22" y1="30" x2="22" y2="130" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-        <line x1="36" y1="30" x2="36" y2="130" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-        
-        <line x1="0" y1="50" x2="45" y2="50" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <line x1="0" y1="75" x2="45" y2="75" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <line x1="0" y1="100" x2="45" y2="100" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <line x1="0" y1="125" x2="45" y2="125" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+      {/* Main Bridge between Left & Right Partners */}
+      <path d="M 125 125 C 160 95, 240 95, 275 125" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" fill="none" />
+      <path d="M 125 130 C 160 160, 240 160, 275 130" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" fill="none" />
 
-        {/* Glow window representing active service */}
-        <rect x="18" y="60" width="9" height="9" fill="#C1121F" opacity="0.5" className="animate-pulse" />
-      </g>
-
-      {/* Airport Terminal Outline (Right) */}
-      <g transform="translate(230, 95)">
-        <path d="M 0 85 Q 35 30 75 40 Q 95 45 105 85 Z" stroke="rgba(255,255,255,0.12)" strokeWidth="1.2" fill="rgba(10,10,10,0.4)" />
-        <line x1="25" y1="68" x2="25" y2="85" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-        <line x1="50" y1="52" x2="50" y2="85" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-        <line x1="75" y1="48" x2="75" y2="85" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-        
-        {/* Airport Tower */}
-        <path d="M 85 45 L 88 15 L 98 15 L 95 45 Z" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <rect x="85" y="10" width="13" height="6" fill="rgba(193, 18, 31, 0.4)" rx="1" />
-      </g>
-
-      {/* Animated Connect Path */}
-      <path d="M 135 150 C 180 180, 200 130, 240 160" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" fill="none" />
-      <path d="M 135 150 C 180 180, 200 130, 240 160" stroke="#C1121F" strokeWidth="1.5" strokeDasharray="5 5" fill="none">
-        <animate attributeName="stroke-dashoffset" values="30;0" dur={lineSpeed} repeatCount="indefinite" />
+      {/* Animated Flowing Energy Beams connecting people */}
+      <path d="M 125 125 C 160 95, 240 95, 275 125" stroke="#C1121F" strokeWidth="1.5" strokeDasharray="6 6" fill="none">
+        <animate attributeName="stroke-dashoffset" values="40;0" dur={lineSpeed} repeatCount="indefinite" />
+      </path>
+      <path d="M 125 130 C 160 160, 240 160, 275 130" stroke="rgba(245,242,236,0.5)" strokeWidth="1.2" strokeDasharray="4 4" fill="none">
+        <animate attributeName="stroke-dashoffset" values="-30;0" dur={lineSpeed} repeatCount="indefinite" />
       </path>
 
-      {/* Location Markers */}
-      <g transform="translate(135, 150)">
-        <circle r="4" fill="#C1121F" />
-        <circle r="9" stroke="#C1121F" strokeWidth="1" opacity="0.4" className="animate-ping" style={{ animationDuration: '3.5s' }} />
+      {/* Central Collaboration / Handshake Synergy Node */}
+      <g transform="translate(200, 125)">
+        <circle r="22" fill="rgba(11,11,11,0.9)" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <circle r="28" stroke="#C1121F" strokeWidth="1" opacity="0.35">
+          <animate attributeName="r" values="22;32;22" dur={pulseDur} repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.4;0;0.4" dur={pulseDur} repeatCount="indefinite" />
+        </circle>
+        
+        {/* Handshake / Partnership Clasp Icon */}
+        <g transform="translate(-10, -8) scale(0.85)" stroke={isHovered ? "#FFFFFF" : "#F5F2EC"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M 2 15 L 7 10 L 11 12 L 15 8" />
+          <path d="M 7 10 L 10 7 L 14 10 L 12 13" fill="rgba(193,18,31,0.3)" stroke="#C1121F" />
+          <path d="M 22 15 L 17 10 L 13 12 L 9 8" />
+          <path d="M 17 10 L 14 7 L 10 10 L 12 13" />
+        </g>
+        <circle r="3" fill="#C1121F" />
       </g>
-      
-      <g transform="translate(240, 160)">
-        <circle r="4" fill="#C1121F" />
-        <circle r="9" stroke="#C1121F" strokeWidth="1" opacity="0.4" className="animate-ping" style={{ animationDuration: '3s', animationDelay: '0.6s' }} />
+
+      {/* TOP PARTNER NODE (Travel Specialist / Coordinator) */}
+      <g transform="translate(200, 52)">
+        <circle r="16" fill="rgba(15,15,15,0.85)" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <circle cx="0" cy="-3" r="4.5" fill={isHovered ? "#FFFFFF" : "rgba(245,242,236,0.85)"} />
+        <path d="M -8 11 C -8 5, 8 5, 8 11" stroke={isHovered ? "#FFFFFF" : "rgba(245,242,236,0.7)"} strokeWidth="1.2" fill="none" />
+        <circle r="2" cx="0" cy="15" fill="#C1121F" />
+      </g>
+
+      {/* LEFT PERSON FIGURE (Travel Partner / Agent) */}
+      <g transform="translate(115, 125)">
+        <circle r="26" fill="rgba(15,15,15,0.9)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <circle r="30" stroke="#C1121F" strokeWidth="1" opacity="0.3" strokeDasharray="3 3" />
+        
+        {/* Head */}
+        <circle cx="0" cy="-6" r="7.5" fill={isHovered ? "#FFFFFF" : "#F5F2EC"} />
+        {/* Body/Shoulders */}
+        <path d="M -14 16 C -14 6, 14 6, 14 16" stroke={isHovered ? "#FFFFFF" : "#F5F2EC"} strokeWidth="1.8" strokeLinecap="round" fill="rgba(193,18,31,0.2)" />
+        {/* Tie/Badge Accent */}
+        <path d="M 0 7 L 0 13" stroke="#C1121F" strokeWidth="1.5" />
+        
+        {/* Active status indicator badge */}
+        <circle cx="16" cy="-14" r="3.5" fill="#C1121F" />
+        <circle cx="16" cy="-14" r="6" stroke="#C1121F" strokeWidth="0.8" opacity="0.6">
+          <animate attributeName="r" values="3.5;7.5;3.5" dur="2.5s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.7;0;0.7" dur="2.5s" repeatCount="indefinite" />
+        </circle>
+      </g>
+
+      {/* RIGHT PERSON FIGURE (DMC Specialist / Hospitality Partner) */}
+      <g transform="translate(285, 125)">
+        <circle r="26" fill="rgba(15,15,15,0.9)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <circle r="30" stroke="#C1121F" strokeWidth="1" opacity="0.3" strokeDasharray="3 3" />
+        
+        {/* Head */}
+        <circle cx="0" cy="-6" r="7.5" fill={isHovered ? "#FFFFFF" : "#F5F2EC"} />
+        {/* Body/Shoulders */}
+        <path d="M -14 16 C -14 6, 14 6, 14 16" stroke={isHovered ? "#FFFFFF" : "#F5F2EC"} strokeWidth="1.8" strokeLinecap="round" fill="rgba(193,18,31,0.2)" />
+        {/* Tie/Badge Accent */}
+        <path d="M 0 7 L 0 13" stroke="#C1121F" strokeWidth="1.5" />
+
+        {/* Active status indicator badge */}
+        <circle cx="-16" cy="-14" r="3.5" fill="#C1121F" />
+        <circle cx="-16" cy="-14" r="6" stroke="#C1121F" strokeWidth="0.8" opacity="0.6">
+          <animate attributeName="r" values="3.5;7.5;3.5" dur="2.8s" repeatCount="indefinite" delay="0.4s" />
+          <animate attributeName="opacity" values="0.7;0;0.7" dur="2.8s" repeatCount="indefinite" delay="0.4s" />
+        </circle>
+      </g>
+
+      {/* Bottom Floating Network Badges */}
+      <g transform="translate(145, 195)">
+        <rect x="-35" y="-10" width="70" height="20" rx="10" fill="rgba(20,20,20,0.85)" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <text x="0" y="3" fill="rgba(245,242,236,0.65)" fontSize="7.5" fontFamily="var(--font-mono)" letterSpacing="0.8" textAnchor="middle">AGENTS</text>
+        <line x1="0" y1="-10" x2="-20" y2="-45" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="2 2" />
+      </g>
+
+      <g transform="translate(255, 195)">
+        <rect x="-35" y="-10" width="70" height="20" rx="10" fill="rgba(20,20,20,0.85)" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <text x="0" y="3" fill="rgba(245,242,236,0.65)" fontSize="7.5" fontFamily="var(--font-mono)" letterSpacing="0.8" textAnchor="middle">HOTELS</text>
+        <line x1="0" y1="-10" x2="20" y2="-45" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="2 2" />
       </g>
     </svg>
   );

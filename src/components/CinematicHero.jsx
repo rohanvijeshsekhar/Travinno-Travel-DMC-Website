@@ -1,19 +1,9 @@
 "use client";
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 export default function CinematicHero() {
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay policy handling
-      });
-    }
-  }, []);
-
   return (
     <div
       style={{
@@ -27,15 +17,10 @@ export default function CinematicHero() {
         zIndex: 1,
       }}
     >
-      {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        src="/video/new.MP4"
+      {/* Background Hero Image Layer - Camel Caravan Sunset */}
+      <img
+        src="/demo/images/home_hero.jpg"
+        alt="Believe in Quality Travel"
         style={{
           position: 'absolute',
           top: 0,
@@ -43,11 +28,24 @@ export default function CinematicHero() {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
+          objectPosition: 'center',
           zIndex: 1,
         }}
-      >
-        <source src="/video/new.MP4" type="video/mp4" />
-      </video>
+      />
+
+      {/* Subtle Cinematic Vignette / Gradient for Contrast & Seamless Bottom Transition */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(to bottom, rgba(5, 5, 5, 0.25) 0%, rgba(5, 5, 5, 0.05) 45%, rgba(5, 5, 5, 0.4) 80%, rgba(5, 5, 5, 0.9) 100%)',
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
 
       {/* Centered Editorial Overlay Content */}
       <div
@@ -79,7 +77,7 @@ export default function CinematicHero() {
             whiteSpace: 'normal',
           }}
         >
-          Curators Of Extraordinary Journeys
+          Believe in Quality Travel
         </h1>
 
         <p
@@ -94,7 +92,7 @@ export default function CinematicHero() {
             textShadow: '0 2px 14px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.7)',
           }}
         >
-          Bespoke B2B Travel &amp; Destination Management
+          Your Trusted Global Destination Management Partner
         </p>
 
         {/* Fixed Explore CTA Outline Button */}

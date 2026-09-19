@@ -815,7 +815,7 @@ export default function CareersPage() {
                       <label style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', fontWeight: 600, letterSpacing: '1.5px', color: 'rgba(245, 242, 236, 0.45)', textTransform: 'uppercase' }}>Phone Number *</label>
                       <input
                         type="tel"
-                        placeholder="+971 50 123 4567"
+                        placeholder="+971 4 575 6105"
                         className="premium-input-field"
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
