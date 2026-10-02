@@ -1,9 +1,19 @@
 "use client";
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function CinematicHero() {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Autoplay policy handling
+      });
+    }
+  }, []);
+
   return (
     <div
       style={{
@@ -17,10 +27,15 @@ export default function CinematicHero() {
         zIndex: 1,
       }}
     >
-      {/* Background Hero Image Layer - Camel Caravan Sunset */}
-      <img
-        src="/demo/images/home_hero.jpg"
-        alt="Believe in Quality Travel"
+      {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        src="/demo/video/new.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -28,24 +43,14 @@ export default function CinematicHero() {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          objectPosition: 'center',
           zIndex: 1,
         }}
-      />
-
-      {/* Subtle Cinematic Vignette / Gradient for Contrast & Seamless Bottom Transition */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'linear-gradient(to bottom, rgba(5, 5, 5, 0.25) 0%, rgba(5, 5, 5, 0.05) 45%, rgba(5, 5, 5, 0.4) 80%, rgba(5, 5, 5, 0.9) 100%)',
-          pointerEvents: 'none',
-          zIndex: 2,
-        }}
-      />
+      >
+        <source src="/demo/video/new.MP4" type="video/mp4" />
+        <source src="/video/new.MP4" type="video/mp4" />
+        <source src="/demo/video/new.mp4" type="video/mp4" />
+        <source src="/video/new.mp4" type="video/mp4" />
+      </video>
 
       {/* Centered Editorial Overlay Content */}
       <div
