@@ -139,7 +139,11 @@ export default function AboutPurpose() {
           font-size: 1.35em;
           font-weight: 400;
           letter-spacing: 0.02em;
-          line-height: 1;
+          line-height: 1.15;
+          padding-top: 6px;
+          padding-bottom: 20px;
+          margin-bottom: -20px;
+          overflow: visible;
           display: inline-block;
           text-transform: none;
           vertical-align: middle;

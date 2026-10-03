@@ -157,12 +157,12 @@ export default function AboutStats() {
           font-family: var(--font-heading), 'Playfair Display', Georgia, serif;
           font-size: clamp(1.8rem, 3.2vw, 2.6rem);
           font-weight: 400;
-          line-height: 1.35;
+          line-height: 1.5;
           letter-spacing: 0.01em;
           color: #F5F2EC;
           text-align: center;
           margin: 0 auto 60px auto;
-          max-width: 800px;
+          max-width: 850px;
         }
 
         .stats-highlight {
@@ -175,16 +175,21 @@ export default function AboutStats() {
           font-size: 1.45em;
           font-weight: 400;
           letter-spacing: 0.02em;
-          line-height: 0.9;
+          line-height: 1.2;
           display: inline-block;
           text-transform: none;
-          vertical-align: middle;
+          vertical-align: -0.05em;
           background: linear-gradient(to bottom, #F5F2EC 15%, #FF6B6B 65%, #C1121F 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           margin: 0 4px;
-          padding-right: 12px;
+          padding-top: 8px;
+          padding-bottom: 24px;
+          margin-bottom: -24px;
+          padding-left: 2px;
+          padding-right: 14px;
+          overflow: visible;
         }
 
         .about-stats-grid {
