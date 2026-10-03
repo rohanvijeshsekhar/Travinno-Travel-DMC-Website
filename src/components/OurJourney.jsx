@@ -6,7 +6,7 @@ import logoImg from '../assets/logo.webp';
 
 const milestones = [
   { step: 'MILESTONE 01', year: 'APR 2017', title: 'FOUNDED', action: 'Free Zone Inception', desc: 'Started with a Free Zone license as a solo venture.' },
-  { step: 'MILESTONE 02', year: 'MAR 2018', title: 'MAINLAND LICENSE', action: 'Dubai & India Offices', desc: 'Mainland transition and India operations launch.' },
+  { step: 'MILESTONE 02', year: 'MAR 2018', title: 'DUBAI LICENSE', action: 'Dubai & India Offices', desc: 'Dubai transition and India operations launch.' },
   { step: 'MILESTONE 03', year: '2020', title: 'TEAM EXPANDED', action: '25 Specialists', desc: 'Grew team to 25 dedicated travel specialists.' },
   { step: 'MILESTONE 04', year: '2021', title: '100K TRAVELLERS', action: 'Passenger Milestone', desc: 'Served over 100,000 travellers worldwide.' },
   { step: 'MILESTONE 05', year: '2022', title: 'FLEET EXPANSION', action: '10 Premium Vehicles', desc: 'Expanded fleet to 10 luxury custom vehicles.' },

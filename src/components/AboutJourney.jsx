@@ -26,12 +26,12 @@ const journalPages = [
   {
     year: '2018',
     date: 'March 09, 2018',
-    city: 'Dubai Mainland & Kochi',
+    city: 'Dubai & Kochi',
     country: 'UAE & India',
     coordinates: '9.9312° N, 76.2673° E',
     title: 'EXPANSION',
-    action: 'Dubai Mainland & India Offices',
-    story: 'Transitioning to a mainland Dubai license allowed us to scale up. Simultaneously, opening our operational headquarters in Vietnam, bridged our execution capabilities directly with the ground team.',
+    action: 'Dubai & India Offices',
+    story: 'Transitioning to a Dubai license allowed us to scale up. Simultaneously, opening our operational headquarters in Vietnam, bridged our execution capabilities directly with the ground team.',
     quote: '"Borders are lines on a map; our mission is to build the bridges between them."',
     photo: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=800&q=80',
     stampColor: '#1a365d',
@@ -438,7 +438,7 @@ export default function AboutJourney() {
         <p className="diary-story-paragraph">
           {data.story.split(' ').map((word, i) => {
             const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-            const highlightWords = ['bespoke', 'extraordinary', 'mainland', 'headquarters', 'specialists', 'satisfaction', 'discerning', 'logistics', 'fleet', 'premium', 'Southeast', 'regional', 'global', 'professionals'];
+            const highlightWords = ['bespoke', 'extraordinary', 'headquarters', 'specialists', 'satisfaction', 'discerning', 'logistics', 'fleet', 'premium', 'Southeast', 'regional', 'global', 'professionals'];
             const shouldHighlight = highlightWords.includes(cleanWord.toLowerCase());
             return (
               <React.Fragment key={i}>
@@ -748,7 +748,7 @@ export default function AboutJourney() {
         }}>
           {data.story.split(' ').map((word, i) => {
             const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-            const highlightWords = ['bespoke', 'extraordinary', 'mainland', 'headquarters', 'specialists', 'satisfaction', 'discerning', 'logistics', 'fleet', 'premium', 'Southeast', 'regional', 'global', 'professionals'];
+            const highlightWords = ['bespoke', 'extraordinary', 'headquarters', 'specialists', 'satisfaction', 'discerning', 'logistics', 'fleet', 'premium', 'Southeast', 'regional', 'global', 'professionals'];
             const shouldHighlight = highlightWords.includes(cleanWord.toLowerCase());
             return (
               <React.Fragment key={i}>
