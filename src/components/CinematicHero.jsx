@@ -35,7 +35,7 @@ export default function CinematicHero() {
         muted
         playsInline
         preload="auto"
-        src="/demo/video/new.MP4"
+        src="/demo/video/IMG_2990.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -46,10 +46,10 @@ export default function CinematicHero() {
           zIndex: 1,
         }}
       >
-        <source src="/demo/video/new.MP4" type="video/mp4" />
-        <source src="/video/new.MP4" type="video/mp4" />
-        <source src="/demo/video/new.mp4" type="video/mp4" />
-        <source src="/video/new.mp4" type="video/mp4" />
+        <source src="/demo/video/IMG_2990.MP4" type="video/mp4" />
+        <source src="/video/IMG_2990.MP4" type="video/mp4" />
+        <source src="/demo/video/IMG_2990.mp4" type="video/mp4" />
+        <source src="/video/IMG_2990.mp4" type="video/mp4" />
       </video>
 
       {/* Centered Editorial Overlay Content */}
