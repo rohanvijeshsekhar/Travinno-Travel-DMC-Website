@@ -351,7 +351,7 @@ export function ParallaxComponent() {
         }}>
           <img
             ref={heroImageRef}
-            src="/demo/images/about_hero.png"
+            src="/images/about_hero.png"
             alt="Travinno Team Strategy Session"
             style={{
               width: '100%',

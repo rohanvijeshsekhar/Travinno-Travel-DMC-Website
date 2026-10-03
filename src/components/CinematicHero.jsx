@@ -35,7 +35,7 @@ export default function CinematicHero() {
         muted
         playsInline
         preload="auto"
-        src="/demo/video/IMG_2990.MP4"
+        src="/video/IMG_2990.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -46,9 +46,7 @@ export default function CinematicHero() {
           zIndex: 1,
         }}
       >
-        <source src="/demo/video/IMG_2990.MP4" type="video/mp4" />
         <source src="/video/IMG_2990.MP4" type="video/mp4" />
-        <source src="/demo/video/IMG_2990.mp4" type="video/mp4" />
         <source src="/video/IMG_2990.mp4" type="video/mp4" />
       </video>
 

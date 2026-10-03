@@ -127,7 +127,7 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
     const img = new window.Image();
     const resolvedSrc = imageSrc.startsWith('data:') || imageSrc.startsWith('http') 
       ? imageSrc 
-      : `/demo/${imageSrc.startsWith('/') ? imageSrc.slice(1) : imageSrc}`;
+      : (imageSrc.startsWith('/') ? imageSrc : `/${imageSrc}`);
     img.crossOrigin = "anonymous";
     img.src = resolvedSrc;
     img.onload = () => {
@@ -233,7 +233,7 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
             alignItems: 'center'
           }}>
             <img
-              src={imageSrc.startsWith('data:') || imageSrc.startsWith('http') ? imageSrc : `/demo/${imageSrc.startsWith('/') ? imageSrc.slice(1) : imageSrc}`}
+              src={imageSrc.startsWith('data:') || imageSrc.startsWith('http') ? imageSrc : (imageSrc.startsWith('/') ? imageSrc : `/${imageSrc}`)}
               alt="Preview"
               style={{
                 maxWidth: '100%',
@@ -2810,7 +2810,7 @@ export default function AdminPanel() {
                       {teamForm.image ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                           <img
-                            src={teamForm.image.startsWith('data:') || teamForm.image.startsWith('http') ? teamForm.image : `/demo/${teamForm.image.startsWith('/') ? teamForm.image.slice(1) : teamForm.image}`}
+                            src={teamForm.image.startsWith('data:') || teamForm.image.startsWith('http') ? teamForm.image : (teamForm.image.startsWith('/') ? teamForm.image : `/${teamForm.image}`)}
                             alt="Preview"
                             style={{ maxHeight: '160px', objectFit: 'contain', display: 'block', pointerEvents: 'none' }}
                           />

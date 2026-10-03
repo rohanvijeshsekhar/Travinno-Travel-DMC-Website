@@ -75,8 +75,8 @@ export default function TeamPage() {
   const resolveImgPath = (src) => {
     if (!src) return '';
     if (src.startsWith('data:') || src.startsWith('http')) return src;
-    const clean = src.startsWith('/') ? src.slice(1) : src;
-    return `/demo/${clean}`;
+    const clean = src.startsWith('/') ? src : `/${src}`;
+    return clean;
   };
 
   // Sort team list by display order (ascending)
@@ -1114,7 +1114,7 @@ export default function TeamPage() {
 
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a 
-                href="/demo/careers/"
+                href="/careers/"
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '0.8rem',
@@ -1143,7 +1143,7 @@ export default function TeamPage() {
                 Explore Careers
               </a>
               <a 
-                href="/demo/contact/"
+                href="/contact/"
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '0.8rem',

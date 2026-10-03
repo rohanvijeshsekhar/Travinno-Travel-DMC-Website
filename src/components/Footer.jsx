@@ -421,7 +421,7 @@ function Footer() {
               />
             </svg>
             <img
-              src="/demo/images/logo_loading.png"
+              src="/images/logo_loading.png"
               alt="Travinno"
               width="140"
               height="25"
@@ -622,9 +622,7 @@ function Footer() {
                       const isHomeSection = ['services', 'testimonials', 'contact', 'why', 'journey', 'destinations'].includes(hashMatch);
                       if (isHomeSection) {
                         const isOnHomePage = typeof window !== 'undefined' && (
-                          window.location.pathname === '/' || 
-                          window.location.pathname === '/demo' || 
-                          window.location.pathname === '/demo/'
+                          window.location.pathname === '/'
                         );
                         if (isOnHomePage) {
                           e.preventDefault();

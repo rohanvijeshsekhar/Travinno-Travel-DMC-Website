@@ -118,8 +118,6 @@ export default function Header() {
       
       if (isHomeSection) {
         const isOnHomePage = typeof window !== 'undefined' && (
-          window.location.pathname === '/demo' || 
-          window.location.pathname === '/demo/' || 
           window.location.pathname === '/'
         );
         

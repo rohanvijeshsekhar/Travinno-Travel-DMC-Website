@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     // If it's already a file path (not base64), redirect to the static file
     if (!rawVal.startsWith('data:')) {
       const clean = rawVal.startsWith('/') ? rawVal : `/${rawVal}`;
-      return NextResponse.redirect(new URL(`/demo${clean}`, req.url));
+      return NextResponse.redirect(new URL(clean, req.url));
     }
 
     // Parse data URI

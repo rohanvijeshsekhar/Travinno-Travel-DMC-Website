@@ -636,7 +636,7 @@ export default function BlogPage() {
           {/* Header/Hero Section occupying exactly 1/3 of the viewport */}
           <div className="editorial-detail-hero">
             <img
-              src={selectedPost.image && (selectedPost.image.startsWith('data:') || selectedPost.image.startsWith('http')) ? selectedPost.image : `/demo/${selectedPost.image.startsWith('/') ? selectedPost.image.slice(1) : selectedPost.image}`}
+              src={selectedPost.image && (selectedPost.image.startsWith('data:') || selectedPost.image.startsWith('http')) ? selectedPost.image : (selectedPost.image.startsWith('/') ? selectedPost.image : `/${selectedPost.image}`)}
               alt={selectedPost.title}
             />
             <div className="editorial-detail-hero-overlay">
@@ -712,7 +712,7 @@ export default function BlogPage() {
               }}
             >
               <img
-                src="/demo/images/blog_hero.png"
+                src="/images/blog_hero.png"
                 alt="Travel Planning Editorial"
                 style={{
                   width: '100%',
@@ -897,7 +897,7 @@ export default function BlogPage() {
                   >
                     <div className="card-image-wrapper">
                       <img
-                        src={post.image && (post.image.startsWith('data:') || post.image.startsWith('http')) ? post.image : `/demo/${post.image.startsWith('/') ? post.image.slice(1) : post.image}`}
+                        src={post.image && (post.image.startsWith('data:') || post.image.startsWith('http')) ? post.image : (post.image.startsWith('/') ? post.image : `/${post.image}`)}
                         alt={post.title}
                       />
                     </div>

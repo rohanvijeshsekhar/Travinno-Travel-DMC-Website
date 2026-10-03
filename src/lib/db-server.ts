@@ -229,7 +229,7 @@ export async function resetCollections(): Promise<void> {
 
 // -- Image field stripping for SSR ---------------------------------------------
 // Stripping base64 from SSR reduces the HTML response from ~8 MB to ~5 KB.
-// Images are served separately via GET /demo/api/image?c=...&i=...&f=...
+// Images are served separately via GET /api/image?c=...&i=...&f=...
 const IMAGE_COLLECTIONS: Record<string, string[]> = {
   travinno_destinations: ['image'],
   travinno_team: ['image'],

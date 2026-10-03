@@ -14,16 +14,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = createServer(async (req, res) => {
     try {
-      const url = req.url || '/';
-
-      // Redirect root and unknown top-level paths to /demo
-      if (url === '/' || url === '') {
-        res.writeHead(302, { Location: '/demo' });
-        res.end();
-        return;
-      }
-
-      const parsedUrl = parse(url, true);
+      const parsedUrl = parse(req.url, true);
       await handle(req, res, parsedUrl);
     } catch (err) {
       console.error('Error occurred handling', req.url, err);

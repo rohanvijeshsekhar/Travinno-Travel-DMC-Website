@@ -15,7 +15,7 @@ interface Destination {
   image: string;       // Image URL
 }
 
-const BASE = '/demo/';
+const BASE = '/';
 
 const getFlagEmoji = (title: string) => {
   switch (title) {
@@ -114,8 +114,8 @@ export default function DestinationStorySection() {
       if (found) {
         let imgUrl = found.image;
         if (imgUrl && !imgUrl.startsWith('data:') && !imgUrl.startsWith('http') && !imgUrl.startsWith('https')) {
-          const cleanPath = imgUrl.startsWith('/') ? imgUrl.substring(1) : imgUrl;
-          imgUrl = `/demo/${cleanPath}`;
+          const cleanPath = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
+          imgUrl = cleanPath;
         }
         return {
           ...d,
