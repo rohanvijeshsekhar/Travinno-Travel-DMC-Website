@@ -24,22 +24,6 @@ const journalPages = [
     noteRight: 'Emirati soil holds infinite opportunities. First client itinerary approved!'
   },
   {
-    year: '2018',
-    date: 'March 09, 2018',
-    city: 'Dubai & Kochi',
-    country: 'UAE & India',
-    coordinates: '9.9312° N, 76.2673° E',
-    title: 'EXPANSION',
-    action: 'Dubai & India Offices',
-    story: 'Transitioning to a Dubai license allowed us to scale up. Simultaneously, opening our operational headquarters in Vietnam, bridged our execution capabilities directly with the ground team.',
-    quote: '"Borders are lines on a map; our mission is to build the bridges between them."',
-    photo: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=800&q=80',
-    stampColor: '#1a365d',
-    stampText: 'COK / IMMIGRATION',
-    noteLeft: 'Kochi office opened! The green backwaters inspire our curated local circuits.',
-    noteRight: 'Two hubs, one standard. Our client portfolio is expanding rapidly.'
-  },
-  {
     year: '2020',
     date: 'September 22, 2020',
     city: 'Dubai Head Office',
@@ -146,8 +130,8 @@ export default function AboutJourney() {
   // Refs to store activeIndex and isFlipping state to prevent duplicate ScrollTrigger rebuilding on state changes
   const activeIndexRef = useRef(activeIndex);
   const isFlippingRef = useRef(isFlipping);
-  const isPage7ScrollLockedRef = useRef(false);
-  const page7LockTimeoutRef = useRef(null);
+  const isLastPageScrollLockedRef = useRef(false);
+  const lastPageLockTimeoutRef = useRef(null);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -167,7 +151,7 @@ export default function AboutJourney() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Intercept scroll down events when Page 7 (Vietnam) is locked
+  // Intercept scroll down events when the last page is locked
   useEffect(() => {
     let lastTouchY = 0;
     const handleTouchStart = (e) => {
@@ -177,7 +161,8 @@ export default function AboutJourney() {
     };
 
     const handleWheelAndTouch = (e) => {
-      if (isPage7ScrollLockedRef.current && activeIndexRef.current === 6) {
+      const lastPageIndex = journalPages.length - 1;
+      if (isLastPageScrollLockedRef.current && activeIndexRef.current === lastPageIndex) {
         let isScrollDown = false;
         if (e.type === 'wheel') {
           isScrollDown = e.deltaY > 0;
@@ -212,7 +197,7 @@ export default function AboutJourney() {
     if (!container) return;
 
     const isMobileViewport = window.innerWidth < 1024;
-    const snapPoints = [0, 0.08, 0.22, 0.36, 0.50, 0.64, 0.78, 0.92, 1.0];
+    const snapPoints = [0, 0.10, 0.26, 0.42, 0.58, 0.74, 0.90, 1.0];
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
@@ -243,22 +228,20 @@ export default function AboutJourney() {
             }
           }
 
-          // Map the snap point index (0 to 8) to the 7 journal page indices (0 to 6)
+          // Map the snap point index (0 to 7) to the 6 journal page indices (0 to 5)
           let targetIdx = 0;
           if (closestK <= 1) {
-            targetIdx = 0; // Page 1 (0 or 0.08)
+            targetIdx = 0; // Page 1 (0 or 0.10)
           } else if (closestK === 2) {
-            targetIdx = 1; // Page 2 (0.22)
+            targetIdx = 1; // Page 2 (0.26)
           } else if (closestK === 3) {
-            targetIdx = 2; // Page 3 (0.36)
+            targetIdx = 2; // Page 3 (0.42)
           } else if (closestK === 4) {
-            targetIdx = 3; // Page 4 (0.50)
+            targetIdx = 3; // Page 4 (0.58)
           } else if (closestK === 5) {
-            targetIdx = 4; // Page 5 (0.64)
-          } else if (closestK === 6) {
-            targetIdx = 5; // Page 6 (0.78)
+            targetIdx = 4; // Page 5 (0.74)
           } else {
-            targetIdx = 6; // Page 7 (0.92 or 1.0)
+            targetIdx = 5; // Page 6 (0.90 or 1.0)
           }
           
           const currentActive = activeIndexRef.current;
@@ -268,13 +251,13 @@ export default function AboutJourney() {
             if (isMobileViewport) {
               // Update state immediately on mobile touch scroll to ensure high responsiveness
               setActiveIndex(targetIdx);
-              if (targetIdx === 6) {
-                isPage7ScrollLockedRef.current = true;
-                if (page7LockTimeoutRef.current) {
-                  clearTimeout(page7LockTimeoutRef.current);
+              if (targetIdx === journalPages.length - 1) {
+                isLastPageScrollLockedRef.current = true;
+                if (lastPageLockTimeoutRef.current) {
+                  clearTimeout(lastPageLockTimeoutRef.current);
                 }
-                page7LockTimeoutRef.current = setTimeout(() => {
-                  isPage7ScrollLockedRef.current = false;
+                lastPageLockTimeoutRef.current = setTimeout(() => {
+                  isLastPageScrollLockedRef.current = false;
                 }, 1000);
               }
             } else if (!currentFlipping) {
@@ -641,7 +624,7 @@ export default function AboutJourney() {
             color: '#c1121f',
             letterSpacing: '0.1em'
           }}>
-            0{idx + 1} / 07
+            0{idx + 1} / 0{journalPages.length}
           </span>
         </div>
 
@@ -1698,7 +1681,9 @@ export default function AboutJourney() {
             {String(activeIndex + 1).padStart(2, '0')}
           </span>
           <span style={{ color: 'rgba(255, 255, 255, 0.25)' }}>/</span>
-          <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>07</span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+            {String(journalPages.length).padStart(2, '0')}
+          </span>
         </div>
 
         {/* DESKTOP MODE: Double page leather journal */}

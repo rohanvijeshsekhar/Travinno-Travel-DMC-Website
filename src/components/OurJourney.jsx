@@ -6,12 +6,11 @@ import logoImg from '../assets/logo.webp';
 
 const milestones = [
   { step: 'MILESTONE 01', year: 'APR 2017', title: 'FOUNDED', action: 'Free Zone Inception', desc: 'Started with a Free Zone license as a solo venture.' },
-  { step: 'MILESTONE 02', year: 'MAR 2018', title: 'DUBAI LICENSE', action: 'Dubai & India Offices', desc: 'Dubai transition and India operations launch.' },
-  { step: 'MILESTONE 03', year: '2020', title: 'TEAM EXPANDED', action: '25 Specialists', desc: 'Grew team to 25 dedicated travel specialists.' },
-  { step: 'MILESTONE 04', year: '2021', title: '100K TRAVELLERS', action: 'Passenger Milestone', desc: 'Served over 100,000 travellers worldwide.' },
-  { step: 'MILESTONE 05', year: '2022', title: 'FLEET EXPANSION', action: '10 Premium Vehicles', desc: 'Expanded fleet to 10 luxury custom vehicles.' },
-  { step: 'MILESTONE 06', year: '2023', title: 'THAILAND OFFICE', action: 'SE Asia Hub', desc: 'Opened regional Thailand hub with local team.' },
-  { step: 'MILESTONE 07', year: '2026', title: 'GLOBAL NETWORK', action: '7 Markets & 75+ Staff', desc: 'Scaled to 7 global markets with 75+ professionals.' }
+  { step: 'MILESTONE 02', year: '2020', title: 'TEAM EXPANDED', action: '25 Specialists', desc: 'Grew team to 25 dedicated travel specialists.' },
+  { step: 'MILESTONE 03', year: '2021', title: '100K TRAVELLERS', action: 'Passenger Milestone', desc: 'Served over 100,000 travellers worldwide.' },
+  { step: 'MILESTONE 04', year: '2022', title: 'FLEET EXPANSION', action: '10 Premium Vehicles', desc: 'Expanded fleet to 10 luxury custom vehicles.' },
+  { step: 'MILESTONE 05', year: '2023', title: 'THAILAND OFFICE', action: 'SE Asia Hub', desc: 'Opened regional Thailand hub with local team.' },
+  { step: 'MILESTONE 06', year: '2026', title: 'GLOBAL NETWORK', action: '7 Markets & 75+ Staff', desc: 'Scaled to 7 global markets with 75+ professionals.' }
 ];
 
 // Background Coordinates removed to prevent text overlaps
@@ -614,7 +613,7 @@ export default function OurJourney() {
               <div 
                 style={{ 
                   display: 'grid', 
-                  gridTemplateColumns: 'repeat(7, 1fr)', 
+                  gridTemplateColumns: `repeat(${milestones.length}, 1fr)`, 
                   width: '100%'
                 }}
               >
@@ -695,8 +694,8 @@ export default function OurJourney() {
                 <div
                   style={{
                     position: 'absolute',
-                    left: 'calc(100% / 14)',
-                    right: 'calc(100% / 14)',
+                    left: `calc(100% / ${milestones.length * 2})`,
+                    right: `calc(100% / ${milestones.length * 2})`,
                     top: '15px',
                     height: '2px'
                   }}
@@ -720,7 +719,7 @@ export default function OurJourney() {
                       top: 0,
                       height: '1px',
                       backgroundColor: '#C1121F',
-                      width: `${(activeIndex / 6) * 100}%`,
+                      width: `${(activeIndex / (milestones.length - 1)) * 100}%`,
                       transition: 'width 0.4s cubic-bezier(0.25, 1, 0.5, 1)'
                     }}
                   />
@@ -734,7 +733,7 @@ export default function OurJourney() {
                         key={`tick2-${idx}`}
                         style={{
                           position: 'absolute',
-                          left: `${(idx / 6) * 100}%`,
+                          left: `${(idx / (milestones.length - 1)) * 100}%`,
                           transform: 'translateX(-50%)',
                           top: '-4px',
                           display: 'flex',
@@ -779,7 +778,7 @@ export default function OurJourney() {
                     height="26"
                     style={{
                       position: 'absolute',
-                      left: `${(activeIndex / 6) * 100}%`,
+                      left: `${(activeIndex / (milestones.length - 1)) * 100}%`,
                       top: '0px',
                       width: '26px',
                       height: '26px',
