@@ -259,6 +259,10 @@ a {
     padding: 24px 4% !important;
   }
 
+  .header-container svg {
+    height: 68px !important;
+  }
+
   .desktop-nav-container nav {
     gap: 20px !important;
   }

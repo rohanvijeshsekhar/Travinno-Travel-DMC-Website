@@ -215,7 +215,7 @@ export default function Header() {
           <svg
             viewBox="0 0 100 130"
             style={{
-              height: '51px',
+              height: '103px',
               width: 'auto',
               display: 'block'
             }}
