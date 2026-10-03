@@ -147,7 +147,7 @@ export default function ContentSection() {
               background: 'transparent',
               border: '1px solid #F5F2EC',
               padding: '16px 36px',
-              borderRadius: '0px',
+              borderRadius: '100px',
               boxShadow: 'none',
               transition: 'all 0.35s ease',
               textDecoration: 'none',

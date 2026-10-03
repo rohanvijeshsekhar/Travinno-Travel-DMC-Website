@@ -67,36 +67,40 @@ export default function CinematicHero() {
           maxWidth: '1200px',
         }}
       >
-        <h1
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(1.75rem, 4.2vw, 3.4rem)',
-            fontWeight: 500,
-            letterSpacing: '0.02em',
-            color: '#F5F2EC',
-            margin: '0 0 14px 0',
-            lineHeight: 1.15,
-            textShadow: '0 2px 20px rgba(0, 0, 0, 0.9), 0 4px 30px rgba(0, 0, 0, 0.7)',
-            whiteSpace: 'normal',
-          }}
-        >
-          Believe in Quality Travel
-        </h1>
+        <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', maxWidth: '100%' }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: 'clamp(2.2rem, 5.5vw, 4.4rem)',
+              fontWeight: 500,
+              letterSpacing: '0.02em',
+              color: '#F5F2EC',
+              margin: '0 0 14px 0',
+              lineHeight: 1.15,
+              textShadow: '0 2px 20px rgba(0, 0, 0, 0.9), 0 4px 30px rgba(0, 0, 0, 0.7)',
+              whiteSpace: 'normal',
+            }}
+          >
+            Believe in Quality Travel
+          </h1>
 
-        <p
-          style={{
-            fontFamily: "'General Sans', 'Inter', sans-serif",
-            fontSize: 'clamp(0.78rem, 1.6vw, 1.05rem)',
-            fontWeight: 500,
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: '#F5F2EC',
-            margin: '0 0 36px 0',
-            textShadow: '0 2px 14px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.7)',
-          }}
-        >
-          Your Trusted Global Destination Management Partner
-        </p>
+          <p
+            style={{
+              fontFamily: "'General Sans', 'Inter', sans-serif",
+              fontSize: 'clamp(0.65rem, 1.15vw, 0.92rem)',
+              fontWeight: 500,
+              letterSpacing: '0.10em',
+              textTransform: 'uppercase',
+              color: '#F5F2EC',
+              margin: '0 0 36px 0',
+              maxWidth: '100%',
+              textWrap: 'balance',
+              textShadow: '0 2px 14px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.7)',
+            }}
+          >
+            Your Trusted Global Destination Management Partner
+          </p>
+        </div>
 
         {/* Fixed Explore CTA Outline Button */}
         <div style={{ pointerEvents: 'auto' }}>
@@ -114,7 +118,7 @@ export default function CinematicHero() {
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
               padding: '16px 36px',
-              borderRadius: '0px',
+              borderRadius: '100px',
               textDecoration: 'none',
               transition: 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
               cursor: 'pointer',
