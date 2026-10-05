@@ -801,7 +801,8 @@ export default function AdminPanel() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (passcode === 'travinno2026') {
+    const clean = (passcode || '').trim().toLowerCase();
+    if (clean === 'travinno2026' || clean === 'travinno@2026') {
       sessionStorage.setItem('travinno_admin_auth', 'true');
       setIsAuthenticated(true);
       db.init();
