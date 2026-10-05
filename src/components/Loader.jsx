@@ -33,21 +33,21 @@ export default function Loader({ onComplete }) {
 
     window.addEventListener('touchmove', preventScroll, { passive: false });
 
-    // Fade-out: start CSS transition at 1800ms (animation is complete by 2.2s)
+    // Fade-out: start CSS transition at 1100ms
     const fadeTimer = setTimeout(() => {
       if (loaderRef.current) {
-        loaderRef.current.style.transition = 'opacity 0.7s ease-in-out';
+        loaderRef.current.style.transition = 'opacity 0.4s ease-in-out';
         loaderRef.current.style.opacity = '0';
       }
-    }, 1800);
+    }, 1100);
 
-    // Unmount: call onComplete at 2500ms (after fade finishes)
+    // Unmount: call onComplete at 1500ms (after fade finishes)
     const exitTimer = setTimeout(() => {
       document.body.style.overflow = origOverflow;
       document.body.style.touchAction = origTouchAction;
       window.removeEventListener('touchmove', preventScroll);
       if (onComplete) onComplete();
-    }, 2500);
+    }, 1500);
 
     return () => {
       document.body.style.overflow = origOverflow;
@@ -273,13 +273,13 @@ export default function Loader({ onComplete }) {
           }}
         />
 
-        {/* Tagline - fades in at 2.4s */}
+        {/* Tagline */}
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 1.2,
-            duration: 0.6,
+            delay: 0.4,
+            duration: 0.4,
             ease: "easeOut"
           }}
           style={{
@@ -297,7 +297,7 @@ export default function Loader({ onComplete }) {
           CRAFTING JOURNEYS, CREATING MEMORIES
         </motion.div>
 
-        {/* Loading Progress Bar - animates from 0s for 3.7s */}
+        {/* Loading Progress Bar */}
         <div
           style={{
             width: '80%',
@@ -313,7 +313,7 @@ export default function Loader({ onComplete }) {
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
             transition={{
-              duration: 1.8,
+              duration: 1.1,
               ease: [0.22, 1, 0.36, 1]
             }}
             style={{

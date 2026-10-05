@@ -23,12 +23,32 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // API routes must never be cached — they serve live DB data
-        source: '/api/:path*',
+        // Immutable version-hashed binary images served via /api/image/
+        source: '/api/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Dynamic live data API routes (collections, ping, upload, save, reset) must never be cached
+        source: '/api/((?!image).*)',
         headers: [
           {
             key: 'Cache-Control',
             value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+        ],
+      },
+      {
+        // Static assets (images, fonts, videos, partners, icons) - cache long-term
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|ico|woff|woff2|ttf|otf|mp4|webm)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

@@ -239,7 +239,7 @@ const IMAGE_COLLECTIONS: Record<string, string[]> = {
 function makeImageApiUrl(col: string, id: string | number, field: string, raw: string): string {
   const b64start = raw.indexOf(',');
   const ver = b64start >= 0 ? raw.substring(b64start + 1, b64start + 9) : '0';
-  return `api/image?c=${col}&i=${encodeURIComponent(String(id))}&f=${field}&v=${ver}`;
+  return `/api/image/?c=${col}&i=${encodeURIComponent(String(id))}&f=${field}&v=${ver}`;
 }
 
 function stripBase64ForSSR(data: Record<string, any>): Record<string, any> {

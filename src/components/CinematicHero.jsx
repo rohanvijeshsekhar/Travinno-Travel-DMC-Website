@@ -34,7 +34,8 @@ export default function CinematicHero() {
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
+        poster="/images/home_hero.jpg"
         src="/video/IMG_2990.MP4"
         style={{
           position: 'absolute',
