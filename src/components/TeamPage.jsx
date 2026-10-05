@@ -474,7 +474,7 @@ export default function TeamPage() {
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <img
                   src={resolveImgPath(managingDirector.image)}
-                  alt={`${managingDirector.name} - Managing Director`}
+                  alt={`${managingDirector.name} - ${managingDirector.position || 'CEO and Founder'}`}
                   className="md-featured-img"
                 />
               </div>
@@ -492,7 +492,13 @@ export default function TeamPage() {
                     display: 'block',
                     marginBottom: '8px'
                   }}>
-                    {managingDirector.position || 'Managing Director'}
+                    {(() => {
+                      const pos = managingDirector.position;
+                      if (!pos || pos === 'Managing Director') return 'CEO and Founder';
+                      if (/founder\s*(&|and)\s*ceo/i.test(pos)) return 'CEO and Founder';
+                      if (/ceo\s*(&|and)\s*founder/i.test(pos)) return 'CEO and Founder';
+                      return pos;
+                    })()}
                   </span>
                   <h2 style={{
                     fontFamily: 'var(--font-heading)',

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
+import { isCloudinaryConfigured } from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,11 +11,15 @@ export async function GET() {
   const password = process.env.DB_PASSWORD || '';
   const database = process.env.DB_NAME;
 
-  // Check if env vars are present
+  const cloudinaryConfigured = isCloudinaryConfigured();
   if (!host || !user || !database) {
     return NextResponse.json({
       connected: false,
       error: 'Missing DB environment variables',
+      cloudinary: {
+        configured: cloudinaryConfigured,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME || '(not set)'
+      },
       env: {
         DB_HOST: host || '(not set)',
         DB_PORT: process.env.DB_PORT || '(not set)',
@@ -43,6 +48,10 @@ export async function GET() {
         connected: true,
         tableExists: false,
         message: 'Connected to MySQL but travinno_collections table does not exist yet.',
+        cloudinary: {
+          configured: cloudinaryConfigured,
+          cloudName: process.env.CLOUDINARY_CLOUD_NAME || '(not set)'
+        },
         env: { DB_HOST: host, DB_PORT: port, DB_USER: user, DB_NAME: database }
       });
     }
@@ -76,6 +85,10 @@ export async function GET() {
       tableExists: true,
       totalCollections: countRow[0].total,
       collections: summary,
+      cloudinary: {
+        configured: cloudinaryConfigured,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME || '(not set)'
+      },
       env: { DB_HOST: host, DB_PORT: port, DB_USER: user, DB_NAME: database }
     });
 
@@ -84,6 +97,10 @@ export async function GET() {
     return NextResponse.json({
       connected: false,
       error: err.message,
+      cloudinary: {
+        configured: cloudinaryConfigured,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME || '(not set)'
+      },
       env: { DB_HOST: host, DB_PORT: port, DB_USER: user, DB_NAME: database }
     });
   }

@@ -6,11 +6,15 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "node server.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:hostinger": "node scripts/migrate-to-hostinger.cjs",
+    "db:sql": "node scripts/generate-sql.cjs",
+    "cloudinary:migrate": "node scripts/migrate-images-to-cloudinary.cjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "cloudinary": "^2.11.0",
     "clsx": "^2.1.1",
     "cobe": "^2.0.1",
     "dotenv": "^16.4.5",

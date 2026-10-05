@@ -75,7 +75,7 @@ if (database && user) {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      connectTimeout: 1000,
+      connectTimeout: 5000,
     });
     useMySQL = true;
 

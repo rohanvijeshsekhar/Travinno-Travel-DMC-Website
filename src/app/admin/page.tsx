@@ -5,6 +5,9 @@ import DBHydrator from '@/components/DBHydrator';
 import AdminPanel from '@/components/AdminPanel';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'CMS Admin Panel - Travinno',
   description: 'Control and update destinations, slides, jobs, applications, and blogs for Travinno.',

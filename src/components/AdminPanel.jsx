@@ -36,14 +36,37 @@ import {
 } from 'lucide-react';
 
 // ==========================================
-// 1. IMAGE CROPPER & UPLOADER COMPONENT
+// 1. IMAGE CLOUDINARY UPLOADER & CROPPER
 // ==========================================
+export async function uploadImageToCloudinary(imageSource, folder = 'travinno') {
+  if (!imageSource) return '';
+  if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
+    return imageSource;
+  }
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageSource, folder }),
+    });
+    const data = await res.json();
+    if (data.success && data.url) {
+      return data.url;
+    }
+  } catch (err) {
+    console.error('Failed to upload image to Cloudinary:', err);
+  }
+  return imageSource;
+}
+
 function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", aspectRatio, outputType = "jpeg" }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState(''); // 'uploading' | 'success' | 'fallback'
   
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
@@ -79,21 +102,33 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
       setZoom(1);
       setPosX(0);
       setPosY(0);
+      if (currentImage.startsWith('https://res.cloudinary.com')) {
+        setUploadStatus('success');
+      }
+    } else {
+      setImageSrc(null);
+      setUploadStatus('');
     }
   }, [currentImage]);
 
+  const processAndUploadFile = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const rawDataUrl = reader.result;
+      setImageSrc(rawDataUrl);
+      setZoom(1);
+      setPosX(0);
+      setPosY(0);
+      // Automatically crop and upload to Cloudinary immediately
+      cropAndUpload(rawDataUrl, 1, 0, 0);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-        setZoom(1);
-        setPosX(0);
-        setPosY(0);
-      };
-      reader.readAsDataURL(file);
-    }
+    const file = e.target.files && e.target.files[0];
+    if (file) processAndUploadFile(file);
   };
 
   const handleDragOver = (e) => {
@@ -108,30 +143,29 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-        setZoom(1);
-        setPosX(0);
-        setPosY(0);
-      };
-      reader.readAsDataURL(file);
-    }
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) processAndUploadFile(file);
   };
 
-  const saveCroppedImage = () => {
-    if (!imageSrc) return;
+  const cropAndUpload = (srcToUse = null, customZoom = zoom, customX = posX, customY = posY) => {
+    const activeSrc = srcToUse || imageSrc;
+    if (!activeSrc) return;
     
+    setIsUploading(true);
+    setUploadStatus('uploading');
+
     const img = new window.Image();
-    const resolvedSrc = imageSrc.startsWith('data:') || imageSrc.startsWith('http') 
-      ? imageSrc 
-      : (imageSrc.startsWith('/') ? imageSrc : `/${imageSrc}`);
+    const resolvedSrc = activeSrc.startsWith('data:') || activeSrc.startsWith('http') 
+      ? activeSrc 
+      : (activeSrc.startsWith('/') ? activeSrc : `/${activeSrc}`);
     img.crossOrigin = "anonymous";
     img.src = resolvedSrc;
-    img.onload = () => {
+    img.onload = async () => {
       const canvas = canvasRef.current;
+      if (!canvas) {
+        setIsUploading(false);
+        return;
+      }
       const ctx = canvas.getContext('2d');
       
       canvas.width = outputWidth;
@@ -163,26 +197,55 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
       // Scale coordinates from container space up to output canvas space
       const scaleMultiplier = outputWidth / containerWidth;
       
-      const scaledWidth = drawWidth * zoom * scaleMultiplier;
-      const scaledHeight = drawHeight * zoom * scaleMultiplier;
+      const scaledWidth = drawWidth * customZoom * scaleMultiplier;
+      const scaledHeight = drawHeight * customZoom * scaleMultiplier;
       
       // Calculate scaled draw positions with translation offsets
-      const dx = (startX + posX + (drawWidth * (1 - zoom)) / 2) * scaleMultiplier;
-      const dy = (startY + posY + (drawHeight * (1 - zoom)) / 2) * scaleMultiplier;
+      const dx = (startX + customX + (drawWidth * (1 - customZoom)) / 2) * scaleMultiplier;
+      const dy = (startY + customY + (drawHeight * (1 - customZoom)) / 2) * scaleMultiplier;
       
       ctx.drawImage(img, dx, dy, scaledWidth, scaledHeight);
       
       // Get base64 string compressed in webp format
       const base64Image = canvas.toDataURL('image/webp', 0.85);
-      onImageCropped(base64Image);
-      alert("Image crop applied and saved successfully!");
+
+      // Upload to Cloudinary via Next.js /api/upload
+      try {
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Image, folder: 'travinno' }),
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadData.success && uploadData.url) {
+          onImageCropped(uploadData.url);
+          setImageSrc(uploadData.url);
+          setUploadStatus('success');
+        } else {
+          // Fallback to compressed base64 if Cloudinary is temporarily unreachable
+          onImageCropped(base64Image);
+          setUploadStatus('fallback');
+        }
+      } catch (uploadErr) {
+        onImageCropped(base64Image);
+        setUploadStatus('fallback');
+      } finally {
+        setIsUploading(false);
+      }
+    };
+    img.onerror = () => {
+      setIsUploading(false);
+      setUploadStatus('');
     };
   };
 
   const removeImage = () => {
     setImageSrc(null);
+    setUploadStatus('');
     onImageCropped('');
   };
+
+  const isCloudinaryUrl = imageSrc && (imageSrc.startsWith('https://res.cloudinary.com') || uploadStatus === 'success');
 
   return (
     <div style={{
@@ -195,7 +258,19 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
       flexDirection: 'column',
       gap: '16px'
     }}>
-      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F5F2EC', letterSpacing: '0.5px' }}>{title}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#F5F2EC', letterSpacing: '0.5px' }}>{title}</span>
+        {isUploading && (
+          <span style={{ fontSize: '0.72rem', color: '#E0A96D', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            Uploading to Cloudinary CDN...
+          </span>
+        )}
+        {!isUploading && isCloudinaryUrl && (
+          <span style={{ fontSize: '0.72rem', color: '#4EBA6F', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+            <CheckCircle size={13} /> Cloudinary Synced
+          </span>
+        )}
+      </div>
       
       {/* Upload Box / Cropper Frame */}
       <div
@@ -203,7 +278,7 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => !imageSrc && fileInputRef.current.click()}
+        onClick={() => !imageSrc && fileInputRef.current && fileInputRef.current.click()}
         style={{
           width: `${containerWidth}px`,
           height: `${containerHeight}px`,
@@ -247,7 +322,7 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
           <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }}>
             <Upload style={{ margin: '0 auto 12px auto', opacity: 0.6 }} size={28} />
             <p style={{ fontSize: '0.8rem', margin: 0 }}>Drag & Drop file here, or click to upload</p>
-            <span style={{ fontSize: '0.68rem', opacity: 0.5 }}>Supports JPEG, PNG, WEBP</span>
+            <span style={{ fontSize: '0.68rem', opacity: 0.5 }}>Supports JPEG, PNG, WEBP — Auto uploads to Cloudinary</span>
           </div>
         )}
       </div>
@@ -314,7 +389,7 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', gap: '8px' }}>
               <button
                 type="button"
-                onClick={() => fileInputRef.current.click()}
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
                 style={{
                   padding: '6px 12px',
                   backgroundColor: 'rgba(255,255,255,0.06)',
@@ -325,7 +400,7 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
                   cursor: 'pointer'
                 }}
               >
-                Replace
+                Choose Another
               </button>
               <button
                 type="button"
@@ -347,21 +422,24 @@ function ImageCropper({ onImageCropped, currentImage, title = "Upload Image", as
 
           <button
             type="button"
-            onClick={saveCroppedImage}
+            onClick={() => cropAndUpload(null, zoom, posX, posY)}
+            disabled={isUploading}
             style={{
               padding: '10px',
-              backgroundColor: '#C1121F',
+              backgroundColor: isUploading ? '#666666' : '#C1121F',
               border: 'none',
               borderRadius: '8px',
               color: '#FFFFFF',
               fontWeight: 600,
               fontSize: '0.8rem',
-              cursor: 'pointer',
+              cursor: isUploading ? 'not-allowed' : 'pointer',
               boxShadow: '0 4px 10px rgba(193, 18, 31, 0.2)',
-              marginTop: '4px'
+              marginTop: '4px',
+              opacity: isUploading ? 0.75 : 1,
+              transition: 'all 0.2s ease',
             }}
           >
-            Apply Crop & Save Changes
+            {isUploading ? 'Uploading to Cloudinary...' : 'Apply Crop & Save Changes'}
           </button>
         </div>
       )}
@@ -608,16 +686,16 @@ export default function AdminPanel() {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Schema state
-  const [destinations, setDestinations] = useState([]);
-  const [blogs, setBlogs] = useState([]);
-  const [careers, setCareers] = useState([]);
-  const [team, setTeam] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [logos, setLogos] = useState([]);
-  const [inquiries, setInquiries] = useState([]);
-  const [applications, setApplications] = useState([]);
-  const [activities, setActivities] = useState([]);
+  // Schema state - initialize directly from db to prevent initial flash/delay
+  const [destinations, setDestinations] = useState(() => db.getDestinations());
+  const [blogs, setBlogs] = useState(() => db.getBlogs());
+  const [careers, setCareers] = useState(() => db.getCareers());
+  const [team, setTeam] = useState(() => db.getTeam());
+  const [testimonials, setTestimonials] = useState(() => db.getTestimonials());
+  const [logos, setLogos] = useState(() => db.getLogos());
+  const [inquiries, setInquiries] = useState(() => db.getInquiries());
+  const [applications, setApplications] = useState(() => db.getApplications());
+  const [activities, setActivities] = useState(() => db.getActivities());
 
 
   // Modal / Form overlays
@@ -630,11 +708,12 @@ export default function AdminPanel() {
   const [blogForm, setBlogForm] = useState({ title: '', category: '', readTime: '', image: '', description: '', content: '' });
   const [careerForm, setCareerForm] = useState({ title: '', location: '', type: 'Full-Time', description: '', status: 'Open' });
   const [teamForm, setTeamForm] = useState({ name: '', position: '', bio: '', image: '', isLeader: false, order: 0, signature: '' });
+  const [isTeamImgUploading, setIsTeamImgUploading] = useState(false);
   const [testimonialForm, setTestimonialForm] = useState({ name: '', company: '', location: '', text: '', rating: 5 });
 
 
   // SEO Management states
-  const [seo, setSeo] = useState([]);
+  const [seo, setSeo] = useState(() => db.getSeo());
   const [selectedSeoPage, setSelectedSeoPage] = useState('home');
   const [seoForm, setSeoForm] = useState({ title: '', description: '' });
 
@@ -762,17 +841,23 @@ export default function AdminPanel() {
   };
 
   // DESTINATIONS CRUD
-  const saveDestination = (e) => {
+  const saveDestination = async (e) => {
     e.preventDefault();
     if (!destForm.name || !destForm.description || !destForm.tagline) {
       alert("Please fill all fields.");
       return;
     }
 
+    let finalImage = destForm.image;
+    if (finalImage && finalImage.startsWith('data:')) {
+      finalImage = await uploadImageToCloudinary(finalImage, 'travinno/destinations');
+    }
+
+    const payload = { ...destForm, image: finalImage };
     let list = [...destinations];
     if (editingItem) {
       // Edit
-      list = list.map(item => item.id === editingItem.id ? { ...item, ...destForm } : item);
+      list = list.map(item => item.id === editingItem.id ? { ...item, ...payload } : item);
       db.saveDestinations(list, `Edited destination country: ${destForm.name}`);
     } else {
       // Add
@@ -781,7 +866,7 @@ export default function AdminPanel() {
         alert("A destination with this country name already exists.");
         return;
       }
-      const newItem = { ...destForm, id };
+      const newItem = { ...payload, id };
       list.push(newItem);
       db.saveDestinations(list, `Added new destination country: ${destForm.name}`);
     }
@@ -797,23 +882,29 @@ export default function AdminPanel() {
 
 
   // BLOGS CRUD
-  const saveBlog = (e) => {
+  const saveBlog = async (e) => {
     e.preventDefault();
     if (!blogForm.title || !blogForm.description || !blogForm.content) {
       alert("Please fill all fields.");
       return;
     }
 
+    let finalImage = blogForm.image;
+    if (finalImage && finalImage.startsWith('data:')) {
+      finalImage = await uploadImageToCloudinary(finalImage, 'travinno/blogs');
+    }
+
+    const payload = { ...blogForm, image: finalImage };
     let list = [...blogs];
     const dateFormatted = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     
     if (editingItem) {
-      list = list.map(item => item.id === editingItem.id ? { ...item, ...blogForm } : item);
+      list = list.map(item => item.id === editingItem.id ? { ...item, ...payload } : item);
       db.saveBlogs(list, `Edited blog post: ${blogForm.title}`);
     } else {
       const id = Date.now();
       const newItem = {
-        ...blogForm,
+        ...payload,
         id,
         date: dateFormatted,
         readTime: blogForm.readTime || `${Math.ceil(blogForm.content.split(/\s+/).length / 200)} min read`
@@ -858,19 +949,24 @@ export default function AdminPanel() {
   };
 
   // TEAM CRUD
-  const saveTeamMember = (e) => {
+  const saveTeamMember = async (e) => {
     e.preventDefault();
     if (!teamForm.name || !teamForm.position) {
       alert("Please fill name and position.");
       return;
     }
+    let finalImage = teamForm.image;
+    if (finalImage && finalImage.startsWith('data:')) {
+      finalImage = await uploadImageToCloudinary(finalImage, 'travinno/team');
+    }
+    const payload = { ...teamForm, image: finalImage };
     let list = [...team];
     if (editingItem) {
-      list = list.map(item => item.id === editingItem.id ? { ...item, ...teamForm } : item);
+      list = list.map(item => item.id === editingItem.id ? { ...item, ...payload } : item);
       db.saveTeam(list, `Edited team member: ${teamForm.name}`);
     } else {
       const id = Date.now();
-      list.push({ ...teamForm, id });
+      list.push({ ...payload, id });
       db.saveTeam(list, `Added team member: ${teamForm.name}`);
     }
     closeForm();
@@ -910,10 +1006,14 @@ export default function AdminPanel() {
   };
 
   // BRAND LOGOS CRUD
-  const handleAddLogo = (base64) => {
+  const handleAddLogo = async (base64) => {
     if (!base64) return;
+    let finalLogo = base64;
+    if (base64.startsWith('data:')) {
+      finalLogo = await uploadImageToCloudinary(base64, 'travinno/logos');
+    }
     const list = [...logos];
-    list.push(base64);
+    list.push(finalLogo);
     db.saveLogos(list, `Uploaded new client brand logo`);
   };
 
@@ -2786,11 +2886,12 @@ export default function AdminPanel() {
                         onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
+                            setIsTeamImgUploading(true);
                             const reader = new FileReader();
-                            reader.onload = (event) => {
+                            reader.onload = async (event) => {
                               const img = new window.Image();
                               img.src = event.target.result;
-                              img.onload = () => {
+                              img.onload = async () => {
                                 const canvas = document.createElement('canvas');
                                 canvas.width = img.width;
                                 canvas.height = img.height;
@@ -2798,7 +2899,25 @@ export default function AdminPanel() {
                                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                                 ctx.drawImage(img, 0, 0);
                                 const webpDataUrl = canvas.toDataURL('image/webp', 0.85);
-                                setTeamForm({ ...teamForm, image: webpDataUrl });
+
+                                try {
+                                  const uploadRes = await fetch('/api/upload', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ image: webpDataUrl, folder: 'travinno/team' }),
+                                  });
+                                  const uploadData = await uploadRes.json();
+                                  if (uploadData.success && uploadData.url) {
+                                    setTeamForm(prev => ({ ...prev, image: uploadData.url }));
+                                    alert("Team photo uploaded to Cloudinary successfully!");
+                                    setIsTeamImgUploading(false);
+                                    return;
+                                  }
+                                } catch (_) {}
+
+                                // Fallback to local base64
+                                setTeamForm(prev => ({ ...prev, image: webpDataUrl }));
+                                setIsTeamImgUploading(false);
                               };
                             };
                             reader.readAsDataURL(file);
@@ -2807,7 +2926,13 @@ export default function AdminPanel() {
                         style={{ display: 'none' }}
                       />
                       
-                      {teamForm.image ? (
+                      {isTeamImgUploading ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px' }}>
+                          <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 600 }}>
+                            Uploading to Cloudinary...
+                          </span>
+                        </div>
+                      ) : teamForm.image ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                           <img
                             src={teamForm.image.startsWith('data:') || teamForm.image.startsWith('http') ? teamForm.image : (teamForm.image.startsWith('/') ? teamForm.image : `/${teamForm.image}`)}
@@ -2844,7 +2969,7 @@ export default function AdminPanel() {
                             Click to upload transparent PNG
                           </span>
                           <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-sans)' }}>
-                            No crop/resize/zoom. Raw PNG will be saved.
+                            Uploaded directly to Cloudinary CDN
                           </span>
                         </div>
                       )}

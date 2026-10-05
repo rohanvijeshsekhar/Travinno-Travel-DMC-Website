@@ -34,8 +34,8 @@ jobs:
             git reset --hard origin/main
             git clean -fd --exclude='.env' --exclude='*.db'
 
-            # ── Write .env with Hostinger MySQL credentials ───────────────────────────
-            printf 'DB_HOST=127.0.0.1\nDB_PORT=3306\nDB_USER=u410255584_tvn\nDB_PASSWORD=Travinno2026\nDB_NAME=u410255584_Travinno2\nNODE_ENV=production\n' > .env
+            # ── Write .env with Hostinger MySQL credentials & Cloudinary ─────────────
+            printf 'DB_HOST=127.0.0.1\nDB_PORT=3306\nDB_USER=u410255584_tvm\nDB_PASSWORD=Travinno@2026\nDB_NAME=u410255584_travinno\nCLOUDINARY_CLOUD_NAME=fifyhrcr\nCLOUDINARY_API_KEY=462151937739666\nCLOUDINARY_API_SECRET=_lcjEAWwXMWr07V3Z7FUmawQks4\nNODE_ENV=production\n' > .env
 
             echo "✅ .env written:"
             cat .env
@@ -85,11 +85,11 @@ jobs:
                   for (const [k, v] of Object.entries(data)) {
                     const strVal = typeof v === 'string' ? v : JSON.stringify(v);
                     await pool.query(
-                      'INSERT INTO travinno_collections (col_key, col_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE col_value = VALUES(col_value)',
+                      'INSERT IGNORE INTO travinno_collections (col_key, col_value) VALUES (?, ?)',
                       [k, strVal]
                     );
                   }
-                  console.log('✅ Synced travinno-data.json to Hostinger MySQL table');
+                  console.log('✅ Initialized travinno_collections table in Hostinger MySQL (preserving existing live data)');
                   await pool.end();
                 } catch(e) {
                   console.log('MySQL sync note:', e.message);
