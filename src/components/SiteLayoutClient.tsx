@@ -47,6 +47,7 @@ export default function SiteLayoutClient({ children }: { children: React.ReactNo
     <div
       style={{
         width: '100%',
+        minHeight: '100dvh',
         backgroundColor: '#050505',
         overflowX: 'clip',
         position: 'relative',

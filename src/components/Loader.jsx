@@ -45,14 +45,18 @@ export default function Loader({ onComplete }) {
       ref={loaderRef}
       className="fullscreen-loader"
       style={{
-        opacity: 1,           // always start fully visible — no FM involvement
+        opacity: 1,
         position: 'fixed',
+        inset: 0,
         top: 0,
         left: 0,
-        width: '100vw',
-        height: '100vh',
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        minHeight: '100dvh',
         backgroundColor: '#050505',
-        zIndex: 99999,
+        zIndex: 999999,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

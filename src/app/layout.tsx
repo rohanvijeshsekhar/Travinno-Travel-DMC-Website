@@ -1,16 +1,23 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import ChunkErrorRecovery from '../components/ChunkErrorRecovery';
 
 export const metadata: Metadata = {
   title: 'Travinno - Crafting Journeys, Creating Memories',
   description: 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Travinno',
+  },
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#050505',
 };
 
 export default function RootLayout({

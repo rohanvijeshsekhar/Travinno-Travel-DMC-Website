@@ -1748,17 +1748,40 @@ a {
    ========================================================================== */
 .fullscreen-loader {
   position: fixed;
+  inset: 0;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
+  width: 100%;
   height: 100vh;
-  background-color: #000000;
-  z-index: 99999;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  background-color: #050505;
+  z-index: 999999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Protective background bleed for iOS Safari dynamic toolbar and safe-area */
+.fullscreen-loader::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -250px;
+  height: 350px;
+  background-color: #050505;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .loader-logo-wrapper {
