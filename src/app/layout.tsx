@@ -18,6 +18,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   viewportFit: 'cover',
   themeColor: '#050505',
+  colorScheme: 'dark',
 };
 
 export default function RootLayout({
@@ -26,8 +27,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      style={{
+        backgroundColor: '#050505',
+        colorScheme: 'dark',
+        margin: 0,
+        padding: 0,
+        width: '100%',
+        minHeight: '100%',
+      }}
+    >
       <head>
+        <meta name="color-scheme" content="dark" />
+        <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#050505" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#050505" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-touch-fullscreen" content="yes" />
         {/* Preconnect to font origins for faster DNS+TLS handshake */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -47,8 +65,11 @@ export default function RootLayout({
           margin: 0,
           padding: 0,
           backgroundColor: '#050505',
+          colorScheme: 'dark',
           color: '#F5F2EC',
-          minHeight: '100vh',
+          minHeight: '100%',
+          minHeight: '100dvh',
+          overscrollBehavior: 'none',
         }}
       >
         <ChunkErrorRecovery />

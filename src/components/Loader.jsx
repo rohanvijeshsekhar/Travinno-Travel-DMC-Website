@@ -16,7 +16,22 @@ export default function Loader({ onComplete }) {
   // Do NOT rely on Framer Motion for the container opacity —
   // FM v12 applies animate={opacity:0} immediately during SSR hydration.
   useEffect(() => {
+    // Prevent touch gestures / rubber-band scrolling on iOS Safari while loader is active
+    const preventScroll = (e) => {
+      e.preventDefault();
+    };
+
+    const origOverflow = document.body.style.overflow;
+    const origTouchAction = document.body.style.touchAction;
+
+    document.documentElement.style.backgroundColor = '#050505';
+    document.documentElement.style.colorScheme = 'dark';
+    document.body.style.backgroundColor = '#050505';
+    document.body.style.colorScheme = 'dark';
     document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
+    window.addEventListener('touchmove', preventScroll, { passive: false });
 
     // Fade-out: start CSS transition at 1800ms (animation is complete by 2.2s)
     const fadeTimer = setTimeout(() => {
@@ -28,12 +43,16 @@ export default function Loader({ onComplete }) {
 
     // Unmount: call onComplete at 2500ms (after fade finishes)
     const exitTimer = setTimeout(() => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = origOverflow;
+      document.body.style.touchAction = origTouchAction;
+      window.removeEventListener('touchmove', preventScroll);
       if (onComplete) onComplete();
     }, 2500);
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = origOverflow;
+      document.body.style.touchAction = origTouchAction;
+      window.removeEventListener('touchmove', preventScroll);
       clearTimeout(fadeTimer);
       clearTimeout(exitTimer);
     };
@@ -43,108 +62,125 @@ export default function Loader({ onComplete }) {
   return (
     <div
       ref={loaderRef}
+      id="fullscreen-brand-loader"
       className="fullscreen-loader"
       style={{
         opacity: 1,
         position: 'fixed',
-        inset: 0,
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0,
-        width: '100%',
-        height: '100%',
-        minHeight: '100dvh',
+        bottom: '-250px',
+        width: '100vw',
+        minHeight: 'calc(100vh + 250px)',
+        minHeight: 'calc(100dvh + 250px)',
+        minHeight: 'calc(100lvh + 250px)',
         backgroundColor: '#050505',
-        zIndex: 999999,
+        zIndex: 9999999,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        pointerEvents: 'none',
-        overflow: 'hidden'
+        paddingBottom: '250px',
+        pointerEvents: 'auto',
+        touchAction: 'none',
+        overscrollBehavior: 'none',
       }}
     >
-      {/* 1. Grid Check Backdrop with increased opacity */}
+      {/* Decorative architectural background graphics - clipped to visible bounds */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: '250px',
+          overflow: 'hidden',
           pointerEvents: 'none',
-          zIndex: 1
+          zIndex: 1,
         }}
       >
-        <svg style={{ width: '100%', height: '100%' }}>
-          <defs>
-            <pattern id="loader-grid" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="0.6" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#loader-grid)" />
-        </svg>
-      </div>
+        {/* 1. Grid Check Backdrop with increased opacity */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 1
+          }}
+        >
+          <svg style={{ width: '100%', height: '100%' }}>
+            <defs>
+              <pattern id="loader-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="0.6" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#loader-grid)" />
+          </svg>
+        </div>
 
-      {/* 2. Left Corner (Bottom Left) Malaysia Buildings Illustration */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 0.22, y: 0 }}
-        transition={{ delay: 0.4, duration: 1.0, ease: "easeOut" }}
-        style={{
-          position: 'absolute',
-          bottom: '4%',
-          left: '5%',
-          width: '240px',
-          height: '360px',
-          zIndex: 2,
-          pointerEvents: 'none'
-        }}
-      >
-        <svg viewBox="0 0 280 720" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-          <g stroke="rgba(255, 255, 255, 0.7)" strokeWidth="2.2" fill="none" strokeLinecap="round">
-            <g transform="translate(-1480, -130)">
-              {/* Petronas Twin Towers */}
-              <line x1="1540" y1="160" x2="1540" y2="820" />
-              <line x1="1700" y1="160" x2="1700" y2="820" />
-              <path d="M 1540,480 H 1700 M 1540,490 H 1700 M 1610,480 V 490 M 1630,480 V 490 M 1620,480 V 490" />
-              {/* Tower 1 */}
-              <path d="M 1536,260 V 340 H 1544 V 260 Z" />
-              <path d="M 1530,340 V 420 H 1550 V 340 Z" />
-              <path d="M 1522,420 V 520 H 1558 V 420 Z" />
-              <path d="M 1512,520 V 640 H 1568 V 520 Z" />
-              <path d="M 1500,640 V 750 H 1580 V 640 Z" />
-              <path d="M 1480,750 V 820 H 1600 V 750 Z" />
-              {/* Tower 2 */}
-              <path d="M 1696,260 V 340 H 1704 V 260 Z" />
-              <path d="M 1690,340 V 420 H 1710 V 340 Z" />
-              <path d="M 1682,420 V 520 H 1718 V 420 Z" />
-              <path d="M 1672,520 V 640 H 1728 V 520 Z" />
-              <path d="M 1660,640 V 750 H 1740 V 640 Z" />
-              <path d="M 1640,750 V 820 H 1760 V 750 Z" />
-              {/* Accents / Overshoots */}
-              <line x1="1490" y1="750" x2="1590" y2="750" />
-              <line x1="1505" y1="640" x2="1575" y2="640" />
-              <line x1="1518" y1="520" x2="1562" y2="520" />
-              <line x1="1650" y1="750" x2="1750" y2="750" />
-              <line x1="1665" y1="640" x2="1735" y2="640" />
-              <line x1="1678" y1="520" x2="1722" y2="520" />
+        {/* 2. Left Corner (Bottom Left) Malaysia Buildings Illustration */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 0.22, y: 0 }}
+          transition={{ delay: 0.4, duration: 1.0, ease: "easeOut" }}
+          style={{
+            position: 'absolute',
+            bottom: '4%',
+            left: '5%',
+            width: '240px',
+            height: '360px',
+            zIndex: 2,
+            pointerEvents: 'none'
+          }}
+        >
+          <svg viewBox="0 0 280 720" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+            <g stroke="rgba(255, 255, 255, 0.7)" strokeWidth="2.2" fill="none" strokeLinecap="round">
+              <g transform="translate(-1480, -130)">
+                {/* Petronas Twin Towers */}
+                <line x1="1540" y1="160" x2="1540" y2="820" />
+                <line x1="1700" y1="160" x2="1700" y2="820" />
+                <path d="M 1540,480 H 1700 M 1540,490 H 1700 M 1610,480 V 490 M 1630,480 V 490 M 1620,480 V 490" />
+                {/* Tower 1 */}
+                <path d="M 1536,260 V 340 H 1544 V 260 Z" />
+                <path d="M 1530,340 V 420 H 1550 V 340 Z" />
+                <path d="M 1522,420 V 520 H 1558 V 420 Z" />
+                <path d="M 1512,520 V 640 H 1568 V 520 Z" />
+                <path d="M 1500,640 V 750 H 1580 V 640 Z" />
+                <path d="M 1480,750 V 820 H 1600 V 750 Z" />
+                {/* Tower 2 */}
+                <path d="M 1696,260 V 340 H 1704 V 260 Z" />
+                <path d="M 1690,340 V 420 H 1710 V 340 Z" />
+                <path d="M 1682,420 V 520 H 1718 V 420 Z" />
+                <path d="M 1672,520 V 640 H 1728 V 520 Z" />
+                <path d="M 1660,640 V 750 H 1740 V 640 Z" />
+                <path d="M 1640,750 V 820 H 1760 V 750 Z" />
+                {/* Accents / Overshoots */}
+                <line x1="1490" y1="750" x2="1590" y2="750" />
+                <line x1="1505" y1="640" x2="1575" y2="640" />
+                <line x1="1518" y1="520" x2="1562" y2="520" />
+                <line x1="1650" y1="750" x2="1750" y2="750" />
+                <line x1="1665" y1="640" x2="1735" y2="640" />
+                <line x1="1678" y1="520" x2="1722" y2="520" />
+              </g>
             </g>
-          </g>
-          {/* Label text */}
-          <text
-            x="140"
-            y="710"
-            textAnchor="middle"
-            fill="rgba(255, 255, 255, 0.15)"
-            fontFamily="var(--font-sans)"
-            fontSize="24"
-            letterSpacing="0.15em"
-          >
-            KUL // 3.1578° N, 101.7119° E
-          </text>
-        </svg>
-      </motion.div>
+            {/* Label text */}
+            <text
+              x="140"
+              y="710"
+              textAnchor="middle"
+              fill="rgba(255, 255, 255, 0.15)"
+              fontFamily="var(--font-sans)"
+              fontSize="24"
+              letterSpacing="0.15em"
+            >
+              KUL // 3.1578° N, 101.7119° E
+            </text>
+          </svg>
+        </motion.div>
+      </div>
 
 
 
