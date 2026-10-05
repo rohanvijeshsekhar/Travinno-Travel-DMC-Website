@@ -7,15 +7,15 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import DestinationsPage from '@/components/DestinationsPage';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export async function generateMetadata() {
-  const collections = await getCollectionsSSR();
-  const seoList = collections['travinno_seo'] || [];
-  const entry = seoList.find((item: any) => item.page === 'destinations');
-  return {
-    title: entry?.title || 'Luxury Destinations Showcase - Travinno',
-    description: entry?.description || 'Discover futuristic cities, private deserts, and tropical archipelagos designed by Travinno specialists.',
-  };
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'destinations',
+    'Luxury Destinations Showcase - Travinno',
+    'Discover futuristic cities, private deserts, and tropical archipelagos designed by Travinno specialists.',
+    '/destinations'
+  );
 }
 
 export default async function DestinationsPageRoute() {

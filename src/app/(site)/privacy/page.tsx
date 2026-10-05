@@ -7,11 +7,16 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import PrivacyPage from '@/components/PrivacyPage';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy - Travinno',
-  description: 'Understand how Travinno handles personal information and B2B partner data securely.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'privacy',
+    'Privacy Policy - Travinno',
+    'Understand how Travinno handles personal information and B2B partner data securely.',
+    '/privacy'
+  );
+}
 
 export default async function PrivacyPageRoute() {
   const collections = await getCollectionsSSR();

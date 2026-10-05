@@ -7,11 +7,16 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import TermsPage from '@/components/TermsPage';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export const metadata: Metadata = {
-  title: 'Terms of Service - Travinno',
-  description: 'Read the legal and commercial terms of service for contracting and booking with Travinno.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'terms',
+    'Terms of Service - Travinno',
+    'Read the legal and commercial terms of service for contracting and booking with Travinno.',
+    '/terms'
+  );
+}
 
 export default async function TermsPageRoute() {
   const collections = await getCollectionsSSR();

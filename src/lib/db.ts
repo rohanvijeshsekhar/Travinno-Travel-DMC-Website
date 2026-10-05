@@ -281,15 +281,116 @@ const INITIAL_ACTIVITIES = [
 ];
 
 const INITIAL_SEO = [
-  { page: 'home', title: 'Travinno - Crafting Journeys, Creating Memories', description: 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.' },
-  { page: 'about', title: 'About Our Journey - Travinno', description: 'Explore the legacy, core purpose, and chronological journey of Travinno.' },
-  { page: 'services', title: 'Luxury Travel Services & MICE - Travinno', description: 'Discover our premium destination services, corporate retreats, MICE coordination, and bespoke packages.' },
-  { page: 'destinations', title: 'Luxury Destinations Showcase - Travinno', description: 'Discover futuristic cities, private deserts, and tropical archipelagos designed by Travinno specialists.' },
-  { page: 'team', title: 'Our Executive Leadership & Travel Specialists - Travinno', description: 'Meet the passionate professionals and travel specialists behind Travinno.' },
-  { page: 'testimonials', title: 'What Our B2B Partners Say - Travinno', description: 'Read client reviews and testimonials from our global B2B travel partners.' },
-  { page: 'careers', title: 'Careers at Travinno - Join Our Team', description: 'Join the dynamic Travinno team. Apply for premium travel and operations positions around the globe.' },
-  { page: 'blog', title: 'Travel Journal & Insights - Travinno', description: 'Read the latest travel tips, destinations guides, and B2B hospitality insights by Travinno editors.' },
-  { page: 'contact', title: 'Contact Us - Travinno Partner Onboarding', description: 'Reach out to establish a B2B partner contract or make custom travel inquiries with Travinno.' }
+  {
+    page: 'home',
+    title: 'Travinno - Crafting Journeys, Creating Memories',
+    description: 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.',
+    url: 'https://travinno.com/',
+    canonical: 'https://travinno.com/',
+    ogImage: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'Travinno, luxury travel, DMC Malaysia, B2B travel partner, destination management, bespoke travel packages, corporate retreats',
+    indexable: true
+  },
+  {
+    page: 'about',
+    title: 'About Our Journey - Travinno',
+    description: 'Explore the legacy, core purpose, and chronological journey of Travinno.',
+    url: 'https://travinno.com/about',
+    canonical: 'https://travinno.com/about',
+    ogImage: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'about Travinno, travel company history, destination specialists, luxury journey creators',
+    indexable: true
+  },
+  {
+    page: 'services',
+    title: 'Luxury Travel Services & MICE - Travinno',
+    description: 'Discover our premium destination services, corporate retreats, MICE coordination, and bespoke packages.',
+    url: 'https://travinno.com/#services',
+    canonical: 'https://travinno.com/#services',
+    ogImage: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'MICE travel, corporate retreats, luxury travel services, VIP concierge, bespoke itineraries',
+    indexable: true
+  },
+  {
+    page: 'destinations',
+    title: 'Luxury Destinations Showcase - Travinno',
+    description: 'Discover futuristic cities, private deserts, and tropical archipelagos designed by Travinno specialists.',
+    url: 'https://travinno.com/destinations',
+    canonical: 'https://travinno.com/destinations',
+    ogImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'luxury destinations, Malaysia travel, Singapore tours, Dubai packages, exotic archipelagos',
+    indexable: true
+  },
+  {
+    page: 'team',
+    title: 'Our Executive Leadership & Travel Specialists - Travinno',
+    description: 'Meet the passionate professionals and travel specialists behind Travinno.',
+    url: 'https://travinno.com/team',
+    canonical: 'https://travinno.com/team',
+    ogImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'Travinno leadership, travel specialists, executive travel team, DMC management',
+    indexable: true
+  },
+  {
+    page: 'testimonials',
+    title: 'What Our B2B Partners Say - Travinno',
+    description: 'Read client reviews and testimonials from our global B2B travel partners.',
+    url: 'https://travinno.com/#testimonials',
+    canonical: 'https://travinno.com/#testimonials',
+    ogImage: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'Travinno reviews, B2B partner testimonials, luxury client feedback, travel partner ratings',
+    indexable: true
+  },
+  {
+    page: 'careers',
+    title: 'Careers at Travinno - Join Our Team',
+    description: 'Join the dynamic Travinno team. Apply for premium travel and operations positions around the globe.',
+    url: 'https://travinno.com/careers',
+    canonical: 'https://travinno.com/careers',
+    ogImage: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'travel jobs, tourism careers, luxury travel vacancies, operations positions',
+    indexable: true
+  },
+  {
+    page: 'blog',
+    title: 'Travel Journal & Insights - Travinno',
+    description: 'Read the latest travel tips, destinations guides, and B2B hospitality insights by Travinno editors.',
+    url: 'https://travinno.com/blog',
+    canonical: 'https://travinno.com/blog',
+    ogImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'travel blog, tourism insights, luxury travel guides, hospitality trends',
+    indexable: true
+  },
+  {
+    page: 'contact',
+    title: 'Contact Us - Travinno Partner Onboarding',
+    description: 'Reach out to establish a B2B partner contract or make custom travel inquiries with Travinno.',
+    url: 'https://travinno.com/contact',
+    canonical: 'https://travinno.com/contact',
+    ogImage: 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'contact Travinno, B2B travel inquiry, partner onboarding, travel agent support',
+    indexable: true
+  },
+  {
+    page: 'privacy',
+    title: 'Privacy Policy - Travinno',
+    description: 'Our commitment to protecting your privacy and managing personal data responsibly.',
+    url: 'https://travinno.com/privacy',
+    canonical: 'https://travinno.com/privacy',
+    ogImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'privacy policy, data protection, cookies policy, Travinno legal',
+    indexable: true
+  },
+  {
+    page: 'terms',
+    title: 'Terms & Conditions - Travinno',
+    description: 'Terms and conditions governing B2B travel contracts, bookings, and services with Travinno.',
+    url: 'https://travinno.com/terms',
+    canonical: 'https://travinno.com/terms',
+    ogImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80',
+    keywords: 'terms and conditions, booking terms, B2B contract guidelines, travel terms',
+    indexable: true
+  }
 ];
 
 // Helper to broadcast state changes to active components

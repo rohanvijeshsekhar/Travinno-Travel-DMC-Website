@@ -7,15 +7,15 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import CareersPage from '@/components/CareersPage';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export async function generateMetadata() {
-  const collections = await getCollectionsSSR();
-  const seoList = collections['travinno_seo'] || [];
-  const entry = seoList.find((item: any) => item.page === 'careers');
-  return {
-    title: entry?.title || 'Careers at Travinno - Join Our Team',
-    description: entry?.description || 'Join the dynamic Travinno team. Apply for premium travel and operations positions around the globe.',
-  };
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'careers',
+    'Careers at Travinno - Join Our Team',
+    'Join the dynamic Travinno team. Apply for premium travel and operations positions around the globe.',
+    '/careers'
+  );
 }
 
 export default async function CareersPageRoute() {

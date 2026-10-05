@@ -31,8 +31,18 @@ import {
   Moon,
   Menu,
   X as XIcon,
-  Search,
-  Sliders
+  Sliders,
+  Link as LinkIcon,
+  HelpCircle,
+  Sparkles,
+  Share2,
+  AlertCircle,
+  CheckCircle2,
+  Layers,
+  ExternalLink,
+  Copy,
+  Tag,
+  RefreshCw
 } from 'lucide-react';
 
 // ==========================================
@@ -715,27 +725,218 @@ export default function AdminPanel() {
   // SEO Management states
   const [seo, setSeo] = useState(() => db.getSeo());
   const [selectedSeoPage, setSelectedSeoPage] = useState('home');
-  const [seoForm, setSeoForm] = useState({ title: '', description: '' });
+  const [seoForm, setSeoForm] = useState({
+    title: '',
+    description: '',
+    url: '',
+    canonical: '',
+    ogImage: '',
+    keywords: '',
+    indexable: true
+  });
+  const [isOgUploading, setIsOgUploading] = useState(false);
+  const [seoPreviewTab, setSeoPreviewTab] = useState('google'); // 'google' | 'social'
+  const [newKeywordInput, setNewKeywordInput] = useState('');
 
   const SEO_PAGE_DEFAULTS = {
-    home: { title: 'Travinno - Crafting Journeys, Creating Memories', description: 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.' },
-    about: { title: 'About Our Journey - Travinno', description: 'Explore the legacy, core purpose, and chronological journey of Travinno.' },
-    services: { title: 'Luxury Travel Services & MICE - Travinno', description: 'Discover our premium destination services, corporate retreats, MICE coordination, and bespoke packages.' },
-    destinations: { title: 'Luxury Destinations Showcase - Travinno', description: 'Discover futuristic cities, private deserts, and tropical archipelagos designed by Travinno specialists.' },
-    team: { title: 'Our Executive Leadership & Travel Specialists - Travinno', description: 'Meet the passionate professionals and travel specialists behind Travinno.' },
-    testimonials: { title: 'What Our B2B Partners Say - Travinno', description: 'Read client reviews and testimonials from our global B2B travel partners.' },
-    careers: { title: 'Careers at Travinno - Join Our Team', description: 'Join the dynamic Travinno team. Apply for premium travel and operations positions around the globe.' },
-    blog: { title: 'Travel Journal & Insights - Travinno', description: 'Read the latest travel tips, destinations guides, and B2B hospitality insights by Travinno editors.' },
-    contact: { title: 'Contact Us - Travinno Partner Onboarding', description: 'Reach out to establish a B2B partner contract or make custom travel inquiries with Travinno.' }
+    home: {
+      page: 'home',
+      path: '/',
+      label: 'Home Page',
+      title: 'Travinno - Crafting Journeys, Creating Memories',
+      description: 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.',
+      url: 'https://travinno.com/',
+      canonical: 'https://travinno.com/',
+      ogImage: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'Travinno, luxury travel, DMC Malaysia, B2B travel partner, destination management, bespoke travel packages',
+      indexable: true
+    },
+    about: {
+      page: 'about',
+      path: '/about',
+      label: 'About Us',
+      title: 'About Our Journey - Travinno',
+      description: 'Explore the legacy, core purpose, and chronological journey of Travinno.',
+      url: 'https://travinno.com/about',
+      canonical: 'https://travinno.com/about',
+      ogImage: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'about Travinno, travel company history, destination specialists, luxury journey creators',
+      indexable: true
+    },
+    services: {
+      page: 'services',
+      path: '/#services',
+      label: 'Services (Section)',
+      title: 'Luxury Travel Services & MICE - Travinno',
+      description: 'Discover our premium destination services, corporate retreats, MICE coordination, and bespoke packages.',
+      url: 'https://travinno.com/#services',
+      canonical: 'https://travinno.com/#services',
+      ogImage: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'MICE travel, corporate retreats, luxury travel services, VIP concierge, bespoke itineraries',
+      indexable: true
+    },
+    destinations: {
+      page: 'destinations',
+      path: '/destinations',
+      label: 'Destinations',
+      title: 'Luxury Destinations Showcase - Travinno',
+      description: 'Discover futuristic cities, private deserts, and tropical archipelagos designed by Travinno specialists.',
+      url: 'https://travinno.com/destinations',
+      canonical: 'https://travinno.com/destinations',
+      ogImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'luxury destinations, Malaysia travel, Singapore tours, Dubai packages, exotic archipelagos',
+      indexable: true
+    },
+    team: {
+      page: 'team',
+      path: '/team',
+      label: 'Team Members',
+      title: 'Our Executive Leadership & Travel Specialists - Travinno',
+      description: 'Meet the passionate professionals and travel specialists behind Travinno.',
+      url: 'https://travinno.com/team',
+      canonical: 'https://travinno.com/team',
+      ogImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'Travinno leadership, travel specialists, executive travel team, DMC management',
+      indexable: true
+    },
+    testimonials: {
+      page: 'testimonials',
+      path: '/#testimonials',
+      label: 'Testimonials (Section)',
+      title: 'What Our B2B Partners Say - Travinno',
+      description: 'Read client reviews and testimonials from our global B2B travel partners.',
+      url: 'https://travinno.com/#testimonials',
+      canonical: 'https://travinno.com/#testimonials',
+      ogImage: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'Travinno reviews, B2B partner testimonials, luxury client feedback, travel partner ratings',
+      indexable: true
+    },
+    careers: {
+      page: 'careers',
+      path: '/careers',
+      label: 'Careers',
+      title: 'Careers at Travinno - Join Our Team',
+      description: 'Join the dynamic Travinno team. Apply for premium travel and operations positions around the globe.',
+      url: 'https://travinno.com/careers',
+      canonical: 'https://travinno.com/careers',
+      ogImage: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'travel jobs, tourism careers, luxury travel vacancies, operations positions',
+      indexable: true
+    },
+    blog: {
+      page: 'blog',
+      path: '/blog',
+      label: 'Blog Listing',
+      title: 'Travel Journal & Insights - Travinno',
+      description: 'Read the latest travel tips, destinations guides, and B2B hospitality insights by Travinno editors.',
+      url: 'https://travinno.com/blog',
+      canonical: 'https://travinno.com/blog',
+      ogImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'travel blog, tourism insights, luxury travel guides, hospitality trends',
+      indexable: true
+    },
+    contact: {
+      page: 'contact',
+      path: '/contact',
+      label: 'Contact Us',
+      title: 'Contact Us - Travinno Partner Onboarding',
+      description: 'Reach out to establish a B2B partner contract or make custom travel inquiries with Travinno.',
+      url: 'https://travinno.com/contact',
+      canonical: 'https://travinno.com/contact',
+      ogImage: 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'contact Travinno, B2B travel inquiry, partner onboarding, travel agent support',
+      indexable: true
+    },
+    privacy: {
+      page: 'privacy',
+      path: '/privacy',
+      label: 'Privacy Policy',
+      title: 'Privacy Policy - Travinno',
+      description: 'Our commitment to protecting your privacy and managing personal data responsibly.',
+      url: 'https://travinno.com/privacy',
+      canonical: 'https://travinno.com/privacy',
+      ogImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'privacy policy, data protection, cookies policy, Travinno legal',
+      indexable: true
+    },
+    terms: {
+      page: 'terms',
+      path: '/terms',
+      label: 'Terms & Conditions',
+      title: 'Terms & Conditions - Travinno',
+      description: 'Terms and conditions governing B2B travel contracts, bookings, and services with Travinno.',
+      url: 'https://travinno.com/terms',
+      canonical: 'https://travinno.com/terms',
+      ogImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80',
+      keywords: 'terms and conditions, booking terms, B2B contract guidelines, travel terms',
+      indexable: true
+    }
   };
 
   useEffect(() => {
-    const pageEntry = seo.find(s => s.page === selectedSeoPage) || SEO_PAGE_DEFAULTS[selectedSeoPage] || { title: '', description: '' };
+    const pageEntry = seo.find(s => s.page === selectedSeoPage) || SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
+    const defaultObj = SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
     setSeoForm({
-      title: pageEntry.title || '',
-      description: pageEntry.description || ''
+      title: pageEntry.title !== undefined ? pageEntry.title : (defaultObj.title || ''),
+      description: pageEntry.description !== undefined ? pageEntry.description : (defaultObj.description || ''),
+      url: pageEntry.url !== undefined && pageEntry.url !== '' ? pageEntry.url : (defaultObj.url || `https://travinno.com/${selectedSeoPage === 'home' ? '' : selectedSeoPage}`),
+      canonical: pageEntry.canonical !== undefined ? pageEntry.canonical : (defaultObj.canonical || `https://travinno.com/${selectedSeoPage === 'home' ? '' : selectedSeoPage}`),
+      ogImage: pageEntry.ogImage !== undefined && pageEntry.ogImage !== '' ? pageEntry.ogImage : (defaultObj.ogImage || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80'),
+      keywords: pageEntry.keywords !== undefined ? pageEntry.keywords : (defaultObj.keywords || ''),
+      indexable: pageEntry.indexable !== undefined ? pageEntry.indexable : true,
     });
   }, [selectedSeoPage, seo]);
+
+  const autoFillCanonical = () => {
+    const defaultObj = SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
+    const defaultUrl = defaultObj.canonical || `https://travinno.com/${selectedSeoPage === 'home' ? '' : selectedSeoPage}`;
+    setSeoForm(prev => ({ ...prev, canonical: defaultUrl }));
+  };
+
+  const handleOgImageFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsOgUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = ev.target.result;
+      const uploadedUrl = await uploadImageToCloudinary(base64, 'travinno-seo');
+      setSeoForm(prev => ({ ...prev, ogImage: uploadedUrl || base64 }));
+      setIsOgUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const addFocusKeyword = () => {
+    if (!newKeywordInput.trim()) return;
+    const currentList = (seoForm.keywords || '').split(',').map(k => k.trim()).filter(Boolean);
+    if (!currentList.includes(newKeywordInput.trim())) {
+      const updated = [...currentList, newKeywordInput.trim()].join(', ');
+      setSeoForm(prev => ({ ...prev, keywords: updated }));
+    }
+    setNewKeywordInput('');
+  };
+
+  const removeFocusKeyword = (kwToRemove) => {
+    const currentList = (seoForm.keywords || '').split(',').map(k => k.trim()).filter(Boolean);
+    const updated = currentList.filter(k => k.toLowerCase() !== kwToRemove.toLowerCase()).join(', ');
+    setSeoForm(prev => ({ ...prev, keywords: updated }));
+  };
+
+  const resetSeoToDefaults = () => {
+    if (confirm(`Reset SEO settings for ${selectedSeoPage.toUpperCase()} page to recommended brand defaults?`)) {
+      const defaultObj = SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
+      setSeoForm({
+        title: defaultObj.title || '',
+        description: defaultObj.description || '',
+        url: defaultObj.url || '',
+        canonical: defaultObj.canonical || '',
+        ogImage: defaultObj.ogImage || '',
+        keywords: defaultObj.keywords || '',
+        indexable: defaultObj.indexable !== undefined ? defaultObj.indexable : true,
+      });
+    }
+  };
 
   const saveSeoSettings = (e) => {
     e.preventDefault();
@@ -744,7 +945,12 @@ export default function AdminPanel() {
     const entry = {
       page: selectedSeoPage,
       title: seoForm.title,
-      description: seoForm.description
+      description: seoForm.description,
+      url: seoForm.url,
+      canonical: seoForm.canonical,
+      ogImage: seoForm.ogImage,
+      keywords: seoForm.keywords,
+      indexable: seoForm.indexable,
     };
     if (index !== -1) {
       updatedSeo[index] = entry;
@@ -752,7 +958,7 @@ export default function AdminPanel() {
       updatedSeo.push(entry);
     }
     setSeo(updatedSeo);
-    db.saveSeo(updatedSeo, `Updated SEO settings for ${selectedSeoPage.toUpperCase()} page`);
+    db.saveSeo(updatedSeo, `Updated SEO metadata for ${selectedSeoPage.toUpperCase()} page`);
     alert(`SEO settings for ${selectedSeoPage.toUpperCase()} page saved successfully!`);
   };
 
@@ -2328,8 +2534,8 @@ export default function AdminPanel() {
             {/* Pages selection sub-sidebar */}
             <div style={{
               width: isMobile ? '100%' : '260px',
-              backgroundColor: 'rgba(255, 255, 255, 0.015)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              backgroundColor: currentTheme.surface,
+              border: `1px solid ${currentTheme.border}`,
               borderRadius: '16px',
               padding: '16px',
               boxSizing: 'border-box',
@@ -2341,7 +2547,7 @@ export default function AdminPanel() {
               <span style={{
                 fontSize: '0.72rem',
                 fontWeight: 600,
-                color: 'rgba(255, 255, 255, 0.4)',
+                color: currentTheme.subText,
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
                 paddingLeft: '12px',
@@ -2350,18 +2556,20 @@ export default function AdminPanel() {
                 Website Pages
               </span>
               {[
-                { key: 'home', label: 'Home Page' },
-                { key: 'about', label: 'About Us' },
-                { key: 'services', label: 'Services (Section)' },
-                { key: 'destinations', label: 'Destinations' },
-                { key: 'team', label: 'Team Members' },
-                { key: 'testimonials', label: 'Testimonials (Section)' },
-                { key: 'careers', label: 'Careers' },
-                { key: 'blog', label: 'Blog Listing' },
-                { key: 'contact', label: 'Contact Us' }
+                { key: 'home', label: 'Home Page', path: '/' },
+                { key: 'about', label: 'About Us', path: '/about' },
+                { key: 'services', label: 'Services (Section)', path: '/#services' },
+                { key: 'destinations', label: 'Destinations', path: '/destinations' },
+                { key: 'team', label: 'Team Members', path: '/team' },
+                { key: 'testimonials', label: 'Testimonials (Section)', path: '/#testimonials' },
+                { key: 'careers', label: 'Careers', path: '/careers' },
+                { key: 'blog', label: 'Blog Listing', path: '/blog' },
+                { key: 'contact', label: 'Contact Us', path: '/contact' },
+                { key: 'privacy', label: 'Privacy Policy', path: '/privacy' },
+                { key: 'terms', label: 'Terms & Conditions', path: '/terms' }
               ].map(p => {
                 const isSelected = selectedSeoPage === p.key;
-                const hasCustom = seo.some(s => s.page === p.key && (s.title || s.description));
+                const hasCustom = seo.some(s => s.page === p.key && (s.title || s.description || s.canonical || s.ogImage || s.keywords));
                 return (
                   <button
                     key={p.key}
@@ -2371,10 +2579,10 @@ export default function AdminPanel() {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '10px 14px',
-                      backgroundColor: isSelected ? 'rgba(193, 18, 31, 0.08)' : 'transparent',
-                      border: 'none',
+                      backgroundColor: isSelected ? 'rgba(193, 18, 31, 0.12)' : 'transparent',
+                      border: isSelected ? '1px solid rgba(193, 18, 31, 0.3)' : '1px solid transparent',
                       borderRadius: '8px',
-                      color: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.7)',
+                      color: isSelected ? currentTheme.text : currentTheme.subText,
                       fontSize: '0.82rem',
                       fontWeight: isSelected ? 600 : 400,
                       cursor: 'pointer',
@@ -2388,7 +2596,7 @@ export default function AdminPanel() {
                       padding: '2px 6px',
                       borderRadius: '100px',
                       backgroundColor: hasCustom ? 'rgba(46, 196, 182, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                      color: hasCustom ? '#2EC4B6' : 'rgba(255, 255, 255, 0.4)',
+                      color: hasCustom ? '#2EC4B6' : currentTheme.subText,
                       fontWeight: 600
                     }}>
                       {hasCustom ? 'Custom' : 'Default'}
@@ -2401,34 +2609,137 @@ export default function AdminPanel() {
             {/* Editing form panel */}
             <div style={{
               flex: 1,
-              backgroundColor: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
+              backgroundColor: currentTheme.surface,
+              border: `1px solid ${currentTheme.border}`,
               borderRadius: '16px',
-              padding: '32px',
-              boxSizing: 'border-box'
+              padding: isMobile ? '20px' : '32px',
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '28px'
             }}>
-              <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '16px', marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '1.15rem', color: '#FFFFFF', margin: 0, fontWeight: 500 }}>
-                  SEO Metadata Settings
-                </h3>
-                <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.45)' }}>
-                  Manage the header tags served during SSR for search engine indexing.
-                </span>
-              </div>
-
-              <form onSubmit={saveSeoSettings} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Meta Title Field */}
-                <div style={fieldStyle}>
-                  <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={labelStyle}>Meta Title</label>
+              {/* Header */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: isMobile ? 'flex-start' : 'center',
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: '12px',
+                borderBottom: `1px solid ${currentTheme.border}`,
+                paddingBottom: '20px'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <h3 style={{ fontSize: '1.25rem', color: currentTheme.text, margin: 0, fontWeight: 600 }}>
+                      SEO & Social Metadata
+                    </h3>
                     <span style={{
-                      fontSize: '0.72rem',
+                      fontSize: '0.68rem',
+                      backgroundColor: 'rgba(193, 18, 31, 0.15)',
+                      color: '#C1121F',
+                      padding: '2px 8px',
+                      borderRadius: '6px',
                       fontWeight: 600,
-                      color: seoForm.title.length > 60 ? '#FF6B6B' : 'rgba(255,255,255,0.45)'
+                      textTransform: 'uppercase'
                     }}>
-                      {seoForm.title.length} / 60 chars {seoForm.title.length > 60 && '• Limit Exceeded'}
+                      {selectedSeoPage}
                     </span>
                   </div>
+                  <span style={{ fontSize: '0.78rem', color: currentTheme.subText }}>
+                    Configure search engine title, description, canonical URL, focus words, and social cards.
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={resetSeoToDefaults}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 14px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                      border: `1px solid ${currentTheme.border}`,
+                      borderRadius: '8px',
+                      color: currentTheme.subText,
+                      fontSize: '0.76rem',
+                      cursor: 'pointer',
+                      fontWeight: 500
+                    }}
+                  >
+                    <RefreshCw size={13} /> Reset Defaults
+                  </button>
+                  <a
+                    href={seoForm.url || `https://travinno.com/${selectedSeoPage === 'home' ? '' : selectedSeoPage}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 14px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                      border: `1px solid ${currentTheme.border}`,
+                      borderRadius: '8px',
+                      color: currentTheme.subText,
+                      fontSize: '0.76rem',
+                      textDecoration: 'none',
+                      fontWeight: 500
+                    }}
+                  >
+                    <ExternalLink size={13} /> View Live
+                  </a>
+                </div>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={saveSeoSettings} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+                
+                {/* 1. TITLE FIELD (matches screenshot) */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9D4EDD'
+                      }}>
+                        <Sparkles size={17} />
+                      </div>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: currentTheme.text, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Title <HelpCircle size={14} color={currentTheme.subText} title="Appears in browser tab and Google headline" />
+                      </span>
+                    </div>
+
+                    <span style={{
+                      backgroundColor: seoForm.title.length > 0 && seoForm.title.length <= 60 ? '#10B981' : (seoForm.title.length > 60 ? '#F59E0B' : '#EF4444'),
+                      color: '#FFFFFF',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      padding: '4px 12px',
+                      borderRadius: '100px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      ✓ {seoForm.title.length} characters
+                    </span>
+                  </div>
+
                   <input
                     type="text"
                     required
@@ -2436,41 +2747,666 @@ export default function AdminPanel() {
                     onChange={(e) => setSeoForm({ ...seoForm, title: e.target.value })}
                     style={{
                       ...inputStyle,
-                      borderColor: seoForm.title.length > 60 ? 'rgba(255, 107, 107, 0.4)' : 'rgba(255, 255, 255, 0.1)'
+                      fontSize: '0.9rem',
+                      fontWeight: 500,
+                      borderColor: seoForm.title.length > 60 ? 'rgba(245, 158, 11, 0.5)' : currentTheme.inputBorder
                     }}
-                    placeholder="Enter page SEO title..."
+                    placeholder="e.g. Travinno - Crafting Journeys, Creating Memories"
                   />
-                  <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>
-                    The title tag is displayed on browser tabs and search engine result headings. Keep it brief and relevant.
-                  </span>
+
+                  <div style={{ fontSize: '0.78rem', color: currentTheme.subText, lineHeight: '1.4' }}>
+                    {seoForm.title || <span style={{ opacity: 0.5 }}>Title will appear here...</span>}
+                  </div>
                 </div>
 
-                {/* Meta Description Field */}
-                <div style={fieldStyle}>
-                  <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={labelStyle}>Meta Description</label>
+                {/* 2. DESCRIPTION FIELD (matches screenshot) */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9D4EDD'
+                      }}>
+                        <MessageSquare size={17} />
+                      </div>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: currentTheme.text, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Description <HelpCircle size={14} color={currentTheme.subText} title="The snippet summary displayed in search engines" />
+                      </span>
+                    </div>
+
                     <span style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      color: seoForm.description.length > 160 ? '#FF6B6B' : 'rgba(255,255,255,0.45)'
+                      backgroundColor: seoForm.description.length > 0 && seoForm.description.length <= 160 ? '#10B981' : (seoForm.description.length > 160 ? '#F59E0B' : '#EF4444'),
+                      color: '#FFFFFF',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      padding: '4px 12px',
+                      borderRadius: '100px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
                     }}>
-                      {seoForm.description.length} / 160 chars {seoForm.description.length > 160 && '• Limit Exceeded'}
+                      ✓ {seoForm.description.length} characters
                     </span>
                   </div>
+
                   <textarea
                     required
                     value={seoForm.description}
                     onChange={(e) => setSeoForm({ ...seoForm, description: e.target.value })}
                     style={{
                       ...textareaStyle,
-                      height: '120px',
-                      borderColor: seoForm.description.length > 160 ? 'rgba(255, 107, 107, 0.4)' : 'rgba(255, 255, 255, 0.1)'
+                      height: '90px',
+                      fontSize: '0.85rem',
+                      borderColor: seoForm.description.length > 160 ? 'rgba(245, 158, 11, 0.5)' : currentTheme.inputBorder
                     }}
-                    placeholder="Enter page SEO description narrative..."
+                    placeholder="Enter meta description summary..."
                   />
-                  <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>
-                    The meta description tag summarizes the page content in search results. A limit of 160 characters ensures it is fully readable.
-                  </span>
+
+                  <div style={{ fontSize: '0.78rem', color: currentTheme.subText, lineHeight: '1.4' }}>
+                    {seoForm.description || <span style={{ opacity: 0.5 }}>Description narrative preview...</span>}
+                  </div>
+                </div>
+
+                {/* 3. URL & INDEXING FIELD (matches screenshot) */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9D4EDD'
+                      }}>
+                        <LinkIcon size={17} />
+                      </div>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: currentTheme.text, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        URL <HelpCircle size={14} color={currentTheme.subText} title="Public page URL and indexing policy" />
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setSeoForm(prev => ({ ...prev, indexable: !prev.indexable }))}
+                      style={{
+                        backgroundColor: seoForm.indexable ? '#10B981' : '#EF4444',
+                        color: '#FFFFFF',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        padding: '4px 12px',
+                        borderRadius: '100px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                      title="Click to toggle Indexable / Not Indexable"
+                    >
+                      {seoForm.indexable ? (
+                        <>✓ Indexable</>
+                      ) : (
+                        <>✕ Not Indexable <HelpCircle size={13} /></>
+                      )}
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={seoForm.url}
+                      onChange={(e) => setSeoForm({ ...seoForm, url: e.target.value })}
+                      style={{ ...inputStyle, fontFamily: 'monospace', fontSize: '0.82rem' }}
+                      placeholder="https://travinno.com/..."
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: currentTheme.subText }}>
+                    <span>
+                      Robots Directive: <strong>{seoForm.indexable ? 'index, follow' : 'noindex, nofollow'}</strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSeoForm(prev => ({ ...prev, indexable: !prev.indexable }))}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#C1121F',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: 0
+                      }}
+                    >
+                      Toggle to {seoForm.indexable ? 'Not Indexable' : 'Indexable'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 4. CANONICAL FIELD (matches screenshot & fixes Missing status) */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9D4EDD'
+                      }}>
+                        <Globe size={17} />
+                      </div>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: currentTheme.text, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Canonical <HelpCircle size={14} color={currentTheme.subText} title="Specifies the authoritative master URL to search engines" />
+                      </span>
+                    </div>
+
+                    {seoForm.canonical && seoForm.canonical.trim() !== '' ? (
+                      <span style={{
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        color: '#10B981',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        padding: '4px 12px',
+                        borderRadius: '100px'
+                      }}>
+                        ✓ Canonical Defined
+                      </span>
+                    ) : (
+                      <span style={{
+                        color: '#F87171',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        Missing
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={seoForm.canonical}
+                      onChange={(e) => setSeoForm({ ...seoForm, canonical: e.target.value })}
+                      style={{
+                        ...inputStyle,
+                        fontFamily: 'monospace',
+                        fontSize: '0.82rem',
+                        borderColor: !seoForm.canonical ? 'rgba(239, 68, 68, 0.4)' : currentTheme.inputBorder
+                      }}
+                      placeholder="https://travinno.com/..."
+                    />
+                    <button
+                      type="button"
+                      onClick={autoFillCanonical}
+                      style={{
+                        padding: '8px 14px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: `1px solid ${currentTheme.border}`,
+                        borderRadius: '8px',
+                        color: currentTheme.text,
+                        fontSize: '0.76rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Auto-fill
+                    </button>
+                  </div>
+
+                  <div style={{ fontSize: '0.75rem', color: currentTheme.subText }}>
+                    {seoForm.canonical ? (
+                      <span style={{ fontFamily: 'monospace' }}>{seoForm.canonical}</span>
+                    ) : (
+                      <span style={{ color: '#F87171' }}>Missing — Click "Auto-fill" to assign canonical tag and prevent SEO penalty.</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 5. SOCIAL SHARE IMAGE (OG & Twitter Image) */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9D4EDD'
+                      }}>
+                        <Share2 size={17} />
+                      </div>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: currentTheme.text, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Social Image (OpenGraph & Twitter) <HelpCircle size={14} color={currentTheme.subText} title="The featured image shown on WhatsApp, Facebook, LinkedIn, Twitter" />
+                      </span>
+                    </div>
+
+                    <span style={{
+                      backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                      color: '#C77DFF',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      padding: '3px 10px',
+                      borderRadius: '100px'
+                    }}>
+                      1200 × 630 px
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '16px', alignItems: 'center' }}>
+                    {/* Image Preview Box */}
+                    <div style={{
+                      width: isMobile ? '100%' : '200px',
+                      height: '110px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      backgroundColor: 'rgba(0,0,0,0.4)',
+                      border: `1px solid ${currentTheme.border}`,
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      {seoForm.ogImage ? (
+                        <img
+                          src={seoForm.ogImage}
+                          alt="Social share preview"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', color: currentTheme.subText }}>No Image</span>
+                      )}
+                      {isOgUploading && (
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          backgroundColor: 'rgba(0,0,0,0.7)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#E0A96D',
+                          fontSize: '0.72rem',
+                          fontWeight: 600
+                        }}>
+                          Uploading to CDN...
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Uploader / URL Controls */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                      <input
+                        type="text"
+                        value={seoForm.ogImage}
+                        onChange={(e) => setSeoForm({ ...seoForm, ogImage: e.target.value })}
+                        style={{ ...inputStyle, fontSize: '0.8rem' }}
+                        placeholder="Paste image URL (https://res.cloudinary.com/...)"
+                      />
+
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <label style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '7px 14px',
+                          backgroundColor: 'rgba(193, 18, 31, 0.1)',
+                          border: '1px solid rgba(193, 18, 31, 0.3)',
+                          borderRadius: '6px',
+                          color: '#C1121F',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}>
+                          <Upload size={13} /> Upload to Cloudinary
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleOgImageFileChange}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const defaultObj = SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
+                            setSeoForm(prev => ({ ...prev, ogImage: defaultObj.ogImage || '' }));
+                          }}
+                          style={{
+                            padding: '7px 12px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                            border: `1px solid ${currentTheme.border}`,
+                            borderRadius: '6px',
+                            color: currentTheme.subText,
+                            fontSize: '0.75rem',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Use Page Default
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. SEO FOCUS WORDS (Keywords) */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9D4EDD'
+                      }}>
+                        <Tag size={17} />
+                      </div>
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: currentTheme.text, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        SEO Focus Words / Keywords <HelpCircle size={14} color={currentTheme.subText} title="Keywords targeted for search engine ranking on this page" />
+                      </span>
+                    </div>
+
+                    <span style={{
+                      backgroundColor: 'rgba(157, 78, 221, 0.15)',
+                      color: '#C77DFF',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      padding: '3px 10px',
+                      borderRadius: '100px'
+                    }}>
+                      {(seoForm.keywords || '').split(',').map(k => k.trim()).filter(Boolean).length} keywords
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={newKeywordInput}
+                      onChange={(e) => setNewKeywordInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addFocusKeyword();
+                        }
+                      }}
+                      style={{ ...inputStyle, fontSize: '0.85rem' }}
+                      placeholder="Add focus keyword (e.g. luxury DMC, Malaysia travel) and press Enter..."
+                    />
+                    <button
+                      type="button"
+                      onClick={addFocusKeyword}
+                      style={{
+                        padding: '8px 16px',
+                        backgroundColor: '#C1121F',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#FFFFFF',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  {/* Keyword tag pills */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', minHeight: '32px' }}>
+                    {(seoForm.keywords || '').split(',').map(k => k.trim()).filter(Boolean).map((kw, i) => {
+                      const inTitle = seoForm.title.toLowerCase().includes(kw.toLowerCase());
+                      const inDesc = seoForm.description.toLowerCase().includes(kw.toLowerCase());
+                      return (
+                        <span
+                          key={i}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '4px 10px',
+                            backgroundColor: inTitle && inDesc ? 'rgba(16, 185, 129, 0.15)' : (inTitle || inDesc ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.06)'),
+                            border: `1px solid ${inTitle && inDesc ? 'rgba(16, 185, 129, 0.3)' : (inTitle || inDesc ? 'rgba(245, 158, 11, 0.3)' : 'rgba(255, 255, 255, 0.1)')}`,
+                            borderRadius: '100px',
+                            fontSize: '0.75rem',
+                            color: inTitle && inDesc ? '#10B981' : (inTitle || inDesc ? '#F59E0B' : currentTheme.text)
+                          }}
+                        >
+                          <strong>{kw}</strong>
+                          <span style={{ fontSize: '0.62rem', opacity: 0.7 }}>
+                            {inTitle && inDesc ? '✓ Title & Desc' : (inTitle ? '✓ In Title' : (inDesc ? '✓ In Desc' : '○ Not used'))}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeFocusKeyword(kw)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: 'inherit',
+                              cursor: 'pointer',
+                              padding: 0,
+                              fontSize: '0.8rem',
+                              marginLeft: '2px',
+                              lineHeight: 1
+                            }}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+
+                  {/* Focus word checklist */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                    gap: '8px',
+                    paddingTop: '6px',
+                    fontSize: '0.74rem',
+                    color: currentTheme.subText
+                  }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <CheckCircle2 size={13} color="#10B981" /> Keywords saved to page meta & used for search ranking
+                    </span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <CheckCircle2 size={13} color="#10B981" /> Separate multiple phrases with commas
+                    </span>
+                  </div>
+                </div>
+
+                {/* 7. LIVE SEARCH & SOCIAL PREVIEWS */}
+                <div style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  border: `1px solid ${currentTheme.border}`,
+                  borderRadius: '12px',
+                  padding: '18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: currentTheme.text }}>
+                      Live Snippet & Social Previews
+                    </span>
+                    <div style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(255,255,255,0.05)', padding: '2px', borderRadius: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setSeoPreviewTab('google')}
+                        style={{
+                          padding: '5px 12px',
+                          borderRadius: '6px',
+                          border: 'none',
+                          backgroundColor: seoPreviewTab === 'google' ? '#C1121F' : 'transparent',
+                          color: '#FFFFFF',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Google Search
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSeoPreviewTab('social')}
+                        style={{
+                          padding: '5px 12px',
+                          borderRadius: '6px',
+                          border: 'none',
+                          backgroundColor: seoPreviewTab === 'social' ? '#C1121F' : 'transparent',
+                          color: '#FFFFFF',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Social Card (OG)
+                      </button>
+                    </div>
+                  </div>
+
+                  {seoPreviewTab === 'google' ? (
+                    /* Google Search Snippet Preview */
+                    <div style={{
+                      backgroundColor: theme === 'dark' ? '#1E1F20' : '#FFFFFF',
+                      border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                      borderRadius: '10px',
+                      padding: '16px',
+                      fontFamily: 'arial, sans-serif'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                        <div style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          backgroundColor: '#C1121F',
+                          color: '#FFFFFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          fontWeight: 700
+                        }}>
+                          T
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.8rem', color: theme === 'dark' ? '#DADCE0' : '#202124', fontWeight: 500 }}>
+                            Travinno
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: theme === 'dark' ? '#9AA0A6' : '#5F6368' }}>
+                            {seoForm.canonical || `https://travinno.com/${selectedSeoPage === 'home' ? '' : selectedSeoPage}`}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{
+                        fontSize: '1.05rem',
+                        color: theme === 'dark' ? '#8AB4F8' : '#1A0DAB',
+                        fontWeight: 400,
+                        marginBottom: '4px',
+                        lineHeight: '1.3'
+                      }}>
+                        {seoForm.title || 'Travinno - Crafting Journeys, Creating Memories'}
+                      </div>
+                      <div style={{
+                        fontSize: '0.82rem',
+                        color: theme === 'dark' ? '#BDC1C6' : '#4D5156',
+                        lineHeight: '1.4'
+                      }}>
+                        {seoForm.description || 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.'}
+                      </div>
+                    </div>
+                  ) : (
+                    /* Social Card Preview */
+                    <div style={{
+                      backgroundColor: theme === 'dark' ? '#1E1F20' : '#F0F2F5',
+                      border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                      maxWidth: '520px'
+                    }}>
+                      <div style={{ height: '220px', width: '100%', backgroundColor: '#000', overflow: 'hidden' }}>
+                        <img
+                          src={seoForm.ogImage || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80'}
+                          alt="Social card"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      </div>
+                      <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: theme === 'dark' ? '#9AA0A6' : '#65676B', fontWeight: 600, letterSpacing: '0.5px' }}>
+                          travinno.com
+                        </span>
+                        <span style={{ fontSize: '0.95rem', fontWeight: 700, color: theme === 'dark' ? '#FFFFFF' : '#050505', lineHeight: '1.3' }}>
+                          {seoForm.title || 'Travinno - Crafting Journeys, Creating Memories'}
+                        </span>
+                        <span style={{ fontSize: '0.78rem', color: theme === 'dark' ? '#BDC1C6' : '#65676B', lineHeight: '1.4' }}>
+                          {seoForm.description || 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Info Note Banner */}
@@ -2490,23 +3426,26 @@ export default function AdminPanel() {
                     borderRadius: '50%',
                     flexShrink: 0
                   }} />
-                  <span style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', lineHeight: '1.4' }}>
-                    <strong>Note:</strong> Changes saved here are written to MySQL and will update the site HTML instantly for all visitors, bots, and crawlers without rebuilding.
+                  <span style={{ fontSize: '0.74rem', color: currentTheme.subText, lineHeight: '1.4' }}>
+                    <strong>Instant Live Sync:</strong> When saved, Title, Description, Canonical URL, Robots, OG Social Image, and Focus Keywords are written directly to MySQL and served dynamically via Server-Side Rendering (SSR) & Next.js metadata to Google, WhatsApp, Facebook, LinkedIn, Twitter, and all web crawlers.
                   </span>
                 </div>
 
                 {/* Form Actions */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '6px' }}>
                   <button
                     type="submit"
                     style={{
                       ...btnSubmitStyle,
-                      padding: '11px 24px',
+                      padding: '12px 28px',
                       borderRadius: '8px',
-                      fontSize: '0.84rem'
+                      fontSize: '0.86rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px'
                     }}
                   >
-                    Save SEO Settings
+                    <Check size={16} /> Save SEO Settings
                   </button>
                 </div>
               </form>

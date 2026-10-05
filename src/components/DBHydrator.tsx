@@ -45,63 +45,152 @@ export default function DBHydrator({ data }: DBHydratorProps) {
     // the persistent layout (Header, Footer) so they re-render immediately.
     window.dispatchEvent(new CustomEvent('travinno-db-update'));
 
-    // ── SEO title/description update ─────────────────────────────────────────
-    const defaultTitle = document.title;
-    const defaultDescEl = document.querySelector('meta[name="description"]');
-    const defaultDesc = defaultDescEl ? defaultDescEl.getAttribute('content') : '';
+    // ── SEO title/description/canonical/OG/Twitter update ──────────────────
+    const applySeoTags = (entry: any, defaultPath: string) => {
+      if (!entry) return;
 
-    const handleHashTitle = () => {
+      // 1. Title
+      if (entry.title) {
+        document.title = entry.title;
+      }
+
+      // 2. Description
+      if (entry.description) {
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+          metaDesc = document.createElement('meta');
+          metaDesc.setAttribute('name', 'description');
+          document.head.appendChild(metaDesc);
+        }
+        metaDesc.setAttribute('content', entry.description);
+      }
+
+      // 3. Keywords / Focus words
+      if (entry.keywords) {
+        let metaKw = document.querySelector('meta[name="keywords"]');
+        if (!metaKw) {
+          metaKw = document.createElement('meta');
+          metaKw.setAttribute('name', 'keywords');
+          document.head.appendChild(metaKw);
+        }
+        metaKw.setAttribute('content', entry.keywords);
+      }
+
+      // 4. Canonical URL
+      const canonicalUrl = entry.canonical && entry.canonical.trim() !== ''
+        ? entry.canonical.trim()
+        : (entry.url && entry.url.trim() !== '' ? entry.url.trim() : `https://travinno.com${defaultPath}`);
+
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute('href', canonicalUrl);
+
+      // 5. Robots / Indexing
+      const isIndexable = entry.indexable !== false;
+      let metaRobots = document.querySelector('meta[name="robots"]');
+      if (!metaRobots) {
+        metaRobots = document.createElement('meta');
+        metaRobots.setAttribute('name', 'robots');
+        document.head.appendChild(metaRobots);
+      }
+      metaRobots.setAttribute('content', isIndexable ? 'index, follow' : 'noindex, nofollow');
+
+      // 6. OpenGraph tags
+      const setMetaProperty = (prop: string, val?: string) => {
+        if (!val) return;
+        let el = document.querySelector(`meta[property="${prop}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', prop);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', val);
+      };
+
+      setMetaProperty('og:title', entry.title);
+      setMetaProperty('og:description', entry.description);
+      setMetaProperty('og:url', canonicalUrl);
+      if (entry.ogImage) setMetaProperty('og:image', entry.ogImage);
+
+      // 7. Twitter Card tags
+      const setMetaName = (name: string, val?: string) => {
+        if (!val) return;
+        let el = document.querySelector(`meta[name="${name}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('name', name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', val);
+      };
+
+      setMetaName('twitter:title', entry.title);
+      setMetaName('twitter:description', entry.description);
+      if (entry.ogImage) setMetaName('twitter:image', entry.ogImage);
+    };
+
+    const handleSeoSync = () => {
       const hash = window.location.hash;
+      const path = window.location.pathname;
       let pageKey = '';
-      if (hash === '#services') pageKey = 'services';
-      else if (hash === '#testimonials') pageKey = 'testimonials';
+      let defaultPath = path || '/';
+
+      if (hash === '#services') {
+        pageKey = 'services';
+        defaultPath = '/#services';
+      } else if (hash === '#testimonials') {
+        pageKey = 'testimonials';
+        defaultPath = '/#testimonials';
+      } else if (path.includes('/about')) {
+        pageKey = 'about';
+        defaultPath = '/about';
+      } else if (path.includes('/blog')) {
+        pageKey = 'blog';
+        defaultPath = '/blog';
+      } else if (path.includes('/careers')) {
+        pageKey = 'careers';
+        defaultPath = '/careers';
+      } else if (path.includes('/contact')) {
+        pageKey = 'contact';
+        defaultPath = '/contact';
+      } else if (path.includes('/destinations')) {
+        pageKey = 'destinations';
+        defaultPath = '/destinations';
+      } else if (path.includes('/team')) {
+        pageKey = 'team';
+        defaultPath = '/team';
+      } else if (path.includes('/privacy')) {
+        pageKey = 'privacy';
+        defaultPath = '/privacy';
+      } else if (path.includes('/terms')) {
+        pageKey = 'terms';
+        defaultPath = '/terms';
+      } else if (path === '/' || path === '') {
+        pageKey = 'home';
+        defaultPath = '/';
+      }
 
       const seoList = db.collections['travinno_seo'] || [];
+      const entry = seoList.find((item: any) => item.page === pageKey);
 
-      if (pageKey) {
-        const entry = seoList.find((item: any) => item.page === pageKey);
-        if (entry) {
-          if (entry.title) document.title = entry.title;
-          const metaDesc = document.querySelector('meta[name="description"]');
-          if (metaDesc && entry.description) {
-            metaDesc.setAttribute('content', entry.description);
-          }
-        }
-      } else {
-        const path = window.location.pathname;
-        let routeKey = 'home';
-        if (path.includes('/about')) routeKey = 'about';
-        else if (path.includes('/blog')) routeKey = 'blog';
-        else if (path.includes('/careers')) routeKey = 'careers';
-        else if (path.includes('/contact')) routeKey = 'contact';
-        else if (path.includes('/destinations')) routeKey = 'destinations';
-        else if (path.includes('/team')) routeKey = 'team';
-
-        const entry = seoList.find((item: any) => item.page === routeKey);
-        if (entry) {
-          if (entry.title) document.title = entry.title;
-          const metaDesc = document.querySelector('meta[name="description"]');
-          if (metaDesc && entry.description) {
-            metaDesc.setAttribute('content', entry.description);
-          }
-        } else {
-          document.title = defaultTitle;
-          if (defaultDescEl && defaultDesc) {
-            defaultDescEl.setAttribute('content', defaultDesc);
-          }
-        }
+      if (entry) {
+        applySeoTags(entry, defaultPath);
       }
     };
 
-    window.addEventListener('hashchange', handleHashTitle);
-    window.addEventListener('travinno-db-update', handleHashTitle);
+    window.addEventListener('hashchange', handleSeoSync);
+    window.addEventListener('travinno-db-update', handleSeoSync);
 
     // Run initially on mount
-    handleHashTitle();
+    handleSeoSync();
 
     return () => {
-      window.removeEventListener('hashchange', handleHashTitle);
-      window.removeEventListener('travinno-db-update', handleHashTitle);
+      window.removeEventListener('hashchange', handleSeoSync);
+      window.removeEventListener('travinno-db-update', handleSeoSync);
     };
   }, []); // fires on every mount (each SPA navigation remounts this component)
 

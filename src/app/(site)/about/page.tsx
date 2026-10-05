@@ -7,15 +7,15 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import { ParallaxComponent } from '@/components/ui/parallax-scrolling';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export async function generateMetadata() {
-  const collections = await getCollectionsSSR();
-  const seoList = collections['travinno_seo'] || [];
-  const entry = seoList.find((item: any) => item.page === 'about');
-  return {
-    title: entry?.title || 'About Our Journey - Travinno',
-    description: entry?.description || 'Explore the legacy, core purpose, and chronological journey of Travinno.',
-  };
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'about',
+    'About Our Journey - Travinno',
+    'Explore the legacy, core purpose, and chronological journey of Travinno.',
+    '/about'
+  );
 }
 
 export default async function AboutPage() {

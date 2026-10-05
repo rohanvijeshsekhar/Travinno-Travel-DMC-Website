@@ -7,15 +7,15 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import BlogPage from '@/components/BlogPage';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export async function generateMetadata() {
-  const collections = await getCollectionsSSR();
-  const seoList = collections['travinno_seo'] || [];
-  const entry = seoList.find((item: any) => item.page === 'blog');
-  return {
-    title: entry?.title || 'Travel Journal & Insights - Travinno',
-    description: entry?.description || 'Read the latest travel tips, destinations guides, and B2B hospitality insights by Travinno editors.',
-  };
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'blog',
+    'Travel Journal & Insights - Travinno',
+    'Read the latest travel tips, destinations guides, and B2B hospitality insights by Travinno editors.',
+    '/blog'
+  );
 }
 
 export default async function BlogPageRoute() {

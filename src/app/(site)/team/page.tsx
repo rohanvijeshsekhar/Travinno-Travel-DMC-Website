@@ -7,15 +7,15 @@ import { db } from '@/lib/db';
 import DBHydrator from '@/components/DBHydrator';
 import TeamPage from '@/components/TeamPage';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo-helper';
 
-export async function generateMetadata() {
-  const collections = await getCollectionsSSR();
-  const seoList = collections['travinno_seo'] || [];
-  const entry = seoList.find((item: any) => item.page === 'team');
-  return {
-    title: entry?.title || 'Our Executive Leadership & Travel Specialists - Travinno',
-    description: entry?.description || 'Meet the passionate professionals and travel specialists behind Travinno.',
-  };
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata(
+    'team',
+    'Our Executive Leadership & Travel Specialists - Travinno',
+    'Meet the passionate professionals and travel specialists behind Travinno.',
+    '/team'
+  );
 }
 
 export default async function TeamPageRoute() {

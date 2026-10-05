@@ -26,14 +26,15 @@ const LogoCloudSection = lazyLoad(() => import('@/components/LogoCloudSection'),
 const WhyTravinno = lazyLoad(() => import('@/components/WhyTravinno'), { ssr: true });
 const ContactCTA = lazyLoad(() => import('@/components/ContactCTA'), { ssr: true });
 
+import { buildPageMetadata } from '@/lib/seo-helper';
+
 export async function generateMetadata() {
-  const collections = await getCollectionsSSR();
-  const seoList = collections['travinno_seo'] || [];
-  const entry = seoList.find((item: any) => item.page === 'home');
-  return {
-    title: entry?.title || 'Travinno - Crafting Journeys, Creating Memories',
-    description: entry?.description || 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.',
-  };
+  return buildPageMetadata(
+    'home',
+    'Travinno - Crafting Journeys, Creating Memories',
+    'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.',
+    '/'
+  );
 }
 
 export default async function HomePage() {
