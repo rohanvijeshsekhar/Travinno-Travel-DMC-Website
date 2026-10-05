@@ -7,10 +7,22 @@ export default function CinematicHero() {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay policy handling
-      });
+    const playVideo = () => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {});
+      }
+    };
+
+    if (typeof window !== 'undefined' && (window.travinnoLoaderCompleted || !document.getElementById('fullscreen-brand-loader'))) {
+      playVideo();
+    } else {
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+      window.addEventListener('travinnoLoaderComplete', playVideo, { once: true });
+      return () => {
+        window.removeEventListener('travinnoLoaderComplete', playVideo);
+      };
     }
   }, []);
 
@@ -30,7 +42,6 @@ export default function CinematicHero() {
       {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
       <video
         ref={videoRef}
-        autoPlay
         loop
         muted
         playsInline

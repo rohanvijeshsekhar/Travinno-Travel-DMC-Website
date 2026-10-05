@@ -75,8 +75,18 @@ export default function SiteLayoutClient({ children }: { children: React.ReactNo
       {/* Cursor-following spotlight — desktop only */}
       {!isTouchDevice && <div className="cursor-glow" />}
 
-      {/* Main content body */}
-      <main style={{ width: '100%', position: 'relative' }}>{children}</main>
+      {/* Main content body - hidden while loader is active so video/content can never bleed through */}
+      <main
+        style={{
+          width: '100%',
+          position: 'relative',
+          visibility: showLoader ? 'hidden' : 'visible',
+          opacity: showLoader ? 0 : 1,
+          transition: 'opacity 0.4s ease-out',
+        }}
+      >
+        {children}
+      </main>
 
       {/* Global Footer Section */}
       <Footer />

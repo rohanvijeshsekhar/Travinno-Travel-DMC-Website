@@ -21,17 +21,25 @@ export default function Loader({ onComplete }) {
       e.preventDefault();
     };
 
-    const origOverflow = document.body.style.overflow;
-    const origTouchAction = document.body.style.touchAction;
+    const origHtmlOverflow = document.documentElement.style.overflow;
+    const origBodyOverflow = document.body.style.overflow;
+    const origBodyPosition = document.body.style.position;
+    const origBodyWidth = document.body.style.width;
+    const origBodyHeight = document.body.style.height;
 
+    document.documentElement.style.overflow = 'hidden';
     document.documentElement.style.backgroundColor = '#050505';
     document.documentElement.style.colorScheme = 'dark';
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
     document.body.style.backgroundColor = '#050505';
     document.body.style.colorScheme = 'dark';
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
 
     window.addEventListener('touchmove', preventScroll, { passive: false });
+    window.addEventListener('scroll', preventScroll, { passive: false });
 
     // Fade-out: start CSS transition at 1100ms
     const fadeTimer = setTimeout(() => {
@@ -43,16 +51,24 @@ export default function Loader({ onComplete }) {
 
     // Unmount: call onComplete at 1500ms (after fade finishes)
     const exitTimer = setTimeout(() => {
-      document.body.style.overflow = origOverflow;
-      document.body.style.touchAction = origTouchAction;
+      document.documentElement.style.overflow = origHtmlOverflow;
+      document.body.style.overflow = origBodyOverflow;
+      document.body.style.position = origBodyPosition;
+      document.body.style.width = origBodyWidth;
+      document.body.style.height = origBodyHeight;
       window.removeEventListener('touchmove', preventScroll);
+      window.removeEventListener('scroll', preventScroll);
       if (onComplete) onComplete();
     }, 1500);
 
     return () => {
-      document.body.style.overflow = origOverflow;
-      document.body.style.touchAction = origTouchAction;
+      document.documentElement.style.overflow = origHtmlOverflow;
+      document.body.style.overflow = origBodyOverflow;
+      document.body.style.position = origBodyPosition;
+      document.body.style.width = origBodyWidth;
+      document.body.style.height = origBodyHeight;
       window.removeEventListener('touchmove', preventScroll);
+      window.removeEventListener('scroll', preventScroll);
       clearTimeout(fadeTimer);
       clearTimeout(exitTimer);
     };
@@ -70,31 +86,26 @@ export default function Loader({ onComplete }) {
         top: 0,
         left: 0,
         right: 0,
-        bottom: '-250px',
+        bottom: 0,
         width: '100vw',
-        minHeight: 'calc(100vh + 250px)',
-        minHeight: 'calc(100dvh + 250px)',
-        minHeight: 'calc(100lvh + 250px)',
+        height: '100vh',
+        height: '100dvh',
         backgroundColor: '#050505',
-        zIndex: 9999999,
+        zIndex: 99999999,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: '250px',
         pointerEvents: 'auto',
         touchAction: 'none',
         overscrollBehavior: 'none',
       }}
     >
-      {/* Decorative architectural background graphics - clipped to visible bounds */}
+      {/* Decorative architectural background graphics - fills 100% of viewport */}
       <div
         style={{
           position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: '250px',
+          inset: 0,
           overflow: 'hidden',
           pointerEvents: 'none',
           zIndex: 1,
