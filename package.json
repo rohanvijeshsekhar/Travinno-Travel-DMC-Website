@@ -46,6 +46,10 @@
     "typescript": "^5"
   },
   "overrides": {
+    "source-map-js": "^1.2.2",
+    "braces": "^3.0.3",
+    "micromatch": "^4.0.8",
+    "fast-glob": "^3.3.3",
     "js-yaml": "^4.3.2",
     "browserslist": "^4.29.3",
     "fflate": ">=0.6.11",
