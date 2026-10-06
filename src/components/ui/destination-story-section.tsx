@@ -218,7 +218,7 @@ export default function DestinationStorySection() {
         // Loop cards to create smooth sequential cinematic card stack transitions
         for (let i = 1; i < cards.length; i++) {
           const startPos = (i - 1) * totalDurationPerCard;
-          const yOffset = isMobile ? 24 : 40; // Maintain 8-12% visible margin responsive to screen height
+          const yOffset = isMobile ? 16 : 40; // Maintain 8-12% visible margin responsive to screen height
 
           if (isMobile) {
             // Mobile: Card slides upward and stops at a static stacked offset (i * yOffset)
@@ -657,6 +657,7 @@ export default function DestinationStorySection() {
             position: relative;
             width: 100%;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             display: flex !important;
             justify-content: center !important;
@@ -667,7 +668,8 @@ export default function DestinationStorySection() {
 
           .destinations-cards-container {
             width: 90% !important;
-            height: 480px !important;
+            max-width: 440px !important;
+            height: clamp(520px, 72vh, 590px) !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
@@ -691,13 +693,17 @@ export default function DestinationStorySection() {
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             -webkit-mask-image: -webkit-radial-gradient(white, black) !important;
+            overflow: hidden !important;
           }
 
           .card-left-panel {
             width: 100% !important;
-            height: 62% !important;
-            padding: 16px 16px !important;
-            justify-content: flex-start !important;
+            height: 67% !important;
+            padding: 14px 18px 20px 18px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
             z-index: 5;
             background: transparent !important;
             border: none !important;
@@ -706,45 +712,54 @@ export default function DestinationStorySection() {
           }
 
           .left-panel-content {
+            width: 100% !important;
             max-width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
           }
 
           .card-right-panel {
             width: 100% !important;
-            height: 38% !important;
+            height: 33% !important;
             border-radius: 24px 24px 0 0 !important;
             overflow: hidden !important;
             border: none !important;
+            flex-shrink: 0 !important;
           }
 
           .destination-image-wrapper {
+            width: 100% !important;
+            height: 100% !important;
             border-radius: 24px 24px 0 0 !important;
             overflow: hidden !important;
           }
 
           .dest-editorial-heading {
-            font-size: 1.35rem !important;
-            margin-bottom: 8px !important;
+            font-size: 1.25rem !important;
+            margin-bottom: 6px !important;
             line-height: 1.2 !important;
           }
 
           .dest-country-heading {
-            font-size: 1.25rem !important;
-            line-height: 1.2 !important;
+            font-size: 1.15rem !important;
+            line-height: 1.15 !important;
+            margin: 0 !important;
           }
 
           .dest-country-name-script {
-             font-size: 2.1rem !important;
-             line-height: 1.2 !important;
-             padding-top: 2px !important;
-             padding-bottom: 4px !important;
+             font-size: 1.85rem !important;
+             line-height: 1.15 !important;
+             padding-top: 1px !important;
+             padding-bottom: 2px !important;
              padding-right: 4px !important;
           }
 
           .dest-editorial-description {
-            font-size: 0.82rem !important;
-            line-height: 1.45 !important;
-            margin-bottom: 6px !important;
+            font-size: 0.8rem !important;
+            line-height: 1.4 !important;
+            margin-bottom: 8px !important;
             display: -webkit-box !important;
             -webkit-line-clamp: 2 !important;
             -webkit-box-orient: vertical !important;
@@ -752,27 +767,40 @@ export default function DestinationStorySection() {
           }
 
           .dest-feature-pills-container {
-            margin-bottom: 8px !important;
+            margin-bottom: 12px !important;
             gap: 6px !important;
           }
 
           .dest-feature-pill {
             padding: 4px 10px !important;
             font-size: 0.65rem !important;
+            line-height: 1.3 !important;
+          }
+
+          .dest-button-container {
+            display: flex !important;
+            margin-top: auto !important;
+            padding-bottom: 2px !important;
           }
 
           .dest-explore-button {
-            padding: 8px 20px !important;
-            font-size: 0.72rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 9px 22px !important;
+            font-size: 0.74rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.8px !important;
+            white-space: nowrap !important;
           }
           
           .dest-number-label {
-            margin-bottom: 6px !important;
+            margin-bottom: 4px !important;
           }
           
           .dest-meta-container {
-            margin-bottom: 6px !important;
-            gap: 4px !important;
+            margin-bottom: 4px !important;
+            gap: 2px !important;
           }
         }
       `}</style>
