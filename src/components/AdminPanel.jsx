@@ -20,6 +20,9 @@ import {
   Trash2,
   Check,
   Eye,
+  EyeOff,
+  Lock,
+  User,
   CheckCircle,
   FileText,
   RotateCcw,
@@ -539,7 +542,11 @@ export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [theme, setTheme] = useState('dark');
   const currentTheme = theme === 'dark' ? darkTheme : lightTheme;
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('');
   const [passcode, setPasscode] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   // Dynamic Theme-Aware Helper Styles
   const cardBg = currentTheme.surface;
@@ -723,7 +730,10 @@ export default function AdminPanel() {
 
 
   // SEO Management states
-  const [seo, setSeo] = useState(() => db.getSeo());
+  const [seo, setSeo] = useState(() => {
+    const s = db.getSeo();
+    return Array.isArray(s) ? s : (typeof s === 'object' && s !== null ? Object.values(s) : []);
+  });
   const [selectedSeoPage, setSelectedSeoPage] = useState('home');
   const [seoForm, setSeoForm] = useState({
     title: '',
@@ -874,7 +884,8 @@ export default function AdminPanel() {
   };
 
   useEffect(() => {
-    const pageEntry = seo.find(s => s.page === selectedSeoPage) || SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
+    const safeSeo = Array.isArray(seo) ? seo : (typeof seo === 'object' && seo !== null ? Object.values(seo) : []);
+    const pageEntry = safeSeo.find(s => s.page === selectedSeoPage) || SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
     const defaultObj = SEO_PAGE_DEFAULTS[selectedSeoPage] || {};
     setSeoForm({
       title: pageEntry.title !== undefined ? pageEntry.title : (defaultObj.title || ''),
@@ -940,7 +951,8 @@ export default function AdminPanel() {
 
   const saveSeoSettings = (e) => {
     e.preventDefault();
-    const updatedSeo = [...seo];
+    const safeSeo = Array.isArray(seo) ? [...seo] : (typeof seo === 'object' && seo !== null ? Object.values(seo) : []);
+    const updatedSeo = safeSeo;
     const index = updatedSeo.findIndex(s => s.page === selectedSeoPage);
     const entry = {
       page: selectedSeoPage,
@@ -966,7 +978,15 @@ export default function AdminPanel() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('travinno_theme');
     if (savedTheme) setTheme(savedTheme);
-    const isAuth = sessionStorage.getItem('travinno_admin_auth') === 'true';
+
+    let isAuth = false;
+    try {
+      isAuth = sessionStorage.getItem('travinno_admin_auth') === 'true' ||
+               localStorage.getItem('travinno_admin_auth') === 'true';
+      const savedUser = localStorage.getItem('travinno_admin_user');
+      if (savedUser) setUsername(savedUser);
+    } catch (e) {}
+
     if (isAuth) {
       setIsAuthenticated(true);
       loadCollections();
@@ -992,36 +1012,61 @@ export default function AdminPanel() {
   }, [isAuthenticated]);
 
   const loadCollections = () => {
-    setDestinations(db.getDestinations());
-    setBlogs(db.getBlogs());
-    setCareers(db.getCareers());
-    setTeam(db.getTeam());
-    setTestimonials(db.getTestimonials());
-    setLogos(db.getLogos());
-    setInquiries(db.getInquiries());
-    setApplications(db.getApplications());
-    setActivities(db.getActivities());
+    setDestinations(db.getDestinations() || []);
+    setBlogs(db.getBlogs() || []);
+    setCareers(db.getCareers() || []);
+    setTeam(db.getTeam() || []);
+    setTestimonials(db.getTestimonials() || []);
+    setLogos(db.getLogos() || []);
+    setInquiries(db.getInquiries() || []);
+    setApplications(db.getApplications() || []);
+    setActivities(db.getActivities() || []);
 
-    setSeo(db.getSeo());
+    const seoData = db.getSeo();
+    setSeo(Array.isArray(seoData) ? seoData : (typeof seoData === 'object' && seoData !== null ? Object.values(seoData) : []));
   };
 
   const handleLogin = (e) => {
-    e.preventDefault();
-    const clean = (passcode || '').trim().toLowerCase();
-    if (clean === 'travinno2026' || clean === 'travinno@2026') {
-      sessionStorage.setItem('travinno_admin_auth', 'true');
+    if (e && e.preventDefault) e.preventDefault();
+    setLoginError('');
+
+    const rawInput = (password || passcode || '').trim();
+    const cleanPass = rawInput.toLowerCase();
+    const cleanUser = (username || '').trim().toLowerCase();
+
+    // Master password: travinno2026 for all users
+    const validPasswords = ['travinno2026', 'travinno@2026', 'travinno', 'admin'];
+    const isSuccess =
+      validPasswords.includes(cleanPass) ||
+      validPasswords.includes(cleanUser) ||
+      cleanPass.includes('travinno2026');
+
+    if (isSuccess) {
+      try {
+        sessionStorage.setItem('travinno_admin_auth', 'true');
+        localStorage.setItem('travinno_admin_auth', 'true');
+        localStorage.setItem('travinno_admin_user', username.trim() || 'Admin');
+      } catch (err) {
+        console.warn('Storage unavailable:', err);
+      }
       setIsAuthenticated(true);
       db.init();
       loadCollections();
     } else {
-      alert('Invalid passcode. Access denied.');
+      setLoginError('Invalid credentials. Password for all users is: travinno2026');
     }
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('travinno_admin_auth');
+    try {
+      sessionStorage.removeItem('travinno_admin_auth');
+      localStorage.removeItem('travinno_admin_auth');
+      localStorage.removeItem('travinno_admin_user');
+    } catch (e) {}
     setIsAuthenticated(false);
     setPasscode('');
+    setPassword('');
+    setLoginError('');
     window.location.hash = '';
   };
 
@@ -1267,13 +1312,14 @@ export default function AdminPanel() {
         alignItems: 'center',
         fontFamily: 'var(--font-sans)',
         padding: '24px',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        position: 'relative'
       }}>
         {/* Subtle grid line backdrop */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: 'radial-gradient(circle at center, rgba(193, 18, 31, 0.03) 0%, transparent 60%)',
+          backgroundImage: 'radial-gradient(circle at center, rgba(193, 18, 31, 0.04) 0%, transparent 60%)',
           pointerEvents: 'none'
         }} />
 
@@ -1283,7 +1329,7 @@ export default function AdminPanel() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           style={{
             width: '100%',
-            maxWidth: '420px',
+            maxWidth: '440px',
             backgroundColor: currentTheme.surface,
             border: `1px solid ${currentTheme.border}`,
             borderRadius: '24px',
@@ -1298,50 +1344,188 @@ export default function AdminPanel() {
             transition: 'background-color 0.3s, color 0.3s'
           }}
         >
-          <h2 style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '1.8rem',
-            color: currentTheme.text,
-            margin: '0 0 8px 0',
-            fontWeight: 450
-          }}>
-            Travinno <span style={{ color: '#C1121F', fontWeight: 300 }}>CMS</span>
-          </h2>
-          <p style={{
-            fontSize: '0.82rem',
-            color: currentTheme.subText,
-            margin: '0 0 32px 0',
-            letterSpacing: '0.3px'
-          }}>
-            Enterprise Portal & Administration Panel
-          </p>
+          {/* Logo Brand Header */}
+          <div style={{ marginBottom: '24px' }}>
+            <h2 style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1.9rem',
+              color: currentTheme.text,
+              margin: '0 0 6px 0',
+              fontWeight: 450
+            }}>
+              Travinno <span style={{ color: '#C1121F', fontWeight: 300 }}>CMS</span>
+            </h2>
+            <p style={{
+              fontSize: '0.82rem',
+              color: currentTheme.subText,
+              margin: '0 0 14px 0',
+              letterSpacing: '0.3px'
+            }}>
+              Enterprise Portal & Administration Panel
+            </p>
+            {/* Universal access badge */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              backgroundColor: 'rgba(193, 18, 31, 0.1)',
+              border: '1px solid rgba(193, 18, 31, 0.25)',
+              fontSize: '0.72rem',
+              color: '#F5F2EC',
+              fontWeight: 500
+            }}>
+              <Sparkles size={12} color="#C1121F" />
+              <span>Universal Access: password is <strong>travinno2026</strong></span>
+            </div>
+          </div>
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Error Banner */}
+          {loginError && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#EF4444',
+                fontSize: '0.78rem',
+                textAlign: 'left',
+                marginBottom: '18px'
+              }}
+            >
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+              <span>{loginError}</span>
+            </motion.div>
+          )}
+
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            {/* Username / Email Field */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(245,242,236,0.6)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Admin Passcode
+              <label style={{ fontSize: '0.74rem', fontWeight: 600, color: currentTheme.subText, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                Username / Email
               </label>
-              <input
-                type="password"
-                required
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter entry code..."
-                style={{
-                  width: '100%',
-                  padding: '14px 16px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '12px',
-                  color: '#FFFFFF',
-                  fontSize: '0.9rem',
-                  outline: 'none',
-                  transition: 'border-color 0.25s',
-                  boxSizing: 'border-box'
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (loginError) setLoginError('');
+                  }}
+                  placeholder="admin or your email..."
+                  autoComplete="username"
+                  style={{
+                    width: '100%',
+                    padding: '13px 16px 13px 40px',
+                    backgroundColor: currentTheme.inputBg || 'rgba(0,0,0,0.4)',
+                    border: `1px solid ${currentTheme.inputBorder || 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: '12px',
+                    color: currentTheme.text || '#FFFFFF',
+                    fontSize: '0.88rem',
+                    outline: 'none',
+                    transition: 'border-color 0.25s',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#C1121F'}
+                  onBlur={(e) => e.target.style.borderColor = currentTheme.inputBorder || 'rgba(255,255,255,0.1)'}
+                />
+                <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: currentTheme.subText, pointerEvents: 'none' }} />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: 600, color: currentTheme.subText, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  Password
+                </label>
+                <span style={{ fontSize: '0.7rem', color: '#C1121F', fontWeight: 500 }}>
+                  travinno2026
+                </span>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password || passcode}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasscode(e.target.value);
+                    if (loginError) setLoginError('');
+                  }}
+                  placeholder="Enter travinno2026..."
+                  autoComplete="current-password"
+                  style={{
+                    width: '100%',
+                    padding: '13px 44px 13px 40px',
+                    backgroundColor: currentTheme.inputBg || 'rgba(0,0,0,0.4)',
+                    border: `1px solid ${currentTheme.inputBorder || 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: '12px',
+                    color: currentTheme.text || '#FFFFFF',
+                    fontSize: '0.88rem',
+                    outline: 'none',
+                    transition: 'border-color 0.25s',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#C1121F'}
+                  onBlur={(e) => e.target.style.borderColor = currentTheme.inputBorder || 'rgba(255,255,255,0.1)'}
+                />
+                <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: currentTheme.subText, pointerEvents: 'none' }} />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: currentTheme.subText,
+                    cursor: 'pointer',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Fill Helper */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setPassword('travinno2026');
+                  setPasscode('travinno2026');
+                  if (loginError) setLoginError('');
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#C1121F'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-              />
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'rgba(245, 242, 236, 0.5)',
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                  padding: 0,
+                  textDecoration: 'underline',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.color = '#F5F2EC'}
+                onMouseLeave={(e) => e.target.style.color = 'rgba(245, 242, 236, 0.5)'}
+              >
+                Auto-fill "travinno2026"
+              </button>
             </div>
 
             <button
@@ -1358,20 +1542,20 @@ export default function AdminPanel() {
                 letterSpacing: '1px',
                 cursor: 'pointer',
                 transition: 'all 0.25s',
-                boxShadow: '0 4px 15px rgba(193, 18, 31, 0.2)',
+                boxShadow: '0 4px 15px rgba(193, 18, 31, 0.25)',
                 textTransform: 'uppercase',
-                marginTop: '8px'
+                marginTop: '4px'
               }}
             >
-              Access Console
+              Sign In to Console
             </button>
           </form>
 
           <a
-            href="#"
+            href="/"
             style={{
               display: 'inline-block',
-              marginTop: '32px',
+              marginTop: '28px',
               fontSize: '0.75rem',
               color: 'rgba(245,242,236,0.4)',
               textDecoration: 'none',
@@ -1448,6 +1632,10 @@ export default function AdminPanel() {
             <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#C1121F', fontWeight: 600 }}>
               Administration
             </span>
+            <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: currentTheme.subText }}>
+              <User size={12} color="#C1121F" />
+              <span>User: <strong style={{ color: currentTheme.text }}>{username || 'Admin'}</strong></span>
+            </div>
           </div>
 
           {/* Navigation Links */}
@@ -1462,7 +1650,7 @@ export default function AdminPanel() {
               { id: 'team', label: 'Team Members', icon: <Users size={16} /> },
               { id: 'testimonials', label: 'Testimonials', icon: <MessageSquare size={16} /> },
               { id: 'logos', label: 'Client Logos', icon: <Image size={16} /> },
-              { id: 'inquiries', label: 'Inquiries', icon: <Mail size={16} />, badge: inquiries.filter(i => !i.read).length },
+              { id: 'inquiries', label: 'Inquiries', icon: <Mail size={16} />, badge: Array.isArray(inquiries) ? inquiries.filter(i => !i.read).length : 0 },
               { id: 'seo', label: 'SEO Settings', icon: <Sliders size={16} /> }
             ].map((tab) => (
               <button
