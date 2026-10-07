@@ -122,7 +122,7 @@ export default function CinematicHero() {
               textShadow: '0 2px 14px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.7)',
             }}
           >
-            YOUR GLOBAL DMC PARTNER
+            YOUR TRUSTED GLOBAL DMC PARTNER
           </p>
         </div>
 
