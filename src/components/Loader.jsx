@@ -41,15 +41,15 @@ export default function Loader({ onComplete }) {
     window.addEventListener('touchmove', preventScroll, { passive: false });
     window.addEventListener('scroll', preventScroll, { passive: false });
 
-    // Fade-out: start CSS transition at 1100ms
+    // Fade-out: start CSS transition at 550ms
     const fadeTimer = setTimeout(() => {
       if (loaderRef.current) {
-        loaderRef.current.style.transition = 'opacity 0.4s ease-in-out';
+        loaderRef.current.style.transition = 'opacity 0.2s ease-in-out';
         loaderRef.current.style.opacity = '0';
       }
-    }, 1100);
+    }, 550);
 
-    // Unmount: call onComplete at 1500ms (after fade finishes)
+    // Unmount: call onComplete at 750ms (after fade finishes)
     const exitTimer = setTimeout(() => {
       document.documentElement.style.overflow = origHtmlOverflow;
       document.body.style.overflow = origBodyOverflow;
@@ -59,7 +59,7 @@ export default function Loader({ onComplete }) {
       window.removeEventListener('touchmove', preventScroll);
       window.removeEventListener('scroll', preventScroll);
       if (onComplete) onComplete();
-    }, 1500);
+    }, 750);
 
     return () => {
       document.documentElement.style.overflow = origHtmlOverflow;
@@ -205,7 +205,7 @@ export default function Loader({ onComplete }) {
             display: 'block'
           }}
         >
-          {/* Step 1: Draw T path (Duration 0.8s, fades out at 1.8s) */}
+          {/* Step 1: Draw T path (Duration 0.35s, fades out at 0.5s) */}
           <motion.path
             d={innerTPath}
             fill="none"
@@ -214,12 +214,12 @@ export default function Loader({ onComplete }) {
             initial={{ pathLength: 0, opacity: 1 }}
             animate={{ pathLength: 1, opacity: [1, 1, 0] }}
             transition={{
-              pathLength: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1.0] },
-              opacity: { delay: 1.8, duration: 0.4, ease: "easeOut" }
+              pathLength: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1.0] },
+              opacity: { delay: 0.45, duration: 0.15, ease: "easeOut" }
             }}
           />
 
-          {/* Step 2: Draw outer destination pin outline (Duration 1.0s, starts after 0.8s, fades out at 1.8s) */}
+          {/* Step 2: Draw outer destination pin outline */}
           <motion.path
             d={outerPinPath}
             fill="none"
@@ -228,12 +228,12 @@ export default function Loader({ onComplete }) {
             initial={{ pathLength: 0, opacity: 1 }}
             animate={{ pathLength: 1, opacity: [1, 1, 0] }}
             transition={{
-              pathLength: { delay: 0.8, duration: 1.0, ease: [0.25, 0.1, 0.25, 1.0] },
-              opacity: { delay: 1.8, duration: 0.4, ease: "easeOut" }
+              pathLength: { delay: 0.1, duration: 0.35, ease: [0.25, 0.1, 0.25, 1.0] },
+              opacity: { delay: 0.45, duration: 0.15, ease: "easeOut" }
             }}
           />
 
-          {/* Step 3: Filled combined path (evenodd cutout) fades in smoothly (Duration 0.4s, starts after 1.8s) */}
+          {/* Step 3: Filled combined path (evenodd cutout) fades in smoothly */}
           <motion.path
             d={`${outerPinPath} ${innerTPath}`}
             fillRule="evenodd"
@@ -242,8 +242,8 @@ export default function Loader({ onComplete }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{
-              delay: 1.8,
-              duration: 0.4,
+              delay: 0.4,
+              duration: 0.2,
               ease: "easeOut"
             }}
           />
@@ -262,13 +262,13 @@ export default function Loader({ onComplete }) {
           maxWidth: '600px'
         }}
       >
-        {/* Brand Name Logo - fades in at 2.2s */}
+        {/* Brand Name Logo - fades in at 0.25s */}
         <motion.img
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 1.0,
-            duration: 0.6,
+            delay: 0.2,
+            duration: 0.3,
             ease: "easeOut"
           }}
           src="/images/logo_loading.png"
@@ -289,8 +289,8 @@ export default function Loader({ onComplete }) {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 0.4,
-            duration: 0.4,
+            delay: 0.1,
+            duration: 0.25,
             ease: "easeOut"
           }}
           style={{
@@ -324,7 +324,7 @@ export default function Loader({ onComplete }) {
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
             transition={{
-              duration: 1.1,
+              duration: 0.5,
               ease: [0.22, 1, 0.36, 1]
             }}
             style={{

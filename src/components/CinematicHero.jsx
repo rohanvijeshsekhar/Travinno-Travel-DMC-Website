@@ -75,7 +75,6 @@ export default function CinematicHero() {
         webkit-playsinline="true"
         x5-playsinline="true"
         preload="metadata"
-        src="/video/IMG_2990.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -86,7 +85,18 @@ export default function CinematicHero() {
           zIndex: 1,
         }}
       >
-        <source src="/video/IMG_2990.MP4" type="video/mp4" />
+        <source
+          src="https://res.cloudinary.com/fifyhrcr/video/upload/c_limit,q_auto,vc_vp9,w_1280/v1791368269/travinno/hero_video.webm"
+          type="video/webm"
+        />
+        <source
+          src="https://res.cloudinary.com/fifyhrcr/video/upload/c_limit,q_auto,vc_h264,w_1280/v1791368269/travinno/hero_video.mp4"
+          type="video/mp4"
+        />
+        <source
+          src="/video/IMG_2990.MP4"
+          type="video/mp4"
+        />
       </video>
 
       {/* Centered Editorial Overlay Content */}

@@ -11,20 +11,21 @@ export default function SiteLayoutClient({ children }: { children: React.ReactNo
   const [isTouchDevice, setIsTouchDevice] = useState(true);
 
   useEffect(() => {
-    // Reset loader completion state on every page mount/refresh
-    if (typeof window !== 'undefined') {
-      (window as any).travinnoLoaderCompleted = false;
+    // 1. Session-gating: skip loader if user already saw it in this session
+    try {
+      if (typeof window !== 'undefined' && sessionStorage.getItem('travinno_session_loaded')) {
+        setShowLoader(false);
+        (window as any).travinnoLoaderCompleted = true;
+        window.dispatchEvent(new Event('travinnoLoaderComplete'));
+      }
+    } catch (e) {
+      // Ignore private browsing storage quota exceptions
     }
 
-    // 1. Detect if touch/mobile device once at mount
+    // 2. Detect if touch/mobile device once at mount
     setIsTouchDevice(
       window.matchMedia('(hover: none) and (pointer: coarse)').matches
     );
-
-    // 2. In Next.js SSR the layout is preserved across client-side navigations,
-    //    so React state alone ensures:
-    //    - Full page load / refresh  → component remounts → showLoader is true (displays loading screen)
-    //    - SPA navigation (Link)     → layout stays mounted → showLoader stays false (seamless transition)
 
     // 3. Register custom cursor-following coordinates (desktop/hover pointer devices only)
     if (window.matchMedia('(hover: hover)').matches) {
@@ -42,6 +43,9 @@ export default function SiteLayoutClient({ children }: { children: React.ReactNo
   const handleLoaderComplete = useCallback(() => {
     setShowLoader(false);
     if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('travinno_session_loaded', '1');
+      } catch (e) {}
       (window as any).travinnoLoaderCompleted = true;
     }
     window.dispatchEvent(new Event('travinnoLoaderComplete'));
