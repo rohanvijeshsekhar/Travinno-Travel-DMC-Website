@@ -46,7 +46,6 @@ export default function CinematicHero() {
         muted
         playsInline
         preload="auto"
-        poster="/images/home_hero.jpg"
         src="/video/IMG_2990.MP4"
         style={{
           position: 'absolute',
