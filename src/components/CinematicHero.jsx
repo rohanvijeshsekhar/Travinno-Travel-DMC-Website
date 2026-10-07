@@ -10,45 +10,46 @@ export default function CinematicHero() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Ensure muted & playsInline properties are set directly on the DOM element for mobile Safari/WebKit
+    // Ensure muted & playsInline properties are set directly on DOM element for mobile Safari/WebKit
     video.defaultMuted = true;
     video.muted = true;
     video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('autoplay', '');
 
-    const startPlayback = () => {
+    const tryPlay = () => {
       if (!video) return;
-      if (!video.src || !video.src.includes('IMG_2990')) {
-        video.src = '/video/IMG_2990.MP4';
-      }
       const promise = video.play();
       if (promise !== undefined) {
         promise.catch(() => {
-          // Mobile iOS/Android fallback: if low-power mode blocks autoplay, resume on first tap
-          const onFirstTouch = () => {
+          // Mobile iOS fallback if battery saver / low-power mode restricts autoplay:
+          const onUserInteraction = () => {
             if (video) video.play().catch(() => {});
+            ['touchstart', 'touchend', 'scroll', 'click'].forEach((evt) => {
+              window.removeEventListener(evt, onUserInteraction);
+            });
           };
-          window.addEventListener('touchstart', onFirstTouch, { passive: true, once: true });
-          window.addEventListener('click', onFirstTouch, { passive: true, once: true });
+          ['touchstart', 'touchend', 'scroll', 'click'].forEach((evt) => {
+            window.addEventListener(evt, onUserInteraction, { passive: true, once: true });
+          });
         });
       }
     };
 
-    // CRITICAL FOR MOBILE SAFARI:
-    // Defer video connection until the document has finished loading.
-    // If the 64MB video src is in the static SSR HTML, mobile Safari's AVPlayer
-    // hooks into the page-load lifecycle and keeps the blue address-bar progress bar
-    // hanging at 80% for several seconds.
-    // By loading post-load, Safari's progress bar completes and disappears in <0.3s!
-    if (document.readyState === 'complete') {
-      startPlayback();
+    if (video.readyState >= 2) {
+      tryPlay();
     } else {
-      window.addEventListener('load', startPlayback, { once: true });
-      const timer = setTimeout(startPlayback, 150);
-      return () => {
-        window.removeEventListener('load', startPlayback);
-        clearTimeout(timer);
-      };
+      video.addEventListener('loadedmetadata', tryPlay, { once: true });
+      video.addEventListener('canplay', tryPlay, { once: true });
+      tryPlay();
     }
+
+    return () => {
+      video.removeEventListener('loadedmetadata', tryPlay);
+      video.removeEventListener('canplay', tryPlay);
+    };
   }, []);
 
   return (
@@ -67,10 +68,14 @@ export default function CinematicHero() {
       {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
       <video
         ref={videoRef}
+        autoPlay
         loop
         muted
         playsInline
-        preload="none"
+        webkit-playsinline="true"
+        x5-playsinline="true"
+        preload="metadata"
+        src="/video/IMG_2990.MP4"
         style={{
           position: 'absolute',
           top: 0,
@@ -80,7 +85,9 @@ export default function CinematicHero() {
           objectFit: 'cover',
           zIndex: 1,
         }}
-      />
+      >
+        <source src="/video/IMG_2990.MP4" type="video/mp4" />
+      </video>
 
       {/* Centered Editorial Overlay Content */}
       <div
