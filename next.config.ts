@@ -43,12 +43,25 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Static assets (images, fonts, videos, partners, icons) - cache long-term
-        source: '/:all*(svg|jpg|jpeg|png|webp|avif|ico|woff|woff2|ttf|otf|mp4|webm)',
+        // Fonts and videos rarely change — cache for 1 year immutably.
+        source: '/:all*(woff|woff2|ttf|otf|mp4|webm)',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Static images (jpg, jpeg, png, webp, avif, svg, ico) — cache for 7 days
+        // with stale-while-revalidate so the browser re-fetches updated images
+        // (e.g. home_hero.jpg) within a week instead of waiting a full year.
+        // This fixes the "old banner image visible on reload" stale-cache issue.
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, stale-while-revalidate=86400',
           },
         ],
       },

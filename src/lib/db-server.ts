@@ -82,7 +82,11 @@ if (database && user) {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      connectTimeout: 5000,
+      connectTimeout: 3000,
+      // Keep connections alive so idle periods don't force a slow MySQL reconnect
+      // on the next visitor's request (which caused the 5-second cold-start delay).
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 10000,
     });
     useMySQL = true;
 
