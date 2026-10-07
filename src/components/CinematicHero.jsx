@@ -15,27 +15,40 @@ export default function CinematicHero() {
     video.muted = true;
     video.playsInline = true;
 
-    const attemptPlay = () => {
-      if (video) {
-        const promise = video.play();
-        if (promise !== undefined) {
-          promise.catch(() => {
-            // Mobile iOS/Android fallback: if low-power mode blocks autoplay, start on first tap
-            const onFirstTouch = () => {
-              if (video) {
-                video.play().catch(() => {});
-              }
-              window.removeEventListener('touchstart', onFirstTouch);
-              window.removeEventListener('click', onFirstTouch);
-            };
-            window.addEventListener('touchstart', onFirstTouch, { passive: true, once: true });
-            window.addEventListener('click', onFirstTouch, { passive: true, once: true });
-          });
-        }
+    const startPlayback = () => {
+      if (!video) return;
+      if (!video.src || !video.src.includes('IMG_2990')) {
+        video.src = '/video/IMG_2990.MP4';
+      }
+      const promise = video.play();
+      if (promise !== undefined) {
+        promise.catch(() => {
+          // Mobile iOS/Android fallback: if low-power mode blocks autoplay, resume on first tap
+          const onFirstTouch = () => {
+            if (video) video.play().catch(() => {});
+          };
+          window.addEventListener('touchstart', onFirstTouch, { passive: true, once: true });
+          window.addEventListener('click', onFirstTouch, { passive: true, once: true });
+        });
       }
     };
 
-    attemptPlay();
+    // CRITICAL FOR MOBILE SAFARI:
+    // Defer video connection until the document has finished loading.
+    // If the 64MB video src is in the static SSR HTML, mobile Safari's AVPlayer
+    // hooks into the page-load lifecycle and keeps the blue address-bar progress bar
+    // hanging at 80% for several seconds.
+    // By loading post-load, Safari's progress bar completes and disappears in <0.3s!
+    if (document.readyState === 'complete') {
+      startPlayback();
+    } else {
+      window.addEventListener('load', startPlayback, { once: true });
+      const timer = setTimeout(startPlayback, 150);
+      return () => {
+        window.removeEventListener('load', startPlayback);
+        clearTimeout(timer);
+      };
+    }
   }, []);
 
   return (
@@ -54,12 +67,10 @@ export default function CinematicHero() {
       {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
       <video
         ref={videoRef}
-        autoPlay
         loop
         muted
         playsInline
-        preload="metadata"
-        src="/video/IMG_2990.MP4"
+        preload="none"
         style={{
           position: 'absolute',
           top: 0,
@@ -69,10 +80,7 @@ export default function CinematicHero() {
           objectFit: 'cover',
           zIndex: 1,
         }}
-      >
-        <source src="/video/IMG_2990.MP4" type="video/mp4" />
-        <source src="/video/IMG_2990.mp4" type="video/mp4" />
-      </video>
+      />
 
       {/* Centered Editorial Overlay Content */}
       <div
