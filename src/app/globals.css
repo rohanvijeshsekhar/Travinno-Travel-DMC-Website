@@ -553,7 +553,7 @@ a {
 .expertise-section {
   background-color: #050505;
   width: 100%;
-  padding: 140px 24px 40px 24px;
+  padding: 140px 24px 80px 24px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -561,7 +561,7 @@ a {
   position: relative;
   z-index: 5;
   overflow: hidden;
-  height: 100vh;
+  height: auto;
 }
 
 .expertise-section::before {
@@ -978,7 +978,7 @@ a {
 @media (max-width: 1023px) {
   .expertise-section {
     height: auto;
-    padding: 90px 24px 20px 24px;
+    padding: 90px 24px 40px 24px;
     justify-content: flex-start;
   }
 
@@ -1000,7 +1000,7 @@ a {
 /* Mobile Media adjustments */
 @media (max-width: 767px) {
   .expertise-section {
-    padding: 70px 20px 20px 20px;
+    padding: 70px 20px 40px 20px;
   }
 
   .expertise-heading {
@@ -3232,7 +3232,6 @@ html.lenis body {
 /* Apply standardized vertical spacing across all homepage sections */
 .editorial-section,
 .destinations-section,
-.expertise-section,
 .journey-section,
 .logo-cloud-section,
 .testimonials-section {
@@ -3240,6 +3239,21 @@ html.lenis body {
   padding-bottom: 0 !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+
+/* Our Expertise section - custom padding so cards, illustrations and drop shadows are never cut off */
+.expertise-section {
+  padding-top: var(--section-gap) !important;
+  padding-bottom: 80px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  height: auto !important;
+}
+
+@media (max-width: 1023px) {
+  .expertise-section {
+    padding-bottom: 40px !important;
+  }
 }
 
 /* Why Travinno section - has customized bottom padding to make the transition to Contact CTA exactly equal to the standard gap */
@@ -3427,7 +3441,6 @@ footer {
 /* Apply standardized vertical spacing across all homepage sections */
 .editorial-section,
 .destinations-section,
-.expertise-section,
 .journey-section,
 .logo-cloud-section,
 .testimonials-section {
@@ -3435,6 +3448,20 @@ footer {
   padding-bottom: 0 !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+
+.expertise-section {
+  padding-top: var(--section-gap) !important;
+  padding-bottom: 80px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  height: auto !important;
+}
+
+@media (max-width: 1023px) {
+  .expertise-section {
+    padding-bottom: 40px !important;
+  }
 }
 
 /* Why Travinno section - has customized bottom padding to make the transition to Contact CTA exactly equal to the standard gap */
