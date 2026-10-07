@@ -63,10 +63,8 @@ export async function POST(req: NextRequest) {
 
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      const mimeType = file.type || 'image/jpeg';
-      const base64Data = `data:${mimeType};base64,${buffer.toString('base64')}`;
 
-      const result = await uploadToCloudinary(base64Data, folder);
+      const result = await uploadToCloudinary(buffer, folder);
 
       if (!result.success) {
         return NextResponse.json(

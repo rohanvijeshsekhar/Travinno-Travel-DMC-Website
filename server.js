@@ -1,3 +1,9 @@
+const path = require('path');
+try {
+  require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+  require('dotenv').config({ path: path.resolve(process.cwd(), '.env') });
+} catch (_) {}
+
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');

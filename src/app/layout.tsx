@@ -67,7 +67,6 @@ export default function RootLayout({
           backgroundColor: '#050505',
           colorScheme: 'dark',
           color: '#F5F2EC',
-          minHeight: '100%',
           minHeight: '100dvh',
           overscrollBehavior: 'none',
         }}

@@ -2,7 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import mysql from 'mysql2/promise';
 import { cache } from 'react';
+import dotenv from 'dotenv';
 import { db } from './db';
+
+// Load .env explicitly
+try {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+  dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+} catch (_) {}
 
 const DATA_FILE = path.join(process.cwd(), 'travinno-data.json');
 
@@ -60,9 +67,9 @@ let useMySQL = false;
 
 const host = process.env.DB_HOST || '127.0.0.1';
 const port = parseInt(process.env.DB_PORT || '3306', 10);
-const user = process.env.DB_USER;
-const password = process.env.DB_PASSWORD || '';
-const database = process.env.DB_NAME;
+const user = process.env.DB_USER || 'u410255584_tvm';
+const password = process.env.DB_PASSWORD || 'Travinno@2026';
+const database = process.env.DB_NAME || 'u410255584_travinno';
 
 if (database && user) {
   try {

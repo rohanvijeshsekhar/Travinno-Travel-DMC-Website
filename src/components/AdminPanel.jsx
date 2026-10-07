@@ -53,18 +53,31 @@ import {
 // ==========================================
 export async function uploadImageToCloudinary(imageSource, folder = 'travinno') {
   if (!imageSource) return '';
-  if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
+  if (typeof imageSource === 'string' && (imageSource.startsWith('http://') || imageSource.startsWith('https://'))) {
     return imageSource;
   }
   try {
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: imageSource, folder }),
-    });
+    let res;
+    if (typeof File !== 'undefined' && imageSource instanceof File) {
+      const fd = new FormData();
+      fd.append('file', imageSource);
+      fd.append('folder', folder);
+      res = await fetch('/api/upload', {
+        method: 'POST',
+        body: fd,
+      });
+    } else {
+      res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageSource, folder }),
+      });
+    }
     const data = await res.json();
     if (data.success && data.url) {
       return data.url;
+    } else {
+      console.error('Failed to upload image to Cloudinary:', data.error);
     }
   } catch (err) {
     console.error('Failed to upload image to Cloudinary:', err);
@@ -1102,7 +1115,7 @@ export default function AdminPanel() {
 
     let finalImage = destForm.image;
     if (finalImage && finalImage.startsWith('data:')) {
-      finalImage = await uploadImageToCloudinary(finalImage, 'travinno/destinations');
+      finalImage = await uploadImageToCloudinary(finalImage, 'travinno');
     }
 
     const payload = { ...destForm, image: finalImage };
@@ -1143,7 +1156,7 @@ export default function AdminPanel() {
 
     let finalImage = blogForm.image;
     if (finalImage && finalImage.startsWith('data:')) {
-      finalImage = await uploadImageToCloudinary(finalImage, 'travinno/blogs');
+      finalImage = await uploadImageToCloudinary(finalImage, 'travinno');
     }
 
     const payload = { ...blogForm, image: finalImage };
@@ -1209,17 +1222,17 @@ export default function AdminPanel() {
     }
     let finalImage = teamForm.image;
     if (finalImage && finalImage.startsWith('data:')) {
-      finalImage = await uploadImageToCloudinary(finalImage, 'travinno/team');
+      finalImage = await uploadImageToCloudinary(finalImage, 'travinno');
     }
     const payload = { ...teamForm, image: finalImage };
     let list = [...team];
     if (editingItem) {
       list = list.map(item => item.id === editingItem.id ? { ...item, ...payload } : item);
-      db.saveTeam(list, `Edited team member: ${teamForm.name}`);
+      await db.saveTeam(list, `Edited team member: ${teamForm.name}`);
     } else {
       const id = Date.now();
       list.push({ ...payload, id });
-      db.saveTeam(list, `Added team member: ${teamForm.name}`);
+      await db.saveTeam(list, `Added team member: ${teamForm.name}`);
     }
     closeForm();
   };
@@ -1262,7 +1275,7 @@ export default function AdminPanel() {
     if (!base64) return;
     let finalLogo = base64;
     if (base64.startsWith('data:')) {
-      finalLogo = await uploadImageToCloudinary(base64, 'travinno/logos');
+      finalLogo = await uploadImageToCloudinary(base64, 'travinno');
     }
     const list = [...logos];
     list.push(finalLogo);
@@ -4011,44 +4024,33 @@ export default function AdminPanel() {
                         type="file"
                         id="team-image-file"
                         accept="image/png, image/jpeg, image/webp"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
+                        onChange={async (e) => {
+                          const file = e.target.files && e.target.files[0];
                           if (file) {
                             setIsTeamImgUploading(true);
-                            const reader = new FileReader();
-                            reader.onload = async (event) => {
-                              const img = new window.Image();
-                              img.src = event.target.result;
-                              img.onload = async () => {
-                                const canvas = document.createElement('canvas');
-                                canvas.width = img.width;
-                                canvas.height = img.height;
-                                const ctx = canvas.getContext('2d');
-                                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                                ctx.drawImage(img, 0, 0);
-                                const webpDataUrl = canvas.toDataURL('image/webp', 0.85);
+                            try {
+                              const formData = new FormData();
+                              formData.append('file', file);
+                              formData.append('folder', 'travinno');
 
-                                try {
-                                  const uploadRes = await fetch('/api/upload', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ image: webpDataUrl, folder: 'travinno/team' }),
-                                  });
-                                  const uploadData = await uploadRes.json();
-                                  if (uploadData.success && uploadData.url) {
-                                    setTeamForm(prev => ({ ...prev, image: uploadData.url }));
-                                    alert("Team photo uploaded to Cloudinary successfully!");
-                                    setIsTeamImgUploading(false);
-                                    return;
-                                  }
-                                } catch (_) {}
+                              const uploadRes = await fetch('/api/upload', {
+                                method: 'POST',
+                                body: formData,
+                              });
 
-                                // Fallback to local base64
-                                setTeamForm(prev => ({ ...prev, image: webpDataUrl }));
-                                setIsTeamImgUploading(false);
-                              };
-                            };
-                            reader.readAsDataURL(file);
+                              const uploadData = await uploadRes.json();
+                              if (uploadData.success && uploadData.url) {
+                                setTeamForm(prev => ({ ...prev, image: uploadData.url }));
+                                alert("Team portrait photo uploaded to Cloudinary successfully!");
+                              } else {
+                                alert(`Cloudinary upload failed: ${uploadData.error || 'Server error'}`);
+                              }
+                            } catch (err) {
+                              console.error('Failed to upload team photo:', err);
+                              alert(`Failed to upload photo: ${err.message || 'Network error'}`);
+                            } finally {
+                              setIsTeamImgUploading(false);
+                            }
                           }
                         }}
                         style={{ display: 'none' }}

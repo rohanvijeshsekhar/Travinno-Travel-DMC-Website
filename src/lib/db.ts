@@ -682,15 +682,23 @@ export const db = {
     if (activityMsg) this.logActivity(activityMsg);
     broadcastChange();
   },
-  saveTeam(data: any[], activityMsg?: string) {
+  async saveTeam(data: any[], activityMsg?: string) {
     this.collections['travinno_team'] = data;
     this._ssSet('travinno_team', data);
     this._lcSet('travinno_team', data);
     if (typeof window !== 'undefined') {
-      fetch(`${API_BASE}/api/save`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'travinno_team', value: data })
-      }).catch(err => console.error('Error writing team:', err));
+      try {
+        const res = await fetch(`${API_BASE}/api/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'travinno_team', value: data })
+        });
+        if (!res.ok) {
+          console.error(`[db] /api/save team failed with status ${res.status}`);
+        }
+      } catch (err) {
+        console.error('Error writing team:', err);
+      }
     }
     if (activityMsg) this.logActivity(activityMsg);
     broadcastChange();

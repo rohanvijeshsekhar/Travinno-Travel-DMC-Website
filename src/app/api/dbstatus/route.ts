@@ -1,15 +1,23 @@
 import { NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+import path from 'path';
 import { isCloudinaryConfigured } from '@/lib/cloudinary';
+
+// Load .env explicitly
+try {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+  dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
+} catch (_) {}
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const host = process.env.DB_HOST;
+  const host = process.env.DB_HOST || '127.0.0.1';
   const port = parseInt(process.env.DB_PORT || '3306', 10);
-  const user = process.env.DB_USER;
-  const password = process.env.DB_PASSWORD || '';
-  const database = process.env.DB_NAME;
+  const user = process.env.DB_USER || 'u410255584_tvm';
+  const password = process.env.DB_PASSWORD || 'Travinno@2026';
+  const database = process.env.DB_NAME || 'u410255584_travinno';
 
   const cloudinaryConfigured = isCloudinaryConfigured();
   if (!host || !user || !database) {
@@ -18,7 +26,7 @@ export async function GET() {
       error: 'Missing DB environment variables',
       cloudinary: {
         configured: cloudinaryConfigured,
-        cloudName: process.env.CLOUDINARY_CLOUD_NAME || '(not set)'
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME || 'fifyhrcr'
       },
       env: {
         DB_HOST: host || '(not set)',
