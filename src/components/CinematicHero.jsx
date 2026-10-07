@@ -111,9 +111,9 @@ export default function CinematicHero() {
           <p
             style={{
               fontFamily: "'General Sans', 'Inter', sans-serif",
-              fontSize: 'clamp(0.65rem, 1.15vw, 0.92rem)',
-              fontWeight: 500,
-              letterSpacing: '0.10em',
+              fontSize: 'clamp(0.85rem, 1.4vw, 1.15rem)',
+              fontWeight: 600,
+              letterSpacing: '0.14em',
               textTransform: 'uppercase',
               color: '#F5F2EC',
               margin: '0 0 36px 0',
@@ -122,7 +122,7 @@ export default function CinematicHero() {
               textShadow: '0 2px 14px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.7)',
             }}
           >
-            Your Trusted Global Destination Management Partner
+            YOUR GLOBAL DMC PARTNER
           </p>
         </div>
 
