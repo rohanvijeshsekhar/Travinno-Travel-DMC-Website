@@ -7,23 +7,35 @@ export default function CinematicHero() {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    const playVideo = () => {
-      if (videoRef.current) {
-        videoRef.current.play().catch(() => {});
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Ensure muted & playsInline properties are set directly on the DOM element for mobile Safari/WebKit
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    const attemptPlay = () => {
+      if (video) {
+        const promise = video.play();
+        if (promise !== undefined) {
+          promise.catch(() => {
+            // Mobile iOS/Android fallback: if low-power mode blocks autoplay, start on first tap
+            const onFirstTouch = () => {
+              if (video) {
+                video.play().catch(() => {});
+              }
+              window.removeEventListener('touchstart', onFirstTouch);
+              window.removeEventListener('click', onFirstTouch);
+            };
+            window.addEventListener('touchstart', onFirstTouch, { passive: true, once: true });
+            window.addEventListener('click', onFirstTouch, { passive: true, once: true });
+          });
+        }
       }
     };
 
-    if (typeof window !== 'undefined' && (window.travinnoLoaderCompleted || !document.getElementById('fullscreen-brand-loader'))) {
-      playVideo();
-    } else {
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-      window.addEventListener('travinnoLoaderComplete', playVideo, { once: true });
-      return () => {
-        window.removeEventListener('travinnoLoaderComplete', playVideo);
-      };
-    }
+    attemptPlay();
   }, []);
 
   return (
@@ -42,10 +54,11 @@ export default function CinematicHero() {
       {/* Background Video Layer - Full Vibrant Colors, No Darkening Overlay */}
       <video
         ref={videoRef}
+        autoPlay
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
         src="/video/IMG_2990.MP4"
         style={{
           position: 'absolute',

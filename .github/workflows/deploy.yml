@@ -33,6 +33,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             git clean -fd --exclude='.env' --exclude='*.db'
+            rm -f public/images/home_hero.jpg
 
             # ── Write .env with Hostinger MySQL credentials & Cloudinary ─────────────
             printf 'DB_HOST=127.0.0.1\nDB_PORT=3306\nDB_USER=u410255584_tvm\nDB_PASSWORD=Travinno@2026\nDB_NAME=u410255584_travinno\nCLOUDINARY_CLOUD_NAME=fifyhrcr\nCLOUDINARY_API_KEY=462151937739666\nCLOUDINARY_API_SECRET=_lcjEAWwXMWr07V3Z7FUmawQks4\nNODE_ENV=production\n' > .env
