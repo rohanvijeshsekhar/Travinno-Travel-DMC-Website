@@ -33,7 +33,13 @@ export async function buildPageMetadata(
   const canonicalUrl = entry?.canonical && entry.canonical.trim() !== ''
     ? entry.canonical.trim()
     : (entry?.url && entry.url.trim() !== '' ? entry.url.trim() : defaultPageUrl);
-  const ogImageUrl = entry?.ogImage && entry.ogImage.trim() !== '' ? entry.ogImage.trim() : DEFAULT_OG_IMAGE;
+  const rawOgImage = entry?.ogImage && entry.ogImage.trim() !== '' ? entry.ogImage.trim() : DEFAULT_OG_IMAGE;
+  let ogImageUrl = rawOgImage;
+  if (rawOgImage.startsWith('data:')) {
+    ogImageUrl = `${DEFAULT_SITE_URL}/api/image/?c=travinno_seo&i=${encodeURIComponent(pageKey)}&f=ogImage`;
+  } else if (rawOgImage.startsWith('/')) {
+    ogImageUrl = `${DEFAULT_SITE_URL}${rawOgImage}`;
+  }
   const isIndexable = entry?.indexable !== false;
   const keywords = entry?.keywords && entry.keywords.trim() !== '' ? entry.keywords.trim() : undefined;
 

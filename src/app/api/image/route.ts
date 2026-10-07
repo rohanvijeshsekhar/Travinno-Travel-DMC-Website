@@ -37,7 +37,11 @@ export async function GET(req: NextRequest) {
     const items: any[] = Array.isArray(data[col]) ? data[col] : [];
 
     const item = items.find(
-      (it: any) => String(it?.id) === String(id) || String(it?.name) === String(id)
+      (it: any) =>
+        String(it?.id) === String(id) ||
+        String(it?.name) === String(id) ||
+        String(it?.page) === String(id) ||
+        String(it?.key) === String(id)
     );
 
     if (!item) {

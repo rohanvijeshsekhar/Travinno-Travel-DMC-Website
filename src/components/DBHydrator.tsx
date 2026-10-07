@@ -114,7 +114,12 @@ export default function DBHydrator({ data }: DBHydratorProps) {
       setMetaProperty('og:title', entry.title);
       setMetaProperty('og:description', entry.description);
       setMetaProperty('og:url', canonicalUrl);
-      if (entry.ogImage) setMetaProperty('og:image', entry.ogImage);
+      if (entry.ogImage) {
+        const ogVal = entry.ogImage.startsWith('data:')
+          ? `https://travinno.com/api/image/?c=travinno_seo&i=${encodeURIComponent(entry.page || 'home')}&f=ogImage`
+          : (entry.ogImage.startsWith('/') ? `https://travinno.com${entry.ogImage}` : entry.ogImage);
+        setMetaProperty('og:image', ogVal);
+      }
 
       // 7. Twitter Card tags
       const setMetaName = (name: string, val?: string) => {
@@ -130,7 +135,12 @@ export default function DBHydrator({ data }: DBHydratorProps) {
 
       setMetaName('twitter:title', entry.title);
       setMetaName('twitter:description', entry.description);
-      if (entry.ogImage) setMetaName('twitter:image', entry.ogImage);
+      if (entry.ogImage) {
+        const twVal = entry.ogImage.startsWith('data:')
+          ? `https://travinno.com/api/image/?c=travinno_seo&i=${encodeURIComponent(entry.page || 'home')}&f=ogImage`
+          : (entry.ogImage.startsWith('/') ? `https://travinno.com${entry.ogImage}` : entry.ogImage);
+        setMetaName('twitter:image', twVal);
+      }
     };
 
     const handleSeoSync = () => {
