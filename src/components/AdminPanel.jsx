@@ -1047,12 +1047,8 @@ export default function AdminPanel() {
     const cleanPass = rawInput.toLowerCase();
     const cleanUser = (username || '').trim().toLowerCase();
 
-    // Master password: travinno2026 for all users
-    const validPasswords = ['travinno2026', 'travinno@2026', 'travinno', 'admin'];
-    const isSuccess =
-      validPasswords.includes(cleanPass) ||
-      validPasswords.includes(cleanUser) ||
-      cleanPass.includes('travinno2026');
+    // Master password: travinnodmc2026
+    const isSuccess = cleanPass === 'travinnodmc2026';
 
     if (isSuccess) {
       try {
