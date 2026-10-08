@@ -5,12 +5,17 @@ import ChunkErrorRecovery from '../components/ChunkErrorRecovery';
 export const metadata: Metadata = {
   title: 'Travinno - Crafting Journeys, Creating Memories',
   description: 'Premium B2B travel partner contract for luxury custom packages, destination management, and leisure travel.',
+  verification: {
+    google: '02mIuTQUDo7CHj_ypfubcPksmhuTfe7gVhfYCudV3zI',
+  },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/icon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-96.png', sizes: '96x96', type: 'image/png' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     apple: [
       { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
@@ -51,6 +56,22 @@ export default function RootLayout({
       }}
     >
       <head>
+        {/* Google Site Verification */}
+        <meta name="google-site-verification" content="02mIuTQUDo7CHj_ypfubcPksmhuTfe7gVhfYCudV3zI" />
+
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-H4HKW1GWTV" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-H4HKW1GWTV');
+            `,
+          }}
+        />
+
         <meta name="color-scheme" content="dark" />
         <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#050505" media="(prefers-color-scheme: light)" />
@@ -58,9 +79,15 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-touch-fullscreen" content="yes" />
+
         {/* Favicon & Touch Icons */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/favicon.ico" sizes="48x48" />
+        <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
+        <link rel="icon" href="/icon-96.png" type="image/png" sizes="96x96" />
+        <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+        <link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
         {/* Preconnect to font origins for faster DNS+TLS handshake */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

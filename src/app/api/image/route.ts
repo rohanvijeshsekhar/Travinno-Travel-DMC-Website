@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const cacheKey = `${col}:${id}:${field}`;
     const cached = imageCache.get(cacheKey);
     if (cached && Date.now() - cached.at < TTL) {
-      return new NextResponse(cached.buf, {
+      return new NextResponse(cached.buf as any, {
         headers: {
           'Content-Type': cached.mime,
           'Cache-Control': 'public, max-age=3600, immutable',
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Parse data URI
-    const match = rawVal.match(/^data:([^;]+);base64,(.+)$/s);
+    const match = rawVal.match(/^data:([^;]+);base64,([\s\S]+)$/);
     if (!match) {
       return new NextResponse('Invalid data URI', { status: 422 });
     }
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
     // Cache for next request
     imageCache.set(cacheKey, { buf, mime, at: Date.now() });
 
-    return new NextResponse(buf, {
+    return new NextResponse(buf as any, {
       headers: {
         'Content-Type': mime,
         'Cache-Control': 'public, max-age=3600, immutable',
