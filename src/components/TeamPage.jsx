@@ -474,7 +474,7 @@ export default function TeamPage() {
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <img
                   src={resolveImgPath(managingDirector.image)}
-                  alt={`${managingDirector.name} - ${managingDirector.position || 'CEO and Founder'}`}
+                  alt={`${managingDirector.name} - ${managingDirector.position || 'Founder and CEO'}`}
                   className="md-featured-img"
                 />
               </div>
@@ -492,13 +492,7 @@ export default function TeamPage() {
                     display: 'block',
                     marginBottom: '8px'
                   }}>
-                    {(() => {
-                      const pos = managingDirector.position;
-                      if (!pos || pos === 'Managing Director') return 'CEO and Founder';
-                      if (/founder\s*(&|and)\s*ceo/i.test(pos)) return 'CEO and Founder';
-                      if (/ceo\s*(&|and)\s*founder/i.test(pos)) return 'CEO and Founder';
-                      return pos;
-                    })()}
+                    {managingDirector.position || 'Founder and CEO'}
                   </span>
                   <h2 style={{
                     fontFamily: 'var(--font-heading)',
@@ -564,7 +558,7 @@ export default function TeamPage() {
             marginBottom: '40px',
             letterSpacing: '-0.5px'
           }}>
-            Our <span className="journey-allura-text" style={{ marginLeft: '6px' }}>Specialists</span>
+            Our <span className="journey-allura-text" style={{ marginLeft: '6px' }}>Key People</span>
           </h2>
 
           <div className="team-members-grid">

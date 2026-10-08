@@ -12,8 +12,8 @@ import { buildPageMetadata } from '@/lib/seo-helper';
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata(
     'team',
-    'Our Executive Leadership & Travel Specialists - Travinno',
-    'Meet the passionate professionals and travel specialists behind Travinno.',
+    'Our Executive Leadership & Key People - Travinno',
+    'Meet the passionate professionals and key people behind Travinno.',
     '/team'
   );
 }

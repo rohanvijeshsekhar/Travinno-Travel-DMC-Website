@@ -351,12 +351,12 @@
     },
     {
       "page": "team",
-      "title": "Our Executive Leadership & Travel Specialists - Travinno",
-      "description": "Meet the passionate professionals and travel specialists behind Travinno.",
+      "title": "Our Executive Leadership & Key People - Travinno",
+      "description": "Meet the passionate professionals and key people behind Travinno.",
       "url": "https://travinno.com/team",
       "canonical": "https://travinno.com/team",
       "ogImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
-      "keywords": "Travinno leadership, travel specialists, executive travel team, DMC management",
+      "keywords": "Travinno leadership, key people, executive travel team, DMC management",
       "indexable": true
     },
     {
@@ -524,7 +524,7 @@
     {
       "id": 1,
       "name": "Prinu Santhappan",
-      "position": "CEO and Founder",
+      "position": "Founder and CEO",
       "bio": "With over two decades of experience in the travel and hospitality industry, I am proud to lead a team of passionate professionals who are united by a shared vision of excellence, innovation, and genuine customer satisfaction.\n\nOur journey has been defined by strong partnerships – built on trust, mutual growth, and a commitment to delivering exceptional value. We believe that success is not achieved alone; it is the result of meaningful collaborations with our clients, partners, and stakeholders.",
       "signature": "",
       "image": "https://res.cloudinary.com/fifyhrcr/image/upload/v1791175180/travinno/vkgfuk3umiadqin5qesy.png",
