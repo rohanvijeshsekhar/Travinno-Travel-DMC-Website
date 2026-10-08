@@ -555,7 +555,7 @@ export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [theme, setTheme] = useState('dark');
   const currentTheme = theme === 'dark' ? darkTheme : lightTheme;
-  const [username, setUsername] = useState('admin');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passcode, setPasscode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -1066,7 +1066,7 @@ export default function AdminPanel() {
       db.init();
       loadCollections();
     } else {
-      setLoginError('Invalid credentials. Password for all users is: travinno2026');
+      setLoginError('Invalid credentials. Please enter a valid username and password.');
     }
   };
 
@@ -1371,27 +1371,11 @@ export default function AdminPanel() {
             <p style={{
               fontSize: '0.82rem',
               color: currentTheme.subText,
-              margin: '0 0 14px 0',
+              margin: '0',
               letterSpacing: '0.3px'
             }}>
               Enterprise Portal & Administration Panel
             </p>
-            {/* Universal access badge */}
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(193, 18, 31, 0.1)',
-              border: '1px solid rgba(193, 18, 31, 0.25)',
-              fontSize: '0.72rem',
-              color: '#F5F2EC',
-              fontWeight: 500
-            }}>
-              <Sparkles size={12} color="#C1121F" />
-              <span>Universal Access: password is <strong>travinno2026</strong></span>
-            </div>
           </div>
 
           {/* Error Banner */}
@@ -1432,7 +1416,7 @@ export default function AdminPanel() {
                     setUsername(e.target.value);
                     if (loginError) setLoginError('');
                   }}
-                  placeholder="admin or your email..."
+                  placeholder="Enter your username or email..."
                   autoComplete="username"
                   style={{
                     width: '100%',
@@ -1455,14 +1439,9 @@ export default function AdminPanel() {
 
             {/* Password Field */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label style={{ fontSize: '0.74rem', fontWeight: 600, color: currentTheme.subText, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                  Password
-                </label>
-                <span style={{ fontSize: '0.7rem', color: '#C1121F', fontWeight: 500 }}>
-                  travinno2026
-                </span>
-              </div>
+              <label style={{ fontSize: '0.74rem', fontWeight: 600, color: currentTheme.subText, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                Password
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -1473,7 +1452,7 @@ export default function AdminPanel() {
                     setPasscode(e.target.value);
                     if (loginError) setLoginError('');
                   }}
-                  placeholder="Enter travinno2026..."
+                  placeholder="Enter your password..."
                   autoComplete="current-password"
                   style={{
                     width: '100%',
@@ -1513,32 +1492,6 @@ export default function AdminPanel() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-            </div>
-
-            {/* Quick Fill Helper */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setPassword('travinno2026');
-                  setPasscode('travinno2026');
-                  if (loginError) setLoginError('');
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'rgba(245, 242, 236, 0.5)',
-                  fontSize: '0.72rem',
-                  cursor: 'pointer',
-                  padding: 0,
-                  textDecoration: 'underline',
-                  transition: 'color 0.2s'
-                }}
-                onMouseEnter={(e) => e.target.style.color = '#F5F2EC'}
-                onMouseLeave={(e) => e.target.style.color = 'rgba(245, 242, 236, 0.5)'}
-              >
-                Auto-fill "travinno2026"
-              </button>
             </div>
 
             <button
