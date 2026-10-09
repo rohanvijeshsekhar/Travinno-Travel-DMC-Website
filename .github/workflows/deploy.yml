@@ -13,13 +13,57 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate Hostinger SSH deployment configuration
+        env:
+          SSH_HOST: ${{ secrets.HOSTINGER_HOST || secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.HOSTINGER_USERNAME || secrets.SSH_USERNAME }}
+          SSH_PASS: ${{ secrets.HOSTINGER_PASSWORD || secrets.SSH_PASSWORD }}
+          SSH_KEY: ${{ secrets.HOSTINGER_SSH_KEY || secrets.SSH_PRIVATE_KEY || secrets.SSH_KEY }}
+        run: |
+          MISSING=0
+
+          if [ -z "$SSH_HOST" ]; then
+            echo "::error title=Missing SSH Host::Required secret missing: HOSTINGER_HOST (or SSH_HOST). Please configure your Hostinger server IP or hostname in GitHub repository secrets."
+            MISSING=1
+          fi
+
+          if [ -z "$SSH_USER" ]; then
+            echo "::error title=Missing SSH Username::Required secret missing: HOSTINGER_USERNAME (or SSH_USERNAME). Please configure your Hostinger SSH username (e.g. u410255584) in GitHub repository secrets."
+            MISSING=1
+          fi
+
+          if [ -z "$SSH_PASS" ] && [ -z "$SSH_KEY" ]; then
+            echo "::error title=Missing SSH Authentication::Required authentication secret missing: Please configure either HOSTINGER_PASSWORD (or SSH_PASSWORD) for password auth, or HOSTINGER_SSH_KEY (or SSH_PRIVATE_KEY) for private key auth in GitHub repository secrets."
+            MISSING=1
+          fi
+
+          if [ "$MISSING" -eq 1 ]; then
+            echo ""
+            echo "════════════════════════════════════════════════════════════════════════════════"
+            echo "❌ DEPLOYMENT STOPPED: Required SSH secrets are missing from GitHub."
+            echo "════════════════════════════════════════════════════════════════════════════════"
+            echo "To fix this deployment, navigate to your GitHub repository:"
+            echo "  GitHub -> Settings -> Secrets and variables -> Actions -> New repository secret"
+            echo ""
+            echo "Configure the following secrets (obtained from Hostinger hPanel > Advanced > SSH Access):"
+            echo "  • HOSTINGER_HOST     : Server IP or hostname (e.g. 195.35.x.x or connect.hostingersite.com)"
+            echo "  • HOSTINGER_USERNAME : SSH username (e.g. u410255584)"
+            echo "  • HOSTINGER_PASSWORD : SSH password (or HOSTINGER_SSH_KEY for SSH private key)"
+            echo "  • HOSTINGER_PORT     : Optional, defaults to 65002 (Hostinger Business Hosting SSH port)"
+            echo "════════════════════════════════════════════════════════════════════════════════"
+            exit 1
+          fi
+
+          echo "✅ SSH configuration validated: Host, Username, and Authentication credentials are provided."
+
       - name: Deploy to Hostinger via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USERNAME }}
-          password: ${{ secrets.HOSTINGER_PASSWORD }}
-          port: 22
+          host: ${{ secrets.HOSTINGER_HOST || secrets.SSH_HOST }}
+          username: ${{ secrets.HOSTINGER_USERNAME || secrets.SSH_USERNAME }}
+          password: ${{ secrets.HOSTINGER_PASSWORD || secrets.SSH_PASSWORD }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY || secrets.SSH_PRIVATE_KEY || secrets.SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT || secrets.SSH_PORT || 65002 }}
           command_timeout: 15m
           script: |
             cd ~/travinno
