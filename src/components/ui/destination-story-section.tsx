@@ -36,8 +36,8 @@ const destinations: Destination[] = [
     title: "Dubai",
     region: "Middle East",
     countryName: "United Arab Emirates",
-    heading: "Modern Skylines & Desert Safaris",
-    description: "Experience a world where futuristic glass skyscrapers rise directly from ancient desert sands, curating the ultimate heights of luxury leisure and private safaris.",
+    heading: "The UAE, Curated Differently.",
+    description: "Exceptional journeys across iconic cities, extraordinary experiences and the Arabian desert — thoughtfully designed around every traveller and every occasion. From private luxury escapes and bespoke experiences to MICE, corporate travel and seamless group journeys, discover the UAE with a level of service that goes beyond the expected.",
     highlights: ["Luxury Travel", "MICE", "Corporate", "Leisure", "Adventure"],
     image: `${BASE}images/destinations/dubai.webp`
   },
@@ -45,8 +45,8 @@ const destinations: Destination[] = [
     title: "Thailand",
     region: "Southeast Asia",
     countryName: "Thailand",
-    heading: "Golden Temples & Tropical Islands",
-    description: "Immerse yourself in the warm hospitality of golden temple cities and white sand archipelago islands with tailored beachfront luxury.",
+    heading: "Timeless Culture. Tropical Beauty. Elevated Experiences.",
+    description: "From the soul of its ancient culture to the serenity of its tropical islands, Thailand offers a world of extraordinary contrasts. Experience thoughtfully curated journeys, exceptional hospitality and distinctive experiences designed around every traveller, every occasion and every expectation.",
     highlights: ["Luxury Travel", "MICE", "Corporate", "Leisure", "Adventure"],
     image: `${BASE}images/destinations/thailand.webp`
   },
@@ -54,8 +54,8 @@ const destinations: Destination[] = [
     title: "Vietnam",
     region: "Southeast Asia",
     countryName: "Vietnam",
-    heading: "Historic Cities & Dramatic Karst Bays",
-    description: "Cruise the emerald waters of Ha Long Bay and explore French colonial cities, combining rich historic heritage with luxury maritime travel.",
+    heading: "A Journey Through Time, Culture & Beauty.",
+    description: "From the timeless streets of Hanoi and the imperial heritage of Hue to the lantern-lit charm of Hoi An and the breathtaking landscapes of Ha Long Bay, discover Vietnam through its rich history, vibrant culture, exquisite cuisine and extraordinary natural beauty.",
     highlights: ["Luxury Travel", "MICE", "Corporate", "Leisure", "Adventure"],
     image: `${BASE}images/destinations/vietnam.webp`
   },
@@ -63,8 +63,8 @@ const destinations: Destination[] = [
     title: "Kenya",
     region: "East Africa",
     countryName: "Kenya",
-    heading: "Untamed Wildlife & Savannah Reserves",
-    description: "Witness the great wilderness migration on the plains of Masai Mara, pairing raw nature with five-star luxury tented camp reserves.",
+    heading: "Untamed Beauty. Timeless Adventure.",
+    description: "Experience Kenya at its most extraordinary — from the sweeping savannahs of the Maasai Mara and breathtaking wildlife encounters to authentic cultural experiences and exceptional safari retreats, where the spirit of Africa unfolds in its purest form.",
     highlights: ["Luxury Travel", "MICE", "Corporate", "Leisure", "Adventure"],
     image: `${BASE}images/destinations/kenya.webp`
   },
